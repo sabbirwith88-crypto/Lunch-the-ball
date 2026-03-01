@@ -1503,6 +1503,87 @@
             margin: 5px;
         }
 
+        /* Network Error Modal */
+        .network-error-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .network-error-content {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            border: 2px solid #ff4444;
+            max-width: 400px;
+        }
+
+        .network-error-icon {
+            font-size: 5rem;
+            margin-bottom: 20px;
+        }
+
+        .network-error-title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #ff4444;
+        }
+
+        .network-error-message {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+
+        .network-error-button {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            background: linear-gradient(to bottom, #ff4444, #cc0000);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .network-error-button:active {
+            transform: scale(0.95);
+            background: linear-gradient(to bottom, #cc0000, #990000);
+        }
+
+        /* Adsterra Banner Ad */
+        .banner-ad-container {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: auto;
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.1);
+            pointer-events: auto;
+        }
+
+        .banner-ad-container iframe {
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
         /* Mobile specific adjustments */
         @media (max-width: 600px) {
             .welcome {
@@ -1706,8 +1787,37 @@
             .code-number {
                 font-size: 1.8rem;
             }
+
+            .network-error-content {
+                padding: 30px 20px;
+            }
+
+            .network-error-icon {
+                font-size: 4rem;
+            }
+
+            .network-error-title {
+                font-size: 1.8rem;
+            }
+
+            .network-error-message {
+                font-size: 1rem;
+            }
         }
     </style>
+    <!-- Adsgram SDK -->
+    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
+    <!-- Adsterra Banner Ad -->
+    <script>
+        atOptions = {
+            'key' : '55510678cf8a0096c811a6d3af7fec7e',
+            'format' : 'iframe',
+            'height' : 50,
+            'width' : 320,
+            'params' : {}
+        };
+    </script>
+    <script src="https://www.highperformanceformat.com/55510678cf8a0096c811a6d3af7fec7e/invoke.js"></script>
 </head>
 <body>
     <!-- Start Screen with Mountain and Sun -->
@@ -1862,6 +1972,33 @@
         <button class="close-code" id="closeCodeDisplay">CLOSE</button>
     </div>
 
+    <!-- Network Error Modal -->
+    <div class="network-error-modal" id="networkErrorModal">
+        <div class="network-error-content">
+            <div class="network-error-icon">📶</div>
+            <div class="network-error-title">NETWORK ERROR</div>
+            <div class="network-error-message">
+                No internet connection detected.<br>
+                Please check your network and try again.
+            </div>
+            <button class="network-error-button" id="networkErrorButton">OK</button>
+        </div>
+    </div>
+
+    <!-- Adsterra Banner Ad Container -->
+    <div class="banner-ad-container" id="bannerAdContainer">
+        <script type="text/javascript">
+            atOptions = {
+                'key' : '55510678cf8a0096c811a6d3af7fec7e',
+                'format' : 'iframe',
+                'height' : 50,
+                'width' : 320,
+                'params' : {}
+            };
+            document.write('<scr' + 'ipt type="text/javascript" src="https://www.highperformanceformat.com/55510678cf8a0096c811a6d3af7fec7e/invoke.js"></scr' + 'ipt>');
+        </script>
+    </div>
+
     <!-- Firebase SDK -->
     <script type="module">
         // Import the functions you need from the SDKs you need
@@ -1954,6 +2091,111 @@
     </script>
 
     <script>
+        /**************************************************************************
+         *  AD INTEGRATION FUNCTIONS (Adsgram and Adsterra)
+         **************************************************************************/
+        
+        // Initialize Adsgram
+        let adController = null;
+        let isAdInitialized = false;
+
+        function initAdsgram() {
+            if (typeof window.Adsgram !== 'undefined' && !isAdInitialized) {
+                try {
+                    adController = window.Adsgram.init({ 
+                        blockId: "int-24007" 
+                    });
+                    isAdInitialized = true;
+                    console.log("Adsgram initialized successfully");
+                } catch (error) {
+                    console.error("Failed to initialize Adsgram:", error);
+                }
+            }
+        }
+
+        // Show interstitial ad
+        function showInterstitialAd() {
+            return new Promise((resolve, reject) => {
+                if (!isAdInitialized || !adController) {
+                    console.log("Adsgram not initialized, initializing now...");
+                    initAdsgram();
+                    if (!adController) {
+                        console.log("Still cannot initialize, skipping ad");
+                        resolve();
+                        return;
+                    }
+                }
+
+                console.log("Attempting to show interstitial ad...");
+                
+                adController.show()
+                    .then(() => {
+                        console.log("Ad shown successfully");
+                        resolve();
+                    })
+                    .catch((error) => {
+                        console.error("Ad error:", error);
+                        // Check if it's a network error
+                        if (error.message && error.message.includes('network')) {
+                            showNetworkError();
+                        }
+                        resolve(); // Resolve anyway to continue game flow
+                    });
+            });
+        }
+
+        // Show network error modal
+        function showNetworkError() {
+            const networkModal = document.getElementById('networkErrorModal');
+            if (networkModal) {
+                networkModal.style.display = 'flex';
+                
+                // Prevent game interaction
+                document.body.style.pointerEvents = 'none';
+                
+                // Close button handler
+                const closeButton = document.getElementById('networkErrorButton');
+                closeButton.onclick = function() {
+                    networkModal.style.display = 'none';
+                    document.body.style.pointerEvents = 'auto';
+                    
+                    // Exit the game and go back to start screen
+                    closeLauncherGame();
+                    startScreen.style.display = 'flex';
+                    levelScreen.style.display = 'none';
+                    launcherGame.style.display = 'none';
+                    resultScreen.style.display = 'none';
+                };
+            }
+        }
+
+        // Check network connection
+        function checkNetworkConnection() {
+            if (!navigator.onLine) {
+                showNetworkError();
+                return false;
+            }
+            return true;
+        }
+
+        // Modified ad trigger function for game entry
+        async function triggerGameEntryAd() {
+            if (!checkNetworkConnection()) return false;
+            
+            console.log("Triggering game entry ad...");
+            await showInterstitialAd();
+            return true;
+        }
+
+        // Modified ad trigger function for game events
+        async function triggerGameEventAd() {
+            if (!checkNetworkConnection()) return false;
+            
+            console.log("Triggering game event ad...");
+            await showInterstitialAd();
+            return true;
+        }
+
         /**************************************************************************
          *  Sound system (WebAudio) - Fixed implementation
          **************************************************************************/
@@ -2072,24 +2314,7 @@
         }
 
         /**************************************************************************
-         *  AD INTEGRATION FUNCTIONS
-         **************************************************************************/
-        // Game Over or Level Win hole ei function-ti call korun
-        function triggerAd() {
-            if (window.AndroidBridge && AndroidBridge.onLevelCompleted) {
-                AndroidBridge.onLevelCompleted();
-            } else if (window.Android && window.Android.showRewardedAd) {
-                // Alternative method
-                window.Android.showRewardedAd();
-            } else {
-                console.log("Ad would trigger here in Android app");
-                // For web testing, you can show a message
-                // alert("Ad would play here in Android app");
-            }
-        }
-
-        /**************************************************************************
-         *  Game code with Level 18 (Electric Shock Challenge) and AD Integration
+         *  Game code with Level 18 (Electric Shock Challenge)
          **************************************************************************/
 
         // Game state - All colors are unlocked from the beginning
@@ -2184,6 +2409,8 @@
         const congratsCode = document.getElementById('congratsCode');
         const copyCodeButton = document.getElementById('copyCodeButton');
         const closeCodeDisplay = document.getElementById('closeCodeDisplay');
+        const networkErrorModal = document.getElementById('networkErrorModal');
+        const networkErrorButton = document.getElementById('networkErrorButton');
         
         // Navigation elements
         const startScreen = document.getElementById('start-screen');
@@ -2213,6 +2440,23 @@
         // Initialize ball position
         ball.style.left = ballPosition.x + 'px';
         ball.style.bottom = ballPosition.y + 'px';
+
+        // Initialize Adsgram
+        initAdsgram();
+
+        // Monitor network status
+        window.addEventListener('online', function() {
+            console.log('Network is online');
+            if (networkErrorModal) {
+                networkErrorModal.style.display = 'none';
+                document.body.style.pointerEvents = 'auto';
+            }
+        });
+
+        window.addEventListener('offline', function() {
+            console.log('Network is offline');
+            showNetworkError();
+        });
 
         // Get or create user ID
         async function initializeUser() {
@@ -2440,7 +2684,10 @@
         }
 
         // Navigation functions
-        function startGame() {
+        async function startGame() {
+            // Show interstitial ad when entering the game
+            await triggerGameEntryAd();
+            
             ensureAudio();
             soundClick();
             startScreen.style.display = 'none';
@@ -3811,7 +4058,7 @@
             }
         }
 
-        function showResultScreen(isWin, customMessage = null) {
+        async function showResultScreen(isWin, customMessage = null) {
             launcherGame.style.display = 'none';
             resultScreen.style.display = 'flex';
 
@@ -3848,8 +4095,8 @@
                     window.firebaseFunctions.saveCompletedLevel(gameState.userId, gameState.currentLevel);
                 }
                 
-                // 馃憠 Level Complete ad trigger
-                triggerAd();
+                // Show interstitial ad on level complete
+                await triggerGameEventAd();
             } else {
                 if (customMessage) {
                     resultMessage.textContent = customMessage;
@@ -3863,8 +4110,8 @@
                 nextLevelButton.style.display = 'none';
                 resultBackButton.style.display = 'block';
                 
-                // Game Over ad trigger
-                triggerAd();
+                // Show interstitial ad on game over / try again
+                await triggerGameEventAd();
             }
             
             // Clear intervals
@@ -3989,6 +4236,11 @@
 
         function launchBall(power) {
             if (gameState.isBallInMotion || gameState.attemptsLeft <= 0) return;
+            
+            // Check network before launching
+            if (!checkNetworkConnection()) {
+                return;
+            }
             
             gameState.isBallInMotion = true;
             gameState.attemptsLeft--;
@@ -4922,6 +5174,19 @@
                 e.preventDefault();
                 hideTutorial();
             }, {passive: false});
+
+            // Network error button
+            networkErrorButton.addEventListener('click', () => {
+                networkErrorModal.style.display = 'none';
+                document.body.style.pointerEvents = 'auto';
+                
+                // Exit the game and go back to start screen
+                closeLauncherGame();
+                startScreen.style.display = 'flex';
+                levelScreen.style.display = 'none';
+                launcherGame.style.display = 'none';
+                resultScreen.style.display = 'none';
+            });
             
             // Set up level click handlers initially
             updateLevelDisplay();
