@@ -1,0 +1,4934 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ball Launcher Game</title>
+    <style>
+        /* Common Styles */
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            touch-action: manipulation;
+            background: linear-gradient(to bottom, #1a2a6c, #b21f1f, #fdbb2d);
+        }
+
+        /* Start Screen Styles */
+        #start-screen {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+            z-index: 10;
+            position: absolute;
+        }
+
+        .welcome {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .start-button {
+            font-size: 2rem;
+            padding: 20px 60px;
+            background-color: white;
+            color: black;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            z-index: 2;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .start-button:active {
+            transform: scale(0.95);
+            background-color: #f0f0f0;
+        }
+
+        .settings-button {
+            margin-top: 20px;
+            font-size: 1.5rem;
+            padding: 15px 30px;
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 2px solid white;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            z-index: 2;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .settings-button:active {
+            transform: scale(0.95);
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Mountain and Sun for Start Screen */
+        .mountain {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 150px;
+            background: linear-gradient(to top, #2c3e50, #3498db);
+            clip-path: polygon(0% 100%, 100% 100%, 100% 30%, 75% 50%, 50% 30%, 25% 50%, 0% 30%);
+            z-index: 1;
+        }
+
+        .sun {
+            position: absolute;
+            top: 15%;
+            right: 15%;
+            width: 100px;
+            height: 100px;
+            background: radial-gradient(circle, #ffde00, #ff8c00);
+            border-radius: 50%;
+            box-shadow: 0 0 50px #ff8c00;
+            z-index: 1;
+            animation: pulse 3s infinite alternate;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.05); }
+        }
+
+        /* Level Screen Styles */
+        #level-screen {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            width: 100%;
+            z-index: 5;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background: linear-gradient(to bottom, #0f2027, #203a43, #2c5364);
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .level-container {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        .level-row {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+        }
+
+        .level {
+            width: 100px;
+            height: 100px;
+            border: 3px solid rgba(255,255,255,0.3);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 3rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        /* Unlocked Level */
+        .level.unlocked {
+            background-color: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        /* Locked Levels */
+        .level.locked {
+            background-color: rgba(50,50,50,0.5);
+            color: gray;
+            cursor: not-allowed;
+        }
+
+        .level.locked::after {
+            content: '';
+            position: absolute;
+            font-size: 1.5rem;
+            bottom: 10px;
+        }
+
+        .level.unlocked:active {
+            transform: scale(0.95);
+            background-color: rgba(255,255,255,0.2);
+        }
+
+        /* Back button for level screen */
+        .back-button-levels {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            padding: 15px 25px;
+            background: linear-gradient(to bottom, #f44336, #d32f2f);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            z-index: 30;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .back-button-levels:active {
+            transform: scale(0.95);
+            background: linear-gradient(to bottom, #e53935, #c62828);
+        }
+
+        /* Settings Modal */
+        .settings-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 100;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .settings-content {
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .settings-title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .ball-options {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .ball-option {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .ball-option.selected {
+            border-color: gold;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.7), 0 3px 8px rgba(0, 0, 0, 0.3);
+            transform: scale(1.1);
+        }
+
+        .ball-option:active {
+            transform: scale(1.05);
+        }
+
+        .close-settings {
+            padding: 15px 30px;
+            font-size: 1.5rem;
+            background: linear-gradient(to bottom, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+        }
+
+        .close-settings:active {
+            transform: scale(0.95);
+            background: linear-gradient(to bottom, #2980b9, #2471a3);
+        }
+
+        /* Launcher Game Screen */
+        #launcher-game {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 20;
+            overflow: hidden;
+            background: linear-gradient(to bottom, #56ccf2, #2f80ed);
+        }
+
+        /* Game Elements */
+        .game-mountain {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(to top, #3a5268, #2c3e50);
+            clip-path: polygon(
+                0% 100%, 
+                10% 70%,
+                20% 80%,
+                30% 60%,
+                40% 90%,
+                50% 65%,
+                60% 75%,
+                70% 55%,
+                80% 85%,
+                90% 60%,
+                100% 100%
+            );
+            z-index: 21;
+        }
+
+        .game-sun {
+            position: absolute;
+            top: 12%;
+            right: 12%;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            z-index: 22;
+            animation: sunsetGlow 4s infinite alternate;
+        }
+
+        @keyframes sunsetGlow {
+            0% { opacity: 0.9; box-shadow: 0 0 60px #FF8C00; }
+            100% { opacity: 1; box-shadow: 0 0 80px #FF4500; }
+        }
+
+        .moon {
+            position: absolute;
+            top: 12%;
+            right: 12%;
+            width: 70px;
+            height: 70px;
+            background: radial-gradient(circle, #f0f0f0, #ccc);
+            border-radius: 50%;
+            box-shadow: 0 0 60px rgba(255, 255, 255, 0.5);
+            z-index: 22;
+            animation: moonGlow 4s infinite alternate;
+        }
+
+        @keyframes moonGlow {
+            0% { opacity: 0.8; box-shadow: 0 0 40px rgba(255, 255, 255, 0.5); }
+            100% { opacity: 1; box-shadow: 0 0 70px rgba(255, 255, 255, 0.8); }
+        }
+
+        .launcher-machine {
+            position: absolute;
+            left: 20px;
+            bottom: 350px;
+            width: 60px;
+            height: 90px;
+            background-color: #555;
+            border-radius: 10px;
+            z-index: 23;
+        }
+
+        .launcher-machine:before {
+            content: '';
+            position: absolute;
+            top: -20px;
+            left: 20px;
+            width: 20px;
+            height: 40px;
+            background-color: #777;
+            transform: rotate(45deg);
+            border-radius: 5px;
+        }
+
+        /* Dustbin Styles */
+        .dustbin {
+            position: absolute;
+            right: 20px;
+            bottom: 350px;
+            width: 60px;
+            height: 80px;
+            z-index: 23;
+        }
+
+        .dustbin.higher {
+            bottom: 450px;
+            right: 50px;
+        }
+
+        .dustbin.small {
+            width: 40px;
+            height: 60px;
+        }
+        
+        .dustbin.very-small {
+            width: 30px;
+            height: 45px;
+        }
+
+        .dustbin.moving {
+            animation: moveDustbin 4s linear infinite;
+        }
+
+        @keyframes moveDustbin {
+            0%, 100% { right: 20px; }
+            50% { right: 200px; }
+        }
+
+        .dustbin.moving-2 {
+            animation: moveDustbin2 5s linear infinite;
+        }
+
+        @keyframes moveDustbin2 {
+            0%, 100% { right: 200px; }
+            50% { right: 20px; }
+        }
+
+        .dustbin-body {
+            position: absolute;
+            bottom: 0;
+            width: 60px;
+            height: 60px;
+            background-color: #8B4513;
+            border: 3px solid #A0522D;
+            border-radius: 0 0 5px 5px;
+            clip-path: polygon(0% 0%, 100% 0%, 85% 100%, 15% 100%);
+        }
+
+        .dustbin.small .dustbin-body {
+            width: 40px;
+            height: 40px;
+        }
+        
+        .dustbin.very-small .dustbin-body {
+            width: 30px;
+            height: 30px;
+        }
+
+        .dustbin-top {
+            position: absolute;
+            top: 0;
+            left: -5px;
+            width: 70px;
+            height: 10px;
+            background-color: #A0522D;
+            border-radius: 3px;
+        }
+
+        .dustbin.small .dustbin-top {
+            width: 50px;
+        }
+        
+        .dustbin.very-small .dustbin-top {
+            width: 40px;
+        }
+
+        .dustbin-lid {
+            position: absolute;
+            top: -8px;
+            left: 10px;
+            width: 40px;
+            height: 8px;
+            background-color: #A0522D;
+            transform: rotate(10deg);
+            border-radius: 3px 3px 0 0;
+        }
+
+        .dustbin.small .dustbin-lid {
+            width: 30px;
+        }
+        
+        .dustbin.very-small .dustbin-lid {
+            width: 20px;
+        }
+
+        /* Ball */
+        .ball {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            z-index: 24;
+            left: 70px;
+            bottom: 380px;
+            display: block;
+        }
+
+        /* Ball color variations - Made more vibrant */
+        .ball-white {
+            background: radial-gradient(circle at 30% 30%, #fff, #ccc);
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
+        }
+        
+        .ball-blue {
+            background: radial-gradient(circle at 30% 30%, #6eb1ff, #0066cc);
+            box-shadow: 0 0 5px rgba(0, 102, 204, 0.7);
+        }
+        
+        .ball-red {
+            background: radial-gradient(circle at 30% 30%, #ff6b6b, #cc0000);
+            box-shadow: 0 0 5px rgba(204, 0, 0, 0.7);
+        }
+        
+        .ball-purple {
+            background: radial-gradient(circle at 30% 30%, #c47cff, #6600cc);
+            box-shadow: 0 0 5px rgba(102, 0, 204, 0.7);
+        }
+        
+        .ball-gray {
+            background: radial-gradient(circle at 30% 30%, #e6e6e6, #808080);
+            box-shadow: 0 0 5px rgba(128, 128, 128, 0.7);
+        }
+        
+        .ball-black {
+            background: radial-gradient(circle at 30% 30%, #4d4d4d, #000);
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.7);
+        }
+
+        /* Updated Power Control Styles - Smaller and without percentage */
+        .power-control {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 180px;
+            z-index: 26;
+            background: rgba(0, 0, 0, 0.7);
+            padding: 8px;
+            border-radius: 10px;
+            text-align: center;
+            color: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .power-control h3 {
+            margin: 0 0 8px 0;
+            font-size: 1rem;
+            color: #FFD700;
+        }
+
+        .power-drag-area {
+            width: 100%;
+            height: 100px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            margin: 8px 0;
+            position: relative;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        .power-indicator {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 0%;
+            background: linear-gradient(to top, #4CAF50, #8BC34A);
+            transition: height 0.1s;
+            pointer-events: none;
+        }
+
+        .power-text {
+            display: none; /* Hide the percentage text */
+        }
+
+        .drag-instructions {
+            font-size: 0.8rem;
+            margin: 5px 0;
+            color: #ccc;
+        }
+
+        .attempts-counter {
+            margin-top: 8px;
+            font-size: 0.9rem;
+            font-weight: bold;
+            color: #FFD700;
+        }
+
+        /* Ball Counter */
+        .ball-counter {
+            position: absolute;
+            top: 30px;
+            left: 30px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            z-index: 25;
+            background: rgba(0,0,0,0.5);
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        /* Coming Soon Message */
+        .coming-soon {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2rem;
+            color: white;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+            z-index: 30;
+            display: none;
+        }
+
+        /* Result Screen */
+        .result-screen {
+            display: none;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 30;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .result-message {
+            font-size: 3rem;
+            margin-bottom: 40px;
+            text-align: center;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .result-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            width: 100%;
+            max-width: 400px;
+            align-items: center;
+        }
+
+        .result-button {
+            padding: 20px;
+            font-size: 1.8rem;
+            border: none;
+            border-radius: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            width: 100%;
+            max-width: 300px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .result-button:active {
+            transform: scale(0.95);
+        }
+
+        .try-again {
+            background-color: #FFA500;
+            color: white;
+        }
+
+        .next-level {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .back-to-levels {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .back-button {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            padding: 15px 25px;
+            background: linear-gradient(to bottom, #f44336, #d32f2f);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            z-index: 30;
+            font-weight: bold;
+            font-size: 1.2rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .back-button:active {
+            transform: scale(0.95);
+            background: linear-gradient(to bottom, #e53935, #c62828);
+        }
+
+        /* Tutorial Overlay */
+        .tutorial-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 40;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .tutorial-content {
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            padding: 30px;
+            border-radius: 15px;
+            max-width: 500px;
+            text-align: center;
+            box-shadow: 0 5px 25px rgba(0, 0, 0, 0.5);
+        }
+
+        .tutorial-title {
+            font-size: 2rem;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        .tutorial-text {
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .tutorial-highlight {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .tutorial-button {
+            padding: 15px 30px;
+            font-size: 1.5rem;
+            background: linear-gradient(to bottom, #3498db, #2980b9);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+        }
+
+        .tutorial-button:active {
+            transform: scale(0.95);
+            background: linear-gradient(to bottom, #2980b9, #2471a3);
+        }
+
+        /* 3D Basketball Hoop Styles for Level 6 and 7 */
+        .hoop {
+            position: absolute;
+            width: 70px;
+            height: 70px;
+            z-index: 23;
+        }
+
+        .hoop-backboard {
+            position: absolute;
+            width: 40px;
+            height: 50px;
+            background: linear-gradient(to right, #e0e0e0, #f5f5f5);
+            border: 3px solid #b0b0b0;
+            border-radius: 5px;
+            box-shadow: 3px 3px 5px rgba(0,0,0,0.3);
+            transform: perspective(100px) rotateY(-10deg);
+        }
+
+        .hoop-rim {
+            position: absolute;
+            top: 25px;
+            left: 40px;
+            width: 30px;
+            height: 30px;
+            border: 4px solid #FF5722;
+            border-radius: 50%;
+            box-shadow: 0 0 8px rgba(255, 87, 34, 0.7);
+        }
+
+        .hoop-net {
+            position: absolute;
+            top: 35px;
+            left: 42px;
+            width: 26px;
+            height: 30px;
+            background: 
+                linear-gradient(90deg, transparent 49%, rgba(255,255,255,0.5) 49%, rgba(255,255,255,0.5) 51%, transparent 51%),
+                linear-gradient(transparent 49%, rgba(255,255,255,0.5) 49%, rgba(255,255,255,0.5) 51%, transparent 51%);
+            background-size: 5px 5px;
+            clip-path: polygon(0% 0%, 100% 0%, 80% 100%, 20% 100%);
+        }
+
+        .hoop.moving-up-down {
+            animation: moveHoopUpDown 3s ease-in-out infinite;
+        }
+
+        @keyframes moveHoopUpDown {
+            0%, 100% { bottom: 350px; }
+            50% { bottom: 450px; }
+        }
+
+        /* Level 8 - Multiple Balls */
+        .level8-ball {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            z-index: 24;
+            background: radial-gradient(circle at 30% 30%, #fff, #ccc);
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.7);
+            display: block;
+        }
+
+        .level8-ball.moving-up-down {
+            animation: moveBallUpDown 2.5s ease-in-out infinite;
+        }
+
+        @keyframes moveBallUpDown {
+            0%, 100% { bottom: 350px; }
+            50% { bottom: 450px; }
+        }
+
+        /* Level 9 - Black Hole */
+        .black-hole {
+            position: absolute;
+            width: 10px; /* Smaller than the ball */
+            height: 10px;
+            border-radius: 50%;
+            background: radial-gradient(circle, #000, #333);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.8), inset 0 0 5px rgba(255, 255, 255, 0.1);
+            z-index: 23;
+            animation: rotateBlackHole 5s linear infinite;
+        }
+
+        @keyframes rotateBlackHole {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .black-hole.moving-snake-fast {
+            animation: moveSnakeFast 4s linear infinite, rotateBlackHole 5s linear infinite;
+        }
+
+        @keyframes moveSnakeFast {
+            0%, 100% { right: 20px; bottom: 350px; }
+            25% { right: 200px; bottom: 350px; }
+            50% { right: 200px; bottom: 450px; }
+            75% { right: 20px; bottom: 450px; }
+        }
+
+        /* Level 10 - Two Black Holes */
+        .black-hole.moving-left-right {
+            animation: moveLeftRight 3s linear infinite, rotateBlackHole 5s linear infinite;
+        }
+
+        @keyframes moveLeftRight {
+            0%, 100% { right: 20px; }
+            50% { right: 200px; }
+        }
+
+        .black-hole.moving-up-down {
+            animation: moveUpDown 4s linear infinite, rotateBlackHole 5s linear infinite;
+        }
+
+        @keyframes moveUpDown {
+            0%, 100% { bottom: 350px; }
+            50% { bottom: 450px; }
+        }
+
+        /* Level 11 - Light Bulb */
+        .light-bulb {
+            position: absolute;
+            width: 20px;
+            height: 30px;
+            z-index: 23;
+        }
+
+        .bulb-body {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle at 30% 30%, #fff, #ffeb3b);
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(255, 235, 59, 0.8);
+        }
+
+        .bulb-base {
+            position: absolute;
+            top: 20px;
+            left: 5px;
+            width: 10px;
+            height: 10px;
+            background: #8d6e63;
+            border-radius: 0 0 5px 5px;
+        }
+
+        .light-bulb.moving-diagonal {
+            animation: moveDiagonal 5s linear infinite;
+        }
+
+        @keyframes moveDiagonal {
+            0%, 100% { right: 20px; bottom: 350px; }
+            25% { right: 150px; bottom: 450px; }
+            50% { right: 250px; bottom: 350px; }
+            75% { right: 150px; bottom: 250px; }
+        }
+
+        /* Level 12 - Two Light Bulbs */
+        .light-bulb.moving-left-right {
+            animation: moveLeftRightBulb 4s linear infinite;
+        }
+
+        @keyframes moveLeftRightBulb {
+            0%, 100% { right: 20px; }
+            50% { right: 250px; }
+        }
+
+        .light-bulb.moving-up-down {
+            animation: moveUpDownBulb 3s linear infinite;
+        }
+
+        @keyframes moveUpDownBulb {
+            0%, 100% { bottom: 350px; }
+            50% { bottom: 450px; }
+        }
+
+        /* Level 13 - Moving Clock Styles */
+        .clock {
+            position: absolute;
+            width: 50px; /* Smaller clock */
+            height: 50px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, #f8f8f8, #d0d0d0);
+            border: 3px solid #333;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            z-index: 23;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .clock-center {
+            width: 6px;
+            height: 6px;
+            background: #333;
+            border-radius: 50%;
+            position: absolute;
+            z-index: 24;
+        }
+
+        .clock-hour-hand {
+            position: absolute;
+            width: 3px;
+            height: 15px;
+            background: #333;
+            top: 50%;
+            left: 50%;
+            transform-origin: bottom center;
+            transform: translate(-50%, -100%) rotate(30deg);
+            border-radius: 2px;
+        }
+
+        .clock-minute-hand {
+            position: absolute;
+            width: 2px;
+            height: 20px;
+            background: #333;
+            top: 50%;
+            left: 50%;
+            transform-origin: bottom center;
+            transform: translate(-50%, -100%) rotate(60deg);
+            border-radius: 2px;
+        }
+
+        .clock-second-hand {
+            position: absolute;
+            width: 1px;
+            height: 22px;
+            background: #ff0000;
+            top: 50%;
+            left: 50%;
+            transform-origin: bottom center;
+            transform: translate(-50%, -100%) rotate(90deg);
+            border-radius: 1px;
+        }
+
+        .clock-numbers {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+        }
+
+        .clock-number {
+            position: absolute;
+            font-size: 8px;
+            font-weight: bold;
+            color: #333;
+            transform-origin: center;
+            text-align: center;
+            width: 12px;
+            height: 12px;
+        }
+
+        .clock.moving-clock {
+            animation: moveClock 7s linear infinite;
+        }
+
+        @keyframes moveClock {
+            0% {
+                right: 20px;
+                bottom: 350px;
+            }
+            25% {
+                right: 250px;
+                bottom: 350px;
+            }
+            50% {
+                right: 250px;
+                bottom: 450px;
+            }
+            75% {
+                right: 20px;
+                bottom: 450px;
+            }
+            100% {
+                right: 20px;
+                bottom: 350px;
+            }
+        }
+
+        /* Level 14 - Two Clocks */
+        .clock.moving-left-right {
+            animation: moveLeftRightClock 4s linear infinite;
+        }
+
+        @keyframes moveLeftRightClock {
+            0%, 100% { right: 20px; }
+            50% { right: 250px; }
+        }
+
+        .clock.moving-up-down {
+            animation: moveUpDownClock 3s linear infinite;
+        }
+
+        @keyframes moveUpDownClock {
+            0%, 100% { bottom: 350px; }
+            50% { bottom: 450px; }
+        }
+
+        /* Timer Display - Updated position for Level 13 and 14 */
+        .timer-display {
+            position: absolute;
+            top: 100px; /* Positioned below the clocks */
+            left: 30px; /* Positioned on the left side */
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: white;
+            z-index: 25;
+            background: rgba(0,0,0,0.5);
+            padding: 10px;
+            border-radius: 10px;
+            display: none;
+        }
+
+        /* Level Complete Animation */
+        .level-complete-animation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 100;
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 3rem;
+            text-align: center;
+            animation: fadeIn 1s ease-in;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        .level-complete-text {
+            animation: pulseText 1.5s infinite alternate;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+        }
+
+        @keyframes pulseText {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
+        }
+
+        .wink-image {
+            width: 80px;
+            height: 80px;
+            margin-top: 20px;
+            animation: pulseText 1.5s infinite alternate;
+        }
+
+        /* Season Navigation */
+        .season-navigation {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .season-button {
+            padding: 12px 24px;
+            font-size: 1.2rem;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .season-button.active {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: #FFD700;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+        }
+
+        .season-button:active {
+            transform: scale(0.95);
+        }
+
+        /* Level 15 - Fire Ring */
+        .fire-ring {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            z-index: 23;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            animation: rotateFireRing 8s linear infinite;
+        }
+
+        .fire-ring-inner {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle, transparent 40%, rgba(255, 69, 0, 0.3) 70%);
+            box-shadow: 
+                0 0 20px rgba(255, 69, 0, 0.7),
+                0 0 40px rgba(255, 69, 0, 0.5),
+                0 0 60px rgba(255, 69, 0, 0.3),
+                inset 0 0 20px rgba(255, 69, 0, 0.4);
+            filter: blur(1px);
+        }
+
+        .fire-ring-outer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle, transparent 30%, rgba(255, 140, 0, 0.2) 60%);
+            box-shadow: 
+                0 0 30px rgba(255, 140, 0, 0.6),
+                0 0 50px rgba(255, 140, 0, 0.4),
+                0 0 70px rgba(255, 140, 0, 0.2);
+            filter: blur(2px);
+            animation: pulseFireRing 3s ease-in-out infinite alternate;
+        }
+
+        @keyframes rotateFireRing {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        @keyframes pulseFireRing {
+            0% { opacity: 0.7; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.05); }
+        }
+
+        /* Level 15 - Target Ball */
+        .level15-target-ball {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            z-index: 24;
+            background: radial-gradient(circle at 30% 30%, #ff6b6b, #cc0000);
+            box-shadow: 0 0 5px rgba(204, 0, 0, 0.7);
+            animation: moveTargetBallUpDown 3s ease-in-out infinite;
+        }
+
+        @keyframes moveTargetBallUpDown {
+            0%, 100% { bottom: 350px; }
+            50% { bottom: 450px; }
+        }
+
+        /* Level 16 - Two Balls with Ring */
+        .level16-ball {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            z-index: 24;
+            background: radial-gradient(circle at 30% 30%, #ff6b6b, #cc0000);
+            box-shadow: 0 0 5px rgba(204, 0, 0, 0.7);
+            display: block;
+        }
+
+        .level16-ball.moving-up-down {
+            animation: moveBallUpDown16 3s ease-in-out infinite;
+        }
+
+        @keyframes moveBallUpDown16 {
+            0%, 100% { bottom: 350px; }
+            50% { bottom: 450px; }
+        }
+
+        /* Level 16 - Ring */
+        .level16-ring {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            z-index: 23;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            animation: rotateLevel16Ring 6s linear infinite;
+        }
+
+        .level16-ring-inner {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle, transparent 40%, rgba(0, 150, 255, 0.3) 70%);
+            box-shadow: 
+                0 0 15px rgba(0, 150, 255, 0.7),
+                0 0 30px rgba(0, 150, 255, 0.5),
+                0 0 45px rgba(0, 150, 255, 0.3),
+                inset 0 0 15px rgba(0, 150, 255, 0.4);
+            filter: blur(1px);
+        }
+
+        .level16-ring-outer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle, transparent 30%, rgba(0, 100, 200, 0.2) 60%);
+            box-shadow: 
+                0 0 20px rgba(0, 100, 200, 0.6),
+                0 0 35px rgba(0, 100, 200, 0.4),
+                0 0 50px rgba(0, 100, 200, 0.2);
+            filter: blur(1.5px);
+            animation: pulseLevel16Ring 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes rotateLevel16Ring {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+
+        @keyframes pulseLevel16Ring {
+            0% { opacity: 0.7; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.05); }
+        }
+
+        /* Level 17 - Electric Maze Challenge */
+        .electric-line {
+            position: absolute;
+            height: 8px;
+            background: linear-gradient(90deg, transparent, #00ffff, #00aaff, #00ffff, transparent);
+            border-radius: 4px;
+            z-index: 23;
+            box-shadow: 0 0 15px rgba(0, 255, 255, 0.8), 0 0 30px rgba(0, 170, 255, 0.6);
+            filter: blur(0.5px);
+        }
+
+        .electric-line.slow {
+            animation: moveElectricLineSlow 6s linear infinite;
+        }
+
+        .electric-line.medium {
+            animation: moveElectricLineMedium 4s linear infinite;
+        }
+
+        .electric-line.fast {
+            animation: moveElectricLineFast 2.5s linear infinite;
+        }
+
+        @keyframes moveElectricLineSlow {
+            0% { left: -100px; }
+            100% { left: calc(100% + 100px); }
+        }
+
+        @keyframes moveElectricLineMedium {
+            0% { left: -100px; }
+            100% { left: calc(100% + 100px); }
+        }
+
+        @keyframes moveElectricLineFast {
+            0% { left: -100px; }
+            100% { left: calc(100% + 100px); }
+        }
+
+        .electric-spark {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, transparent 30%, rgba(0, 255, 255, 0.3) 70%);
+            border-radius: 50%;
+            z-index: 24;
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .electric-spark.active {
+            animation: electricSpark 0.5s ease-out;
+        }
+
+        @keyframes electricSpark {
+            0% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 1; transform: scale(1.2); }
+            100% { opacity: 0; transform: scale(1.5); }
+        }
+
+        /* Level 17 Target Ring */
+        .level17-ring {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            z-index: 23;
+            right: 100px;
+            bottom: 350px;
+            animation: pulseLevel17Ring 2s ease-in-out infinite alternate;
+        }
+
+        .level17-ring-inner {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle, transparent 40%, rgba(0, 255, 255, 0.3) 70%);
+            box-shadow: 
+                0 0 20px rgba(0, 255, 255, 0.8),
+                0 0 40px rgba(0, 200, 255, 0.6),
+                0 0 60px rgba(0, 150, 255, 0.4),
+                inset 0 0 20px rgba(0, 255, 255, 0.4);
+            filter: blur(1px);
+        }
+
+        .level17-ring-outer {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle, transparent 30%, rgba(0, 200, 255, 0.2) 60%);
+            box-shadow: 
+                0 0 25px rgba(0, 200, 255, 0.7),
+                0 0 45px rgba(0, 150, 255, 0.5),
+                0 0 65px rgba(0, 100, 255, 0.3);
+            filter: blur(1.5px);
+        }
+
+        @keyframes pulseLevel17Ring {
+            0% { opacity: 0.7; transform: scale(1); }
+            100% { opacity: 1; transform: scale(1.05); }
+        }
+
+        /* Level 18 - Electric Shock Challenge */
+        .level18-ball {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            z-index: 24;
+            background: radial-gradient(circle at 30% 30%, #ff6b6b, #cc0000);
+            box-shadow: 0 0 5px rgba(204, 0, 0, 0.7);
+            display: block;
+        }
+
+        .level18-ball.moving-up-down {
+            animation: moveBallUpDown18 3s ease-in-out infinite;
+        }
+
+        @keyframes moveBallUpDown18 {
+            0%, 100% { bottom: 350px; }
+            50% { bottom: 450px; }
+        }
+
+        /* Level 18 Electric Lines */
+        .level18-electric-line {
+            position: absolute;
+            height: 8px;
+            background: linear-gradient(90deg, transparent, #ff00ff, #ff00aa, #ff00ff, transparent);
+            border-radius: 4px;
+            z-index: 23;
+            box-shadow: 0 0 15px rgba(255, 0, 255, 0.8), 0 0 30px rgba(255, 0, 170, 0.6);
+            filter: blur(0.5px);
+        }
+
+        .level18-electric-line.slow {
+            animation: moveLevel18ElectricLineSlow 5s linear infinite;
+        }
+
+        .level18-electric-line.medium {
+            animation: moveLevel18ElectricLineMedium 3.5s linear infinite;
+        }
+
+        .level18-electric-line.fast {
+            animation: moveLevel18ElectricLineFast 2s linear infinite;
+        }
+
+        @keyframes moveLevel18ElectricLineSlow {
+            0% { left: -100px; }
+            100% { left: calc(100% + 100px); }
+        }
+
+        @keyframes moveLevel18ElectricLineMedium {
+            0% { left: -100px; }
+            100% { left: calc(100% + 100px); }
+        }
+
+        @keyframes moveLevel18ElectricLineFast {
+            0% { left: -100px; }
+            100% { left: calc(100% + 100px); }
+        }
+
+        /* Congratulation Code Display */
+        .code-display {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 30px;
+            border-radius: 20px;
+            z-index: 200;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            border: 3px solid gold;
+            max-width: 90%;
+            width: 400px;
+        }
+
+        .code-display h2 {
+            color: white;
+            font-size: 2rem;
+            margin-bottom: 20px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .code-box {
+            background: rgba(255,255,255,0.95);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px solid gold;
+        }
+
+        .code-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #333;
+            letter-spacing: 5px;
+            word-break: break-all;
+        }
+
+        .copy-button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .copy-button:hover {
+            transform: scale(1.05);
+            background: #45a049;
+        }
+
+        .close-code {
+            background: #f44336;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        /* Mobile specific adjustments */
+        @media (max-width: 600px) {
+            .welcome {
+                font-size: 2.5rem;
+            }
+            
+            .start-button {
+                font-size: 1.8rem;
+                padding: 15px 40px;
+            }
+            
+            .settings-button {
+                font-size: 1.2rem;
+                padding: 12px 25px;
+            }
+            
+            .level {
+                width: 80px;
+                height: 80px;
+                font-size: 2.5rem;
+            }
+            
+            .level.locked::after {
+                font-size: 1.5rem;
+            }
+            
+            .result-message {
+                font-size: 2.5rem;
+            }
+            
+            .result-button {
+                font-size: 1.5rem;
+                padding: 15px;
+            }
+            
+            .power-control {
+                width: 160px;
+                padding: 6px;
+            }
+            
+            .power-control h3 {
+                font-size: 0.9rem;
+            }
+            
+            .power-drag-area {
+                height: 90px;
+            }
+            
+            .attempts-counter {
+                font-size: 0.9rem;
+            }
+            
+            .ball-counter {
+                font-size: 1.2rem;
+                top: 20px;
+                left: 20px;
+            }
+            
+            .tutorial-content {
+                padding: 20px;
+            }
+            
+            .tutorial-title {
+                font-size: 1.8rem;
+            }
+            
+            .tutorial-text {
+                font-size: 1rem;
+            }
+            
+            .tutorial-button {
+                font-size: 1.2rem;
+                padding: 12px 25px;
+            }
+            
+            .ball-option {
+                width: 50px;
+                height: 50px;
+            }
+            
+            .settings-content {
+                padding: 20px;
+            }
+            
+            .settings-title {
+                font-size: 1.8rem;
+            }
+            
+            .hoop {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .hoop-backboard {
+                width: 35px;
+                height: 45px;
+            }
+            
+            .hoop-rim {
+                top: 20px;
+                left: 35px;
+                width: 25px;
+                height: 25px;
+            }
+            
+            .hoop-net {
+                top: 30px;
+                left: 37px;
+                width: 21px;
+                height: 25px;
+            }
+            
+            .level-complete-animation {
+                font-size: 2.5rem;
+            }
+            
+            .wink-image {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .season-navigation {
+                gap: 10px;
+            }
+            
+            .season-button {
+                padding: 10px 16px;
+                font-size: 1rem;
+            }
+            
+            .clock {
+                width: 40px;
+                height: 40px;
+            }
+            
+            .clock-hour-hand {
+                height: 12px;
+            }
+            
+            .clock-minute-hand {
+                height: 16px;
+            }
+            
+            .clock-second-hand {
+                height: 18px;
+            }
+            
+            .clock-number {
+                font-size: 6px;
+            }
+            
+            .timer-display {
+                font-size: 1.2rem;
+                top: 80px;
+                left: 20px;
+            }
+            
+            .fire-ring {
+                width: 100px;
+                height: 100px;
+            }
+            
+            .level15-target-ball {
+                width: 18px;
+                height: 18px;
+            }
+            
+            .level16-ball {
+                width: 18px;
+                height: 18px;
+            }
+            
+            .level16-ring {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .electric-line {
+                height: 6px;
+            }
+            
+            .level17-ring {
+                width: 60px;
+                height: 60px;
+                right: 50px;
+            }
+            
+            .level18-ball {
+                width: 18px;
+                height: 18px;
+            }
+            
+            .level18-electric-line {
+                height: 6px;
+            }
+            
+            .code-display {
+                padding: 20px;
+            }
+            
+            .code-number {
+                font-size: 1.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Start Screen with Mountain and Sun -->
+    <div id="start-screen">
+        <div class="welcome">WELCOME TO BALL LAUNCHER</div>
+        <button class="start-button" id="startButton">START</button>
+        <button class="settings-button" id="settingsButton">SETTINGS</button>
+        <div class="mountain"></div>
+        <div class="sun"></div>
+    </div>
+
+    <!-- Level Screen - Black Background with Levels -->
+    <div id="level-screen">
+        <div class="season-navigation">
+            <button class="season-button active" id="season1Button">SEASON 1</button>
+            <button class="season-button" id="season2Button">SEASON 2</button>
+        </div>
+        <div class="level-container" id="levelContainer">
+            <!-- Levels will be dynamically generated here -->
+        </div>
+        <button class="back-button-levels" id="backButtonLevels">BACK</button>
+    </div>
+
+    <!-- Settings Modal -->
+    <div class="settings-modal" id="settingsModal">
+        <div class="settings-content">
+            <div class="settings-title">CHOOSE BALL</div>
+            <div class="ball-options">
+                <div class="ball-option selected" id="ball-white" data-color="white" style="background: radial-gradient(circle at 30% 30%, #fff, #ccc); box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);"></div>
+                <div class="ball-option" id="ball-blue" data-color="blue" style="background: radial-gradient(circle at 30% 30%, #6eb1ff, #0066cc); box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);"></div>
+                <div class="ball-option" id="ball-red" data-color="red" style="background: radial-gradient(circle at 30% 30%, #ff6b6b, #cc0000); box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);"></div>
+                <div class="ball-option" id="ball-purple" data-color="purple" style="background: radial-gradient(circle at 30% 30%, #c47cff, #6600cc); box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);"></div>
+                <div class="ball-option" id="ball-gray" data-color="gray" style="background: radial-gradient(circle at 30% 30%, #e6e6e6, #808080); box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);"></div>
+                <div class="ball-option" id="ball-black" data-color="black" style="background: radial-gradient(circle at 30% 30%, #4d4d4d, #000); box-shadow: 0 3px 8px rgba(0, 0, 0, 0.3);"></div>
+            </div>
+            <button class="close-settings" id="closeSettings">CLOSE</button>
+        </div>
+    </div>
+
+    <!-- Launcher Game Screen -->
+    <div id="launcher-game">
+        <div class="game-mountain"></div>
+        <div class="game-sun" id="gameSun"></div>
+        <div class="moon" id="moon" style="display: none;"></div>
+        <div class="launcher-machine"></div>
+        
+        <!-- Dustbins will be added dynamically based on level -->
+        <div id="dustbins-container"></div>
+        
+        <!-- Hoops for level 6 and 7 -->
+        <div id="hoops-container"></div>
+        
+        <!-- Level 8 balls -->
+        <div id="level8-balls-container"></div>
+        
+        <!-- Black holes for level 9 and 10 -->
+        <div id="black-hole-container"></div>
+        
+        <!-- Light bulbs for level 11 and 12 -->
+        <div id="light-bulb-container"></div>
+        
+        <!-- Clock for level 13 and 14 -->
+        <div id="clock-container"></div>
+        
+        <!-- Fire Ring for level 15 -->
+        <div id="fire-ring-container"></div>
+        
+        <!-- Target Ball for level 15 -->
+        <div id="level15-target-ball-container"></div>
+        
+        <!-- Level 16 Balls -->
+        <div id="level16-balls-container"></div>
+        
+        <!-- Level 16 Ring -->
+        <div id="level16-ring-container"></div>
+        
+        <!-- Electric Lines for Level 17 -->
+        <div id="electric-lines-container"></div>
+        
+        <!-- Level 17 Ring -->
+        <div id="level17-ring-container"></div>
+        
+        <!-- Level 18 Balls -->
+        <div id="level18-balls-container"></div>
+        
+        <!-- Level 18 Electric Lines -->
+        <div id="level18-electric-lines-container"></div>
+        
+        <!-- Timer display for level 13 and 14 - positioned on left side below clocks -->
+        <div class="timer-display" id="timerDisplay">Time: 7s</div>
+        
+        <div class="ball ball-white" id="ball"></div>
+        
+        <!-- Ball counter for various levels -->
+        <div class="ball-counter" id="ballCounter" style="display: none;"></div>
+        
+        <!-- Coming soon message -->
+        <div class="coming-soon" id="comingSoon">Season 2 Coming Soon!</div>
+        
+        <!-- Updated Power control box with drag interface -->
+        <div class="power-control">
+            <h3>DRAG UP TO SET POWER</h3>
+            <div class="power-drag-area" id="powerDragArea">
+                <div class="power-indicator" id="powerIndicator"></div>
+                <div class="power-text" id="powerText">0%</div>
+            </div>
+            <div class="drag-instructions">Drag upward and release to launch</div>
+            <div class="attempts-counter" id="attemptsCounter">Attempts: 3</div>
+        </div>
+        
+        <button class="back-button" id="gameBackButton">BACK</button>
+        
+        <!-- Tutorial Overlay -->
+        <div class="tutorial-overlay" id="tutorialOverlay" style="display: none;">
+            <div class="tutorial-content">
+                <div class="tutorial-title">HOW TO PLAY</div>
+                <div class="tutorial-text">
+                    Drag <span class="tutorial-highlight">upward</span> in the power box to set the launch power.<br>
+                    Release to launch the ball into the target.<br>
+                    Complete the level by getting the ball into the dustbin!
+                </div>
+                <button class="tutorial-button" id="tutorialButton">GOT IT!</button>
+            </div>
+            <div class="tutorial-arrow" id="tutorialArrow" style="bottom: 220px; left: 50%; transform: translateX(-50%);"></div>
+        </div>
+    </div>
+
+    <!-- Result Screen -->
+    <div class="result-screen" id="resultScreen">
+        <div class="result-message" id="resultMessage"></div>
+        <div class="result-buttons">
+            <button class="result-button try-again" id="tryAgainButton" style="display: none;">TRY AGAIN</button>
+            <button class="result-button next-level" id="nextLevelButton">NEXT LEVEL</button>
+            <button class="result-button back-to-levels" id="resultBackButton">LEVELS</button>
+        </div>
+    </div>
+
+    <!-- Level Complete Animation -->
+    <div class="level-complete-animation" id="levelCompleteAnimation">
+        <div class="level-complete-text">Level coming soon</div>
+        <img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgd2lkdGg9IjI0IiBoZWlnaHQ9IjI0Ij48cGF0aCBmaWxsPSIjZmZmIiBkPSJNMTIgMkM2LjQ4IDIgMiA2LjQ4IDIgMTJzNC40OCAxMCAxMCAxMCAxMC00LjQ4IDEwLTEwUzE3LjUyIDIgMTIgMnptLTIgMTUuNWwtNy03IDEuNDEtMS40MUwxMCAxNC42N2w0LjU5LTQuNTlMMTYgMTEuNWwtNiA2eiIvPjwvc3ZnPg==" class="wink-image" alt="Wink">
+    </div>
+
+    <!-- Code Display Modal -->
+    <div class="code-display" id="codeDisplay" style="display: none;">
+        <h2>🎉 CONGRATULATIONS! 🎉</h2>
+        <p style="color: white; font-size: 1.2rem;">You've completed Level 18!</p>
+        <div class="code-box">
+            <div class="code-number" id="congratsCode"></div>
+        </div>
+        <button class="copy-button" id="copyCodeButton">📋 COPY CODE</button>
+        <button class="close-code" id="closeCodeDisplay">CLOSE</button>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-analytics.js";
+        import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDQoJn8Pl-4QGBX8quMRo9BkO-TWfa2oMA",
+            authDomain: "earn-for-earn.firebaseapp.com",
+            databaseURL: "https://earn-for-earn-default-rtdb.firebaseio.com",
+            projectId: "earn-for-earn",
+            storageBucket: "earn-for-earn.firebasestorage.app",
+            messagingSenderId: "730217056305",
+            appId: "1:730217056305:web:5787ccc6a05495db742d10",
+            measurementId: "G-P46D3WDMVG"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const database = getDatabase(app);
+
+        // Generate a random 11-digit number
+        function generate11DigitCode() {
+            return Math.floor(10000000000 + Math.random() * 90000000000).toString();
+        }
+
+        // Generate a random user ID
+        function generateUserId() {
+            return 'user_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        }
+
+        // Get or create user ID
+        function getUserId() {
+            let userId = localStorage.getItem('ballLauncherUserId');
+            if (!userId) {
+                userId = generateUserId();
+                localStorage.setItem('ballLauncherUserId', userId);
+                // Save user to Firebase
+                set(ref(database, 'users/' + userId), {
+                    createdAt: new Date().toISOString(),
+                    completedLevels: 0
+                });
+            }
+            return userId;
+        }
+
+        // Save completed level data to Firebase
+        async function saveCompletedLevel(userId, levelNumber, code = null) {
+            const userRef = ref(database, 'users/' + userId);
+            
+            try {
+                // Get current user data
+                const snapshot = await get(child(ref(database), 'users/' + userId));
+                const userData = snapshot.val() || {};
+                
+                // Update completed levels
+                const completedLevels = userData.completedLevels || [];
+                if (!Array.isArray(completedLevels)) {
+                    completedLevels = [];
+                }
+                
+                if (!completedLevels.includes(levelNumber)) {
+                    completedLevels.push(levelNumber);
+                }
+                
+                // Save to Firebase
+                await set(ref(database, 'users/' + userId), {
+                    ...userData,
+                    completedLevels: completedLevels,
+                    lastPlayed: new Date().toISOString(),
+                    lastCompletedLevel: levelNumber,
+                    completionCode: code || null
+                });
+                
+                console.log('Progress saved to Firebase');
+            } catch (error) {
+                console.error('Error saving to Firebase:', error);
+            }
+        }
+
+        // Make functions available globally
+        window.firebaseFunctions = {
+            generate11DigitCode,
+            getUserId,
+            saveCompletedLevel
+        };
+    </script>
+
+    <script>
+        /**************************************************************************
+         *  Sound system (WebAudio) - Fixed implementation
+         **************************************************************************/
+        let audioCtx = null;
+        
+        // Initialize audio context on user interaction
+        function ensureAudio() {
+            if (!audioCtx) {
+                try {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    // Resume the audio context if it was suspended
+                    if (audioCtx.state === 'suspended') {
+                        audioCtx.resume().then(() => {
+                            console.log('Audio context resumed successfully');
+                        });
+                    }
+                } catch (e) {
+                    console.error('Web Audio API is not supported in this browser', e);
+                }
+            }
+            return audioCtx;
+        }
+
+        // Play a tone with specified parameters
+        function playTone(freq = 440, type = 'sine', duration = 0.18, gain = 0.12) {
+            const ctx = ensureAudio();
+            if (!ctx) return;
+            
+            const osc = ctx.createOscillator();
+            const g = ctx.createGain();
+            
+            osc.type = type;
+            osc.frequency.value = freq;
+            osc.connect(g);
+            
+            g.connect(ctx.destination);
+            
+            const now = ctx.currentTime;
+            g.gain.setValueAtTime(gain, now);
+            g.gain.exponentialRampToValueAtTime(0.001, now + duration);
+            
+            osc.start(now);
+            osc.stop(now + duration);
+        }
+
+        // Play noise sound
+        function playNoise(duration = 0.15, gain = 0.15) {
+            const ctx = ensureAudio();
+            if (!ctx) return;
+            
+            const bufferSize = ctx.sampleRate * duration;
+            const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+            const data = buffer.getChannelData(0);
+            
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = Math.random() * 2 - 1;
+            }
+            
+            const noise = ctx.createBufferSource();
+            noise.buffer = buffer;
+            
+            const filter = ctx.createBiquadFilter();
+            filter.type = 'highpass';
+            filter.frequency.value = 1000;
+            
+            const g = ctx.createGain();
+            g.gain.value = gain;
+            
+            noise.connect(filter);
+            filter.connect(g);
+            g.connect(ctx.destination);
+            
+            noise.start();
+            noise.stop(ctx.currentTime + duration);
+        }
+
+        // Sound events
+        function soundClick() { 
+            playTone(1000, 'square', 0.07, 0.1); 
+        }
+        
+        function soundLaunch() { 
+            playTone(200, 'sawtooth', 0.2, 0.2);
+            playNoise(0.2, 0.1);
+        }
+        
+        function soundHit() { 
+            playTone(800, 'sine', 0.1, 0.15); 
+        }
+        
+        function soundWin() { 
+            playTone(600, 'sine', 0.2, 0.2);
+            setTimeout(() => playTone(800, 'sine', 0.2, 0.2), 120);
+            setTimeout(() => playTone(1000, 'sine', 0.2, 0.2), 240);
+        }
+        
+        function soundFail() { 
+            playTone(200, 'triangle', 0.2, 0.2);
+            setTimeout(() => playTone(120, 'triangle', 0.2, 0.2), 100);
+        }
+        
+        function soundUnlock() { 
+            playTone(1200, 'sine', 0.1, 0.2);
+            setTimeout(() => playTone(1500, 'sine', 0.1, 0.2), 80);
+        }
+        
+        function soundBurn() { 
+            playTone(100, 'sawtooth', 0.3, 0.3);
+            playNoise(0.3, 0.2);
+        }
+
+        // New sound for electric shock
+        function soundElectricShock() { 
+            playTone(150, 'sawtooth', 0.3, 0.4);
+            playNoise(0.4, 0.3);
+        }
+
+        /**************************************************************************
+         *  AD INTEGRATION FUNCTIONS
+         **************************************************************************/
+        // Game Over or Level Win hole ei function-ti call korun
+        function triggerAd() {
+            if (window.AndroidBridge && AndroidBridge.onLevelCompleted) {
+                AndroidBridge.onLevelCompleted();
+            } else if (window.Android && window.Android.showRewardedAd) {
+                // Alternative method
+                window.Android.showRewardedAd();
+            } else {
+                console.log("Ad would trigger here in Android app");
+                // For web testing, you can show a message
+                // alert("Ad would play here in Android app");
+            }
+        }
+
+        /**************************************************************************
+         *  Game code with Level 18 (Electric Shock Challenge) and AD Integration
+         **************************************************************************/
+
+        // Game state - All colors are unlocked from the beginning
+        const gameState = {
+            currentLevel: 1,
+            attemptsLeft: 3,
+            maxAttempts: 3,
+            unlockedLevels: 1,
+            ballsInBins: 0,
+            requiredBalls: 1,
+            binStatus: [],
+            isBallInMotion: false,
+            level5Balls: 0,
+            level6Balls: 0,
+            level7Balls: 0,
+            level8Balls: 0,
+            level9Balls: 0,
+            level10Balls: 0,
+            level11Balls: 0,
+            level12Balls: 0,
+            level13Balls: 0,
+            level14Balls: 0,
+            level15Balls: 0,
+            level16Balls: 0,
+            level17Balls: 0,
+            level18Balls: 0,
+            hoopPositions: [],
+            level8BallPositions: [],
+            blackHolePositions: [],
+            lightBulbPositions: [],
+            clockPositions: [],
+            fireRingPosition: null,
+            targetBallPosition: null,
+            level16BallPositions: [],
+            level16RingPosition: null,
+            electricLinePositions: [],
+            level17RingPosition: null,
+            level18BallPositions: [],
+            level18ElectricLinePositions: [],
+            currentPower: 0,
+            isDragging: false,
+            isFirstLevelPlay: true,
+            ballColor: 'white',
+            // All colors are unlocked from the beginning
+            unlockedBallColors: ['white', 'blue', 'red', 'purple', 'gray', 'black'],
+            currentSeason: 1, // 1 for levels 1-9, 2 for levels 10-18
+            timerInterval: null,
+            timeLeft: 7,
+            userId: null,
+            level18Completed: false
+        };
+
+        // DOM elements
+        const startButton = document.getElementById('startButton');
+        const settingsButton = document.getElementById('settingsButton');
+        const settingsModal = document.getElementById('settingsModal');
+        const closeSettings = document.getElementById('closeSettings');
+        const ballOptions = document.querySelectorAll('.ball-option');
+        const ball = document.getElementById('ball');
+        const powerDragArea = document.getElementById('powerDragArea');
+        const powerIndicator = document.getElementById('powerIndicator');
+        const attemptsCounter = document.getElementById('attemptsCounter');
+        const dustbinsContainer = document.getElementById('dustbins-container');
+        const hoopsContainer = document.getElementById('hoops-container');
+        const level8BallsContainer = document.getElementById('level8-balls-container');
+        const blackHoleContainer = document.getElementById('black-hole-container');
+        const lightBulbContainer = document.getElementById('light-bulb-container');
+        const clockContainer = document.getElementById('clock-container');
+        const fireRingContainer = document.getElementById('fire-ring-container');
+        const level15TargetBallContainer = document.getElementById('level15-target-ball-container');
+        const level16BallsContainer = document.getElementById('level16-balls-container');
+        const level16RingContainer = document.getElementById('level16-ring-container');
+        const electricLinesContainer = document.getElementById('electric-lines-container');
+        const level17RingContainer = document.getElementById('level17-ring-container');
+        const level18BallsContainer = document.getElementById('level18-balls-container');
+        const level18ElectricLinesContainer = document.getElementById('level18-electric-lines-container');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const resultScreen = document.getElementById('resultScreen');
+        const resultMessage = document.getElementById('resultMessage');
+        const ballCounter = document.getElementById('ballCounter');
+        const comingSoon = document.getElementById('comingSoon');
+        const gameSun = document.getElementById('gameSun');
+        const moon = document.getElementById('moon');
+        const tutorialOverlay = document.getElementById('tutorialOverlay');
+        const tutorialButton = document.getElementById('tutorialButton');
+        const backButtonLevels = document.getElementById('backButtonLevels');
+        const levelCompleteAnimation = document.getElementById('levelCompleteAnimation');
+        const levelContainer = document.getElementById('levelContainer');
+        const season1Button = document.getElementById('season1Button');
+        const season2Button = document.getElementById('season2Button');
+        const codeDisplay = document.getElementById('codeDisplay');
+        const congratsCode = document.getElementById('congratsCode');
+        const copyCodeButton = document.getElementById('copyCodeButton');
+        const closeCodeDisplay = document.getElementById('closeCodeDisplay');
+        
+        // Navigation elements
+        const startScreen = document.getElementById('start-screen');
+        const levelScreen = document.getElementById('level-screen');
+        const launcherGame = document.getElementById('launcher-game');
+        const gameBackButton = document.getElementById('gameBackButton');
+        const tryAgainButton = document.getElementById('tryAgainButton');
+        const nextLevelButton = document.getElementById('nextLevelButton');
+        const resultBackButton = document.getElementById('resultBackButton');
+        
+        // Ball position
+        const ballPosition = { x: 70, y: 380 };
+        let targetPositions = [];
+        let movingDustbinInterval = null;
+        let hoopInterval = null;
+        let level8BallInterval = null;
+        let blackHoleInterval = null;
+        let lightBulbInterval = null;
+        let fireRingInterval = null;
+        let targetBallInterval = null;
+        let level16BallInterval = null;
+        let level16RingInterval = null;
+        let electricLineInterval = null;
+        let level18BallInterval = null;
+        let level18ElectricLineInterval = null;
+
+        // Initialize ball position
+        ball.style.left = ballPosition.x + 'px';
+        ball.style.bottom = ballPosition.y + 'px';
+
+        // Get or create user ID
+        async function initializeUser() {
+            if (window.firebaseFunctions) {
+                gameState.userId = window.firebaseFunctions.getUserId();
+                console.log('User ID:', gameState.userId);
+            }
+        }
+
+        // Show congratulation code
+        function showCongratulationCode() {
+            if (window.firebaseFunctions && !gameState.level18Completed) {
+                const code = window.firebaseFunctions.generate11DigitCode();
+                congratsCode.textContent = code;
+                codeDisplay.style.display = 'block';
+                gameState.level18Completed = true;
+                
+                // Save to Firebase
+                window.firebaseFunctions.saveCompletedLevel(gameState.userId, 18, code);
+            }
+        }
+
+        // Copy code to clipboard
+        copyCodeButton.addEventListener('click', () => {
+            const code = congratsCode.textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                alert('Code copied to clipboard!');
+            }).catch(() => {
+                alert('Failed to copy code. Please copy manually.');
+            });
+        });
+
+        closeCodeDisplay.addEventListener('click', () => {
+            codeDisplay.style.display = 'none';
+        });
+
+        // Save game progress to localStorage
+        function saveGameProgress() {
+            localStorage.setItem('ballLauncherProgress', JSON.stringify({
+                unlockedLevels: gameState.unlockedLevels,
+                isFirstLevelPlay: gameState.isFirstLevelPlay,
+                ballColor: gameState.ballColor,
+                currentSeason: gameState.currentSeason,
+                level18Completed: gameState.level18Completed
+            }));
+        }
+
+        // Load game progress from localStorage
+        function loadGameProgress() {
+            const savedProgress = localStorage.getItem('ballLauncherProgress');
+            if (savedProgress) {
+                const progress = JSON.parse(savedProgress);
+                gameState.unlockedLevels = progress.unlockedLevels;
+                gameState.isFirstLevelPlay = progress.isFirstLevelPlay !== undefined ? progress.isFirstLevelPlay : true;
+                gameState.currentSeason = progress.currentSeason || 1;
+                gameState.level18Completed = progress.level18Completed || false;
+                
+                // Always keep all colors unlocked
+                gameState.unlockedBallColors = ['white', 'blue', 'red', 'purple', 'gray', 'black'];
+                
+                // Use saved color if available, otherwise default to white
+                gameState.ballColor = progress.ballColor || 'white';
+                
+                // Update level buttons based on loaded progress
+                updateLevelDisplay();
+                
+                // Update ball appearance with saved color
+                updateBallAppearance();
+                
+                // Update ball options based on unlocked colors
+                updateBallOptions();
+            } else {
+                // First time playing - all ball colors are unlocked
+                gameState.unlockedBallColors = ['white', 'blue', 'red', 'purple', 'gray', 'black'];
+                updateBallOptions();
+            }
+        }
+
+        // Update level display based on current season
+        function updateLevelDisplay() {
+            // Clear existing levels
+            levelContainer.innerHTML = '';
+            
+            // Update season buttons
+            season1Button.classList.toggle('active', gameState.currentSeason === 1);
+            season2Button.classList.toggle('active', gameState.currentSeason === 2);
+            
+            // Create level rows based on current season
+            if (gameState.currentSeason === 1) {
+                // Season 1: Levels 1-9
+                createLevelRows(1, 9);
+            } else {
+                // Season 2: Levels 10-18
+                createLevelRows(10, 18);
+            }
+            
+            // Update level buttons based on unlocked levels
+            for (let i = 1; i <= 9; i++) {
+                const levelNumber = gameState.currentSeason === 1 ? i : i + 9;
+                const levelElement = document.getElementById('level' + levelNumber);
+                if (levelElement) {
+                    if (levelNumber <= gameState.unlockedLevels) {
+                        levelElement.classList.remove('locked');
+                        levelElement.classList.add('unlocked');
+                    } else {
+                        levelElement.classList.add('locked');
+                        levelElement.classList.remove('unlocked');
+                    }
+                }
+            }
+            
+            // Set up click handlers for levels
+            setupLevelClickHandlers();
+        }
+
+        // Create level rows for the level screen
+        function createLevelRows(startLevel, endLevel) {
+            const levelsPerRow = 3;
+            const totalLevels = endLevel - startLevel + 1;
+            const totalRows = Math.ceil(totalLevels / levelsPerRow);
+            
+            for (let row = 0; row < totalRows; row++) {
+                const levelRow = document.createElement('div');
+                levelRow.className = 'level-row';
+                
+                for (let col = 0; col < levelsPerRow; col++) {
+                    const levelNumber = startLevel + row * levelsPerRow + col;
+                    if (levelNumber > endLevel) break;
+                    
+                    const level = document.createElement('div');
+                    level.className = 'level locked';
+                    level.id = 'level' + levelNumber;
+                    level.textContent = levelNumber;
+                    
+                    levelRow.appendChild(level);
+                }
+                
+                levelContainer.appendChild(levelRow);
+            }
+        }
+
+        // Update ball color options based on unlocked colors
+        function updateBallOptions() {
+            ballOptions.forEach(option => {
+                const color = option.getAttribute('data-color');
+                
+                if (gameState.unlockedBallColors.includes(color)) {
+                    option.classList.remove('locked');
+                } else {
+                    option.classList.add('locked');
+                }
+                
+                if (color === gameState.ballColor) {
+                    option.classList.add('selected');
+                } else {
+                    option.classList.remove('selected');
+                }
+            });
+        }
+
+        // Update the ball appearance based on selected color
+        function updateBallAppearance() {
+            // Remove all existing color classes
+            ball.className = 'ball';
+            
+            // Add the selected color class
+            ball.classList.add(`ball-${gameState.ballColor}`);
+            
+            // Set gradient based on color
+            const colorGradients = {
+                'white': 'radial-gradient(circle at 30% 30%, #fff, #ccc)',
+                'blue': 'radial-gradient(circle at 30% 30%, #6eb1ff, #0066cc)',
+                'red': 'radial-gradient(circle at 30% 30%, #ff6b6b, #cc0000)',
+                'purple': 'radial-gradient(circle at 30% 30%, #c47cff, #6600cc)',
+                'gray': 'radial-gradient(circle at 30% 30%, #e6e6e6, #808080)',
+                'black': 'radial-gradient(circle at 30% 30%, #4d4d4d, #000)'
+            };
+            
+            ball.style.background = colorGradients[gameState.ballColor] || colorGradients['white'];
+            ball.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.7)';
+        }
+
+        // Update background based on level
+        function updateBackgroundForLevel(level) {
+            // Reset display for both sun and moon
+            gameSun.style.display = 'block';
+            moon.style.display = 'none';
+            
+            if (level >= 3 && level <= 5) {
+                // Level 3-5: Evening background with evening sun
+                launcherGame.style.background = 'linear-gradient(to bottom, #ff7e5f, #feb47b)';
+                gameSun.style.background = 'radial-gradient(circle, #FFA500, #FF4500)';
+                gameSun.style.boxShadow = '0 0 60px #FF8C00';
+            } else if (level >= 6 && level <= 14) {
+                // Level 6-14: Night background with moon
+                launcherGame.style.background = 'linear-gradient(to bottom, #0f2027, #203a43, #2c5364)';
+                gameSun.style.display = 'none';
+                moon.style.display = 'block';
+            } else if (level === 15) {
+                // Level 15: Dark red-black gradient for fire ring level
+                launcherGame.style.background = 'linear-gradient(to bottom, #2c0000, #8B0000, #000000)';
+                gameSun.style.display = 'none';
+                moon.style.display = 'none';
+            } else if (level === 16) {
+                // Level 16: Dark blue gradient for two balls with ring level
+                launcherGame.style.background = 'linear-gradient(to bottom, #000033, #000066, #000099)';
+                gameSun.style.display = 'none';
+                moon.style.display = 'none';
+            } else if (level === 17) {
+                // Level 17: Dark blue to purple gradient for electric maze
+                launcherGame.style.background = 'linear-gradient(to bottom, #0a0a2a, #1a1a4a, #2a2a6a)';
+                gameSun.style.display = 'none';
+                moon.style.display = 'none';
+            } else if (level === 18) {
+                // Level 18: Dark purple gradient for electric shock challenge
+                launcherGame.style.background = 'linear-gradient(to bottom, #330033, #660066, #990099)';
+                gameSun.style.display = 'none';
+                moon.style.display = 'none';
+            } else {
+                // Level 1-2: Day background with normal sun
+                launcherGame.style.background = 'linear-gradient(to bottom, #56ccf2, #2f80ed)';
+                gameSun.style.background = 'radial-gradient(circle, #ffde00, #ff8c00)';
+                gameSun.style.boxShadow = '0 0 60px #ff8c00';
+            }
+        }
+
+        // Navigation functions
+        function startGame() {
+            ensureAudio();
+            soundClick();
+            startScreen.style.display = 'none';
+            levelScreen.style.display = 'flex';
+            // Set up level click handlers when level screen is shown
+            updateLevelDisplay();
+        }
+
+        function showSettings() {
+            ensureAudio();
+            soundClick();
+            settingsModal.style.display = 'flex';
+        }
+
+        function hideSettings() {
+            ensureAudio();
+            soundClick();
+            settingsModal.style.display = 'none';
+        }
+
+        function setupLevelClickHandlers() {
+            // Determine which levels to set up based on current season
+            const startLevel = gameState.currentSeason === 1 ? 1 : 10;
+            const endLevel = gameState.currentSeason === 1 ? 9 : 18;
+            
+            for (let i = startLevel; i <= endLevel; i++) {
+                const levelElement = document.getElementById('level' + i);
+                if (!levelElement) continue;
+                
+                // Remove any existing event listeners
+                levelElement.replaceWith(levelElement.cloneNode(true));
+                
+                const newLevelElement = document.getElementById('level' + i);
+                
+                if (newLevelElement.classList.contains('unlocked')) {
+                    newLevelElement.addEventListener('click', () => {
+                        ensureAudio();
+                        soundClick();
+                        openLauncherGame(i);
+                    });
+                    newLevelElement.addEventListener('touchstart', (e) => {
+                        e.preventDefault();
+                        ensureAudio();
+                        soundClick();
+                        openLauncherGame(i);
+                    }, {passive: false});
+                }
+            }
+        }
+
+        function openLauncherGame(level) {
+            // Reset timer if it exists
+            if (gameState.timerInterval) {
+                clearInterval(gameState.timerInterval);
+                gameState.timerInterval = null;
+            }
+            
+            // Check if level is in current season
+            if ((gameState.currentSeason === 1 && level > 9) || (gameState.currentSeason === 2 && level > 19)) {
+                // Show coming soon message for levels beyond current season
+                comingSoon.style.display = 'block';
+                return;
+            }
+            
+            gameState.currentLevel = level;
+            gameState.ballsInBins = 0;
+            gameState.binStatus = [];
+            gameState.isBallInMotion = false;
+            gameState.level5Balls = 0;
+            gameState.level6Balls = 0;
+            gameState.level7Balls = 0;
+            gameState.level8Balls = 0;
+            gameState.level9Balls = 0;
+            gameState.level10Balls = 0;
+            gameState.level11Balls = 0;
+            gameState.level12Balls = 0;
+            gameState.level13Balls = 0;
+            gameState.level14Balls = 0;
+            gameState.level15Balls = 0;
+            gameState.level16Balls = 0;
+            gameState.level17Balls = 0;
+            gameState.level18Balls = 0;
+            gameState.hoopPositions = [];
+            gameState.level8BallPositions = [];
+            gameState.blackHolePositions = [];
+            gameState.lightBulbPositions = [];
+            gameState.clockPositions = [];
+            gameState.fireRingPosition = null;
+            gameState.targetBallPosition = null;
+            gameState.level16BallPositions = [];
+            gameState.level16RingPosition = null;
+            gameState.electricLinePositions = [];
+            gameState.level17RingPosition = null;
+            gameState.level18BallPositions = [];
+            gameState.level18ElectricLinePositions = [];
+            gameState.timeLeft = 7;
+            
+            // Set attempts based on level
+            switch(level) {
+                case 1:
+                    gameState.maxAttempts = 2;
+                    break;
+                case 2:
+                    gameState.maxAttempts = 3;
+                    break;
+                case 3:
+                    gameState.maxAttempts = 2;
+                    break;
+                case 4:
+                    gameState.maxAttempts = 3;
+                    break;
+                case 5:
+                    gameState.maxAttempts = 3;
+                    break;
+                case 6:
+                    gameState.maxAttempts = 2; // Level 6: 2 attempts
+                    break;
+                case 7:
+                    gameState.maxAttempts = 3; // Level 7: 3 attempts
+                    break;
+                case 8:
+                    gameState.maxAttempts = 5; // Level 8: 5 attempts
+                    break;
+                case 9:
+                    gameState.maxAttempts = 1; // Level 9: 1 attempt
+                    break;
+                case 10:
+                    gameState.maxAttempts = 3; // Level 10: 3 attempts
+                    break;
+                case 11:
+                    gameState.maxAttempts = 2; // Level 11: 2 attempts
+                    break;
+                case 12:
+                    gameState.maxAttempts = 3; // Level 12: 3 attempts
+                    break;
+                case 13:
+                    gameState.maxAttempts = 2; // Level 13: 3 attempts
+                    break;
+                case 14:
+                    gameState.maxAttempts = 4; // Level 14: 5 attempts
+                    break;
+                case 15:
+                    gameState.maxAttempts = 2; // Level 15: 3 attempts
+                    break;
+                case 16:
+                    gameState.maxAttempts = 3; // Level 16: 5 attempts
+                    break;
+                case 17:
+                    gameState.maxAttempts = 2; // Level 17: 5 attempts
+                    break;
+                case 18:
+                    gameState.maxAttempts = 2; // Level 18: 2 attempts
+                    break;
+                default:
+                    gameState.maxAttempts = 5;
+            }
+            
+            // Set required balls based on level
+            switch(level) {
+                case 3:
+                    gameState.requiredBalls = 2;
+                    break;
+                case 5:
+                    gameState.requiredBalls = 2;
+                    break;
+                case 7:
+                    gameState.requiredBalls = 2;
+                    break;
+                case 8:
+                    gameState.requiredBalls = 4; // Level 8: 4 balls (3 moving + 1 static) - UPDATED
+                    break;
+                case 9:
+                    gameState.requiredBalls = 1;
+                    break;
+                case 10:
+                    gameState.requiredBalls = 2; // Level 10: 2 black holes
+                    break;
+                case 11:
+                    gameState.requiredBalls = 1; // Level 11: 1 light bulb
+                    break;
+                case 12:
+                    gameState.requiredBalls = 2; // Level 12: 2 light bulbs
+                    break;
+                case 13:
+                    gameState.requiredBalls = 1; // Level 13: 1 clock
+                    break;
+                case 14:
+                    gameState.requiredBalls = 2; // Level 14: 2 clocks
+                    break;
+                case 15:
+                    gameState.requiredBalls = 1; // Level 15: 1 ball through fire ring
+                    break;
+                case 16:
+                    gameState.requiredBalls = 2; // Level 16: 2 balls to touch
+                    break;
+                case 17:
+                    gameState.requiredBalls = 1; // Level 17: 1 ball through electric maze
+                    break;
+                case 18:
+                    gameState.requiredBalls = 2; // Level 18: 2 balls to touch
+                    break;
+                default:
+                    gameState.requiredBalls = 1;
+            }
+            
+            gameState.attemptsLeft = gameState.maxAttempts;
+            updateAttemptsCounter();
+            
+            // Update background based on level
+            updateBackgroundForLevel(level);
+            
+            // Clear any existing intervals
+            if (movingDustbinInterval) {
+                clearInterval(movingDustbinInterval);
+                movingDustbinInterval = null;
+            }
+            
+            if (hoopInterval) {
+                clearInterval(hoopInterval);
+                hoopInterval = null;
+            }
+            
+            if (level8BallInterval) {
+                clearInterval(level8BallInterval);
+                level8BallInterval = null;
+            }
+            
+            if (blackHoleInterval) {
+                clearInterval(blackHoleInterval);
+                blackHoleInterval = null;
+            }
+            
+            if (lightBulbInterval) {
+                clearInterval(lightBulbInterval);
+                lightBulbInterval = null;
+            }
+            
+            if (fireRingInterval) {
+                clearInterval(fireRingInterval);
+                fireRingInterval = null;
+            }
+            
+            if (targetBallInterval) {
+                clearInterval(targetBallInterval);
+                targetBallInterval = null;
+            }
+            
+            if (level16BallInterval) {
+                clearInterval(level16BallInterval);
+                level16BallInterval = null;
+            }
+            
+            if (level16RingInterval) {
+                clearInterval(level16RingInterval);
+                level16RingInterval = null;
+            }
+            
+            if (electricLineInterval) {
+                clearInterval(electricLineInterval);
+                electricLineInterval = null;
+            }
+            
+            if (level18BallInterval) {
+                clearInterval(level18BallInterval);
+                level18BallInterval = null;
+            }
+            
+            if (level18ElectricLineInterval) {
+                clearInterval(level18ElectricLineInterval);
+                level18ElectricLineInterval = null;
+            }
+            
+            if (gameState.timerInterval) {
+                clearInterval(gameState.timerInterval);
+                gameState.timerInterval = null;
+            }
+            
+            // Clear previous targets
+            dustbinsContainer.innerHTML = '';
+            hoopsContainer.innerHTML = '';
+            level8BallsContainer.innerHTML = '';
+            blackHoleContainer.innerHTML = '';
+            lightBulbContainer.innerHTML = '';
+            clockContainer.innerHTML = '';
+            fireRingContainer.innerHTML = '';
+            level15TargetBallContainer.innerHTML = '';
+            level16BallsContainer.innerHTML = '';
+            level16RingContainer.innerHTML = '';
+            electricLinesContainer.innerHTML = '';
+            level17RingContainer.innerHTML = '';
+            level18BallsContainer.innerHTML = '';
+            level18ElectricLinesContainer.innerHTML = '';
+            targetPositions = [];
+            
+            // Hide timer display initially
+            timerDisplay.style.display = 'none';
+            
+            // Hide coming soon message
+            comingSoon.style.display = 'none';
+            
+            // Create targets based on level
+            switch(level) {
+                case 2:
+                    createDustbin(20, 350, 'very-small-bin', true, true);
+                    break;
+                case 3:
+                    createDustbin(30, 350, 'lower-bin', true, false);
+                    createDustbin(60, 450, 'higher-bin', true, false);
+                    break;
+                case 4:
+                    const movingDustbin = createDustbin(20, 350, 'moving-bin', true, false);
+                    movingDustbin.classList.add('moving');
+                    
+                    movingDustbinInterval = setInterval(() => {
+                        updateMovingDustbinPosition();
+                    }, 50);
+                    break;
+                case 5:
+                    const movingDustbin1 = createDustbin(20, 350, 'moving-bin-1', true, false);
+                    movingDustbin1.classList.add('moving');
+                    
+                    const movingDustbin2 = createDustbin(20, 450, 'moving-bin-2', true, false);
+                    movingDustbin2.classList.add('moving-2');
+                    
+                    movingDustbinInterval = setInterval(() => {
+                        updateMovingDustbinPosition();
+                    }, 50);
+                    break;
+                case 6:
+                    // Level 6: Single moving hoop
+                    createHoop(100, 350, 'hoop-1');
+                    break;
+                case 7:
+                    // Level 7: Two moving hoops
+                    createHoop(80, 350, 'hoop-1');
+                    createHoop(150, 350, 'hoop-2');
+                    break;
+                case 8:
+                    // Level 8: Three balls moving up and down + one static ball on the right - UPDATED
+                    createLevel8Balls();
+                    break;
+                case 9:
+                    // Level 9: Small black hole moving around
+                    createBlackHole(20, 350, 'black-hole-1', 'moving-snake-fast');
+                    break;
+                case 10:
+                    // Level 10: Two black holes moving in different patterns - UPDATED
+                    createBlackHole(20, 400, 'black-hole-1', 'moving-left-right'); // Higher position
+                    createBlackHole(100, 400, 'black-hole-2', 'moving-up-down');
+                    break;
+                case 11:
+                    // Level 11: One light bulb moving diagonally
+                    createLightBulb(20, 350, 'light-bulb-1', 'moving-diagonal');
+                    break;
+                case 12:
+                    // Level 12: Two light bulbs moving in different patterns - UPDATED
+                    createLightBulb(20, 400, 'light-bulb-1', 'moving-left-right'); // Higher position
+                    createLightBulb(150, 400, 'light-bulb-2', 'moving-up-down');
+                    break;
+                case 13:
+                    // Level 13: Moving clock with timer (NO CARS)
+                    createClock(20, 350, 'clock-1', 'moving-clock');
+                    // Show timer display
+                    timerDisplay.style.display = 'block';
+                    updateTimerDisplay();
+                    // Start timer countdown
+                    startTimer();
+                    break;
+                case 14:
+                    // Level 14: Two clocks moving in different patterns (NO CARS)
+                    createClock(20, 350, 'clock-1', 'moving-left-right');
+                    createClock(150, 350, 'clock-2', 'moving-up-down');
+                    // Show timer display
+                    timerDisplay.style.display = 'block';
+                    updateTimerDisplay();
+                    // Start timer countdown
+                    startTimer();
+                    break;
+                case 15:
+                    // Level 15: Fire Ring Challenge with Target Ball
+                    createFireRing();
+                    createTargetBall();
+                    break;
+                case 16:
+                    // Level 16: Two Balls with Ring Challenge
+                    createLevel16Balls();
+                    createLevel16Ring();
+                    break;
+                case 17:
+                    // Level 17: Electric Maze Challenge
+                    createElectricLines();
+                    createLevel17Ring();
+                    break;
+                case 18:
+                    // Level 18: Electric Shock Challenge
+                    createLevel18Balls();
+                    createLevel18ElectricLines();
+                    break;
+                default:
+                    createDustbin(20, 350, 'default-bin', false, false);
+            }
+            
+            levelScreen.style.display = 'none';
+            launcherGame.style.display = 'block';
+            resetBall();
+            
+            // Update ball counter display
+            updateBallCounter();
+            
+            // Show tutorial for first level if it's the first time
+            if (level === 1 && gameState.isFirstLevelPlay) {
+                showTutorial();
+            }
+            
+            // Show next level button only if there is a next level and it's unlocked
+            const maxLevelInSeason = gameState.currentSeason === 1 ? 9 : 18;
+            
+            if (level < maxLevelInSeason && level < gameState.unlockedLevels) {
+                nextLevelButton.style.display = 'block';
+            } else {
+                nextLevelButton.style.display = 'none';
+            }
+        }
+
+        // Create Level 18 Electric Lines
+        function createLevel18ElectricLines() {
+            // Create 4 electric lines at different heights with different speeds
+            const lineHeights = [250, 350, 450, 550]; // Different heights
+            const lineSpeeds = ['slow', 'medium', 'fast', 'medium']; // Different speeds
+            
+            for (let i = 0; i < 4; i++) {
+                const electricLine = document.createElement('div');
+                electricLine.className = `level18-electric-line ${lineSpeeds[i]}`;
+                electricLine.id = `level18-electric-line-${i}`;
+                level18ElectricLinesContainer.appendChild(electricLine);
+                
+                // Position the line at the specified height
+                electricLine.style.bottom = lineHeights[i] + 'px';
+                electricLine.style.width = '180px'; // Width of the line
+                
+                const lineRect = electricLine.getBoundingClientRect();
+                gameState.level18ElectricLinePositions.push({
+                    x: lineRect.left,
+                    y: window.innerHeight - lineRect.bottom,
+                    width: lineRect.width,
+                    height: lineRect.height,
+                    element: electricLine,
+                    id: `level18-electric-line-${i}`
+                });
+            }
+            
+            level18ElectricLineInterval = setInterval(() => {
+                updateLevel18ElectricLinePositions();
+            }, 50);
+        }
+
+        function updateLevel18ElectricLinePositions() {
+            const electricLines = document.querySelectorAll('.level18-electric-line');
+            electricLines.forEach((line, index) => {
+                const lineRect = line.getBoundingClientRect();
+                
+                if (index < gameState.level18ElectricLinePositions.length) {
+                    gameState.level18ElectricLinePositions[index] = {
+                        x: lineRect.left,
+                        y: window.innerHeight - lineRect.bottom,
+                        width: lineRect.width,
+                        height: lineRect.height,
+                        element: line,
+                        id: line.id
+                    };
+                }
+            });
+        }
+
+        // Create Level 18 Balls
+        function createLevel18Balls() {
+            // Create two balls - one on the left and one on the right
+            for (let i = 0; i < 2; i++) {
+                const level18Ball = document.createElement('div');
+                level18Ball.className = 'level18-ball moving-up-down';
+                level18Ball.id = `level18-ball-${i}`;
+                level18BallsContainer.appendChild(level18Ball);
+                
+                // Position balls - one on left, one on right
+                if (i === 0) {
+                    // Left ball
+                    level18Ball.style.left = '150px';
+                } else {
+                    // Right ball
+                    level18Ball.style.right = '100px';
+                }
+                
+                level18Ball.style.bottom = '350px';
+                level18Ball.style.display = 'block';
+                
+                const ballRect = level18Ball.getBoundingClientRect();
+                gameState.level18BallPositions.push({
+                    x: ballRect.left,
+                    y: window.innerHeight - ballRect.bottom,
+                    width: ballRect.width,
+                    height: ballRect.height,
+                    element: level18Ball,
+                    id: `level18-ball-${i}`,
+                    touched: false
+                });
+            }
+            
+            level18BallInterval = setInterval(() => {
+                updateLevel18BallPositions();
+            }, 50);
+        }
+
+        function updateLevel18BallPositions() {
+            const level18Balls = document.querySelectorAll('.level18-ball');
+            level18Balls.forEach((ball, index) => {
+                const ballRect = ball.getBoundingClientRect();
+                
+                if (index < gameState.level18BallPositions.length) {
+                    gameState.level18BallPositions[index] = {
+                        x: ballRect.left,
+                        y: window.innerHeight - ballRect.bottom,
+                        width: ballRect.width,
+                        height: ballRect.height,
+                        element: ball,
+                        id: ball.id,
+                        touched: gameState.level18BallPositions[index].touched
+                    };
+                }
+            });
+        }
+
+        // Create Level 17 Ring
+        function createLevel17Ring() {
+            const level17Ring = document.createElement('div');
+            level17Ring.className = 'level17-ring';
+            level17Ring.id = 'level17-ring';
+            
+            const level17RingInner = document.createElement('div');
+            level17RingInner.className = 'level17-ring-inner';
+            
+            const level17RingOuter = document.createElement('div');
+            level17RingOuter.className = 'level17-ring-outer';
+            
+            level17Ring.appendChild(level17RingInner);
+            level17Ring.appendChild(level17RingOuter);
+            level17RingContainer.appendChild(level17Ring);
+            
+            // Position the ring on the right side
+            level17Ring.style.right = '100px';
+            level17Ring.style.bottom = '350px';
+            
+            const ringRect = level17Ring.getBoundingClientRect();
+            gameState.level17RingPosition = {
+                x: ringRect.left,
+                y: window.innerHeight - ringRect.bottom,
+                width: ringRect.width,
+                height: ringRect.height,
+                element: level17Ring,
+                id: 'level17-ring'
+            };
+        }
+
+        // Create Electric Lines for Level 17
+        function createElectricLines() {
+            // Create 3 electric lines at different heights with different speeds
+            const lineHeights = [300, 400, 500]; // Different heights
+            const lineSpeeds = ['slow', 'medium', 'fast']; // Different speeds
+            
+            for (let i = 0; i < 3; i++) {
+                const electricLine = document.createElement('div');
+                electricLine.className = `electric-line ${lineSpeeds[i]}`;
+                electricLine.id = `electric-line-${i}`;
+                electricLinesContainer.appendChild(electricLine);
+                
+                // Position the line at the specified height
+                electricLine.style.bottom = lineHeights[i] + 'px';
+                electricLine.style.width = '150px'; // Width of the line
+                
+                const lineRect = electricLine.getBoundingClientRect();
+                gameState.electricLinePositions.push({
+                    x: lineRect.left,
+                    y: window.innerHeight - lineRect.bottom,
+                    width: lineRect.width,
+                    height: lineRect.height,
+                    element: electricLine,
+                    id: `electric-line-${i}`
+                });
+            }
+            
+            electricLineInterval = setInterval(() => {
+                updateElectricLinePositions();
+            }, 50);
+        }
+
+        function updateElectricLinePositions() {
+            const electricLines = document.querySelectorAll('.electric-line');
+            electricLines.forEach((line, index) => {
+                const lineRect = line.getBoundingClientRect();
+                
+                if (index < gameState.electricLinePositions.length) {
+                    gameState.electricLinePositions[index] = {
+                        x: lineRect.left,
+                        y: window.innerHeight - lineRect.bottom,
+                        width: lineRect.width,
+                        height: lineRect.height,
+                        element: line,
+                        id: line.id
+                    };
+                }
+            });
+        }
+
+        // Create Level 16 Ring
+        function createLevel16Ring() {
+            const level16Ring = document.createElement('div');
+            level16Ring.className = 'level16-ring';
+            level16Ring.id = 'level16-ring';
+            
+            const level16RingInner = document.createElement('div');
+            level16RingInner.className = 'level16-ring-inner';
+            
+            const level16RingOuter = document.createElement('div');
+            level16RingOuter.className = 'level16-ring-outer';
+            
+            level16Ring.appendChild(level16RingInner);
+            level16Ring.appendChild(level16RingOuter);
+            level16RingContainer.appendChild(level16Ring);
+            
+            // Position the ring in the center of the screen
+            level16Ring.style.left = '50%';
+            level16Ring.style.top = '50%';
+            
+            const ringRect = level16Ring.getBoundingClientRect();
+            gameState.level16RingPosition = {
+                x: ringRect.left,
+                y: window.innerHeight - ringRect.bottom,
+                width: ringRect.width,
+                height: ringRect.height,
+                element: level16Ring,
+                id: 'level16-ring'
+            };
+            
+            level16RingInterval = setInterval(() => {
+                updateLevel16RingPosition();
+            }, 50);
+        }
+
+        function updateLevel16RingPosition() {
+            const level16Ring = document.getElementById('level16-ring');
+            if (!level16Ring) return;
+            
+            const ringRect = level16Ring.getBoundingClientRect();
+            gameState.level16RingPosition = {
+                x: ringRect.left,
+                y: window.innerHeight - ringRect.bottom,
+                width: ringRect.width,
+                height: ringRect.height,
+                element: level16Ring,
+                id: 'level16-ring'
+            };
+        }
+
+        // Create Level 16 Balls
+        function createLevel16Balls() {
+            // Create two balls - one on the left and one on the right
+            for (let i = 0; i < 2; i++) {
+                const level16Ball = document.createElement('div');
+                level16Ball.className = 'level16-ball moving-up-down';
+                level16Ball.id = `level16-ball-${i}`;
+                level16BallsContainer.appendChild(level16Ball);
+                
+                // Position balls - one on left, one on right
+                if (i === 0) {
+                    // Left ball
+                    level16Ball.style.left = '150px';
+                } else {
+                    // Right ball
+                    level16Ball.style.right = '100px';
+                }
+                
+                level16Ball.style.bottom = '350px';
+                level16Ball.style.display = 'block';
+                
+                const ballRect = level16Ball.getBoundingClientRect();
+                gameState.level16BallPositions.push({
+                    x: ballRect.left,
+                    y: window.innerHeight - ballRect.bottom,
+                    width: ballRect.width,
+                    height: ballRect.height,
+                    element: level16Ball,
+                    id: `level16-ball-${i}`,
+                    touched: false
+                });
+            }
+            
+            level16BallInterval = setInterval(() => {
+                updateLevel16BallPositions();
+            }, 50);
+        }
+
+        function updateLevel16BallPositions() {
+            const level16Balls = document.querySelectorAll('.level16-ball');
+            level16Balls.forEach((ball, index) => {
+                const ballRect = ball.getBoundingClientRect();
+                
+                if (index < gameState.level16BallPositions.length) {
+                    gameState.level16BallPositions[index] = {
+                        x: ballRect.left,
+                        y: window.innerHeight - ballRect.bottom,
+                        width: ballRect.width,
+                        height: ballRect.height,
+                        element: ball,
+                        id: ball.id,
+                        touched: gameState.level16BallPositions[index].touched
+                    };
+                }
+            });
+        }
+
+        // Create target ball for level 15
+        function createTargetBall() {
+            const targetBall = document.createElement('div');
+            targetBall.className = 'level15-target-ball';
+            targetBall.id = 'target-ball';
+            level15TargetBallContainer.appendChild(targetBall);
+            
+            // Position the target ball near the fire ring (right side, moving up and down)
+            targetBall.style.right = '100px';
+            targetBall.style.bottom = '350px';
+            
+            const ballRect = targetBall.getBoundingClientRect();
+            gameState.targetBallPosition = {
+                x: ballRect.left,
+                y: window.innerHeight - ballRect.bottom,
+                width: ballRect.width,
+                height: ballRect.height,
+                element: targetBall,
+                id: 'target-ball',
+                touched: false
+            };
+            
+            targetBallInterval = setInterval(() => {
+                updateTargetBallPosition();
+            }, 50);
+        }
+
+        function updateTargetBallPosition() {
+            const targetBall = document.getElementById('target-ball');
+            if (!targetBall) return;
+            
+            const ballRect = targetBall.getBoundingClientRect();
+            gameState.targetBallPosition = {
+                x: ballRect.left,
+                y: window.innerHeight - ballRect.bottom,
+                width: ballRect.width,
+                height: ballRect.height,
+                element: targetBall,
+                id: 'target-ball',
+                touched: gameState.targetBallPosition ? gameState.targetBallPosition.touched : false
+            };
+        }
+
+        // Create fire ring for level 15
+        function createFireRing() {
+            const fireRing = document.createElement('div');
+            fireRing.className = 'fire-ring';
+            fireRing.id = 'fire-ring';
+            
+            const fireRingInner = document.createElement('div');
+            fireRingInner.className = 'fire-ring-inner';
+            
+            const fireRingOuter = document.createElement('div');
+            fireRingOuter.className = 'fire-ring-outer';
+            
+            fireRing.appendChild(fireRingInner);
+            fireRing.appendChild(fireRingOuter);
+            fireRingContainer.appendChild(fireRing);
+            
+            // Position the fire ring in the center of the screen
+            fireRing.style.left = '50%';
+            fireRing.style.top = '50%';
+            
+            const ringRect = fireRing.getBoundingClientRect();
+            gameState.fireRingPosition = {
+                x: ringRect.left,
+                y: window.innerHeight - ringRect.bottom,
+                width: ringRect.width,
+                height: ringRect.height,
+                element: fireRing,
+                id: 'fire-ring'
+            };
+            
+            fireRingInterval = setInterval(() => {
+                updateFireRingPosition();
+            }, 50);
+        }
+
+        function updateFireRingPosition() {
+            const fireRing = document.getElementById('fire-ring');
+            if (!fireRing) return;
+            
+            const ringRect = fireRing.getBoundingClientRect();
+            gameState.fireRingPosition = {
+                x: ringRect.left,
+                y: window.innerHeight - ringRect.bottom,
+                width: ringRect.width,
+                height: ringRect.height,
+                element: fireRing,
+                id: 'fire-ring'
+            };
+        }
+
+        // Create clock for level 13 and 14
+        function createClock(right, bottom, id, animationClass) {
+            const clock = document.createElement('div');
+            clock.className = `clock ${animationClass}`;
+            clock.id = id;
+            
+            // Create clock center
+            const clockCenter = document.createElement('div');
+            clockCenter.className = 'clock-center';
+            
+            // Create clock hands
+            const hourHand = document.createElement('div');
+            hourHand.className = 'clock-hour-hand';
+            
+            const minuteHand = document.createElement('div');
+            minuteHand.className = 'clock-minute-hand';
+            
+            const secondHand = document.createElement('div');
+            secondHand.className = 'clock-second-hand';
+            
+            // Create clock numbers
+            const clockNumbers = document.createElement('div');
+            clockNumbers.className = 'clock-numbers';
+            
+            // Add numbers 3, 6, 9, 12
+            const numbers = [3, 6, 9, 12];
+            numbers.forEach(num => {
+                const number = document.createElement('div');
+                number.className = 'clock-number';
+                number.textContent = num;
+                
+                // Position numbers around the clock
+                switch(num) {
+                    case 3:
+                        number.style.right = '5px';
+                        number.style.top = '50%';
+                        number.style.transform = 'translateY(-50%)';
+                        break;
+                    case 6:
+                        number.style.bottom = '5px';
+                        number.style.left = '50%';
+                        number.style.transform = 'translateX(-50%)';
+                        break;
+                    case 9:
+                        number.style.left = '5px';
+                        number.style.top = '50%';
+                        number.style.transform = 'translateY(-50%)';
+                        break;
+                    case 12:
+                        number.style.top = '5px';
+                        number.style.left = '50%';
+                        number.style.transform = 'translateX(-50%)';
+                        break;
+                }
+                
+                clockNumbers.appendChild(number);
+            });
+            
+            // Assemble the clock
+            clock.appendChild(clockCenter);
+            clock.appendChild(hourHand);
+            clock.appendChild(minuteHand);
+            clock.appendChild(secondHand);
+            clock.appendChild(clockNumbers);
+            
+            clockContainer.appendChild(clock);
+            
+            clock.style.right = right + 'px';
+            clock.style.bottom = bottom + 'px';
+            
+            const clockRect = clock.getBoundingClientRect();
+            gameState.clockPositions.push({
+                x: clockRect.left,
+                y: window.innerHeight - clockRect.bottom,
+                width: clockRect.width,
+                height: clockRect.height,
+                element: clock,
+                id: id,
+                touched: false
+            });
+            
+            // Update clock positions continuously
+            setInterval(() => {
+                updateClockPositions();
+            }, 50);
+        }
+
+        function updateClockPositions() {
+            const clocks = document.querySelectorAll('.clock');
+            clocks.forEach(clock => {
+                const clockRect = clock.getBoundingClientRect();
+                
+                const targetIndex = gameState.clockPositions.findIndex(t => t.id === clock.id);
+                if (targetIndex >= 0) {
+                    gameState.clockPositions[targetIndex] = {
+                        x: clockRect.left,
+                        y: window.innerHeight - clockRect.bottom,
+                        width: clockRect.width,
+                        height: clockRect.height,
+                        element: clock,
+                        id: clock.id,
+                        touched: gameState.clockPositions[targetIndex].touched
+                    };
+                }
+            });
+        }
+
+        // Timer functions for level 13 and 14
+        function startTimer() {
+            gameState.timeLeft = 7;
+            updateTimerDisplay();
+            
+            gameState.timerInterval = setInterval(() => {
+                gameState.timeLeft--;
+                updateTimerDisplay();
+                
+                if (gameState.timeLeft <= 0) {
+                    // Time's up!
+                    clearInterval(gameState.timerInterval);
+                    gameState.timerInterval = null;
+                    
+                    // Check if player hasn't completed the level
+                    if ((gameState.currentLevel === 13 && gameState.level13Balls < 1) || 
+                        (gameState.currentLevel === 14 && gameState.level14Balls < 2)) {
+                        setTimeout(() => {
+                            showResultScreen(false, "Time Up!");
+                        }, 500);
+                    }
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            timerDisplay.textContent = `Time: ${gameState.timeLeft}s`;
+            
+            // Change color when time is running low
+            if (gameState.timeLeft <= 3) {
+                timerDisplay.style.color = '#ff6b6b';
+                timerDisplay.style.animation = 'pulseText 0.5s infinite alternate';
+            } else {
+                timerDisplay.style.color = 'white';
+                timerDisplay.style.animation = 'none';
+            }
+        }
+
+        function createLightBulb(right, bottom, id, animationClass) {
+            const lightBulb = document.createElement('div');
+            lightBulb.className = `light-bulb ${animationClass}`;
+            lightBulb.id = id;
+            
+            const bulbBody = document.createElement('div');
+            bulbBody.className = 'bulb-body';
+            
+            const bulbBase = document.createElement('div');
+            bulbBase.className = 'bulb-base';
+            
+            lightBulb.appendChild(bulbBody);
+            lightBulb.appendChild(bulbBase);
+            lightBulbContainer.appendChild(lightBulb);
+            
+            lightBulb.style.right = right + 'px';
+            lightBulb.style.bottom = bottom + 'px';
+            
+            const bulbRect = bulbBody.getBoundingClientRect();
+            gameState.lightBulbPositions.push({
+                x: bulbRect.left,
+                y: window.innerHeight - bulbRect.bottom,
+                width: bulbRect.width,
+                height: bulbRect.height,
+                element: bulbBody,
+                id: id,
+                touched: false
+            });
+            
+            lightBulbInterval = setInterval(() => {
+                updateLightBulbPositions();
+            }, 50);
+        }
+
+        function updateLightBulbPositions() {
+            const lightBulbs = document.querySelectorAll('.light-bulb');
+            lightBulbs.forEach(lightBulb => {
+                const bulbBody = lightBulb.querySelector('.bulb-body');
+                const bulbRect = bulbBody.getBoundingClientRect();
+                
+                const targetIndex = gameState.lightBulbPositions.findIndex(t => t.id === lightBulb.id);
+                if (targetIndex >= 0) {
+                    gameState.lightBulbPositions[targetIndex] = {
+                        x: bulbRect.left,
+                        y: window.innerHeight - bulbRect.bottom,
+                        width: bulbRect.width,
+                        height: bulbRect.height,
+                        element: bulbBody,
+                        id: lightBulb.id,
+                        touched: gameState.lightBulbPositions[targetIndex].touched
+                    };
+                }
+            });
+        }
+
+        function createBlackHole(right, bottom, id, animationClass) {
+            const blackHole = document.createElement('div');
+            blackHole.className = `black-hole ${animationClass}`;
+            blackHole.id = id;
+            blackHoleContainer.appendChild(blackHole);
+            
+            blackHole.style.right = right + 'px';
+            blackHole.style.bottom = bottom + 'px';
+            
+            const holeRect = blackHole.getBoundingClientRect();
+            gameState.blackHolePositions.push({
+                x: holeRect.left,
+                y: window.innerHeight - holeRect.bottom,
+                width: holeRect.width,
+                height: holeRect.height,
+                element: blackHole,
+                id: id,
+                touched: false
+            });
+            
+            blackHoleInterval = setInterval(() => {
+                updateBlackHolePositions();
+            }, 50);
+        }
+
+        function updateBlackHolePositions() {
+            const blackHoles = document.querySelectorAll('.black-hole');
+            blackHoles.forEach(blackHole => {
+                const holeRect = blackHole.getBoundingClientRect();
+                
+                const targetIndex = gameState.blackHolePositions.findIndex(t => t.id === blackHole.id);
+                if (targetIndex >= 0) {
+                    gameState.blackHolePositions[targetIndex] = {
+                        x: holeRect.left,
+                        y: window.innerHeight - holeRect.bottom,
+                        width: holeRect.width,
+                        height: holeRect.height,
+                        element: blackHole,
+                        id: blackHole.id,
+                        touched: gameState.blackHolePositions[targetIndex].touched
+                    };
+                }
+            });
+        }
+
+        function createLevel8Balls() {
+            // Create 3 balls moving up and down, spaced further apart - UPDATED
+            for (let i = 0; i < 3; i++) {
+                const level8Ball = document.createElement('div');
+                level8Ball.className = 'level8-ball moving-up-down'; // Add the moving animation class
+                level8Ball.id = `level8-ball-${i}`;
+                level8BallsContainer.appendChild(level8Ball);
+                
+                // Position balls with more space between them (60px apart)
+                level8Ball.style.right = (80 + i * 60) + 'px';
+                level8Ball.style.bottom = '350px';
+                level8Ball.style.display = 'block';
+                
+                const ballRect = level8Ball.getBoundingClientRect();
+                gameState.level8BallPositions.push({
+                    x: ballRect.left,
+                    y: window.innerHeight - ballRect.bottom,
+                    width: ballRect.width,
+                    height: ballRect.height,
+                    element: level8Ball,
+                    id: `level8-ball-${i}`,
+                    touched: false
+                });
+            }
+            
+            // Add one more static ball on the right side
+            const staticBall = document.createElement('div');
+            staticBall.className = 'level8-ball moving-up-down'; // Make this one move too
+            staticBall.id = 'level8-ball-static';
+            level8BallsContainer.appendChild(staticBall);
+            
+            staticBall.style.right = '20px';
+            staticBall.style.bottom = '350px';
+            staticBall.style.display = 'block';
+            
+            const staticBallRect = staticBall.getBoundingClientRect();
+            gameState.level8BallPositions.push({
+                x: staticBallRect.left,
+                y: window.innerHeight - staticBallRect.bottom,
+                width: staticBallRect.width,
+                height: staticBallRect.height,
+                element: staticBall,
+                id: 'level8-ball-static',
+                touched: false
+            });
+            
+            level8BallInterval = setInterval(() => {
+                updateLevel8BallPositions();
+            }, 50);
+        }
+
+        function updateLevel8BallPositions() {
+            const level8Balls = document.querySelectorAll('.level8-ball');
+            level8Balls.forEach((ball, index) => {
+                const ballRect = ball.getBoundingClientRect();
+                
+                if (index < gameState.level8BallPositions.length) {
+                    gameState.level8BallPositions[index] = {
+                        x: ballRect.left,
+                        y: window.innerHeight - ballRect.bottom,
+                        width: ballRect.width,
+                        height: ballRect.height,
+                        element: ball,
+                        id: ball.id,
+                        touched: gameState.level8BallPositions[index].touched
+                    };
+                }
+            });
+        }
+
+        function createHoop(right, bottom, id) {
+            const hoop = document.createElement('div');
+            hoop.className = `hoop moving-up-down`;
+            hoop.id = id;
+            
+            const backboard = document.createElement('div');
+            backboard.className = 'hoop-backboard';
+            
+            const rim = document.createElement('div');
+            rim.className = 'hoop-rim';
+            
+            const net = document.createElement('div');
+            net.className = 'hoop-net';
+            
+            hoop.appendChild(backboard);
+            hoop.appendChild(rim);
+            hoop.appendChild(net);
+            hoopsContainer.appendChild(hoop);
+            
+            hoop.style.right = right + 'px';
+            hoop.style.bottom = bottom + 'px';
+            
+            const rimRect = rim.getBoundingClientRect();
+            targetPositions.push({
+                x: rimRect.left,
+                y: window.innerHeight - rimRect.bottom,
+                width: rimRect.width,
+                height: rimRect.height,
+                element: rim,
+                id: id,
+                hasBall: false
+            });
+            
+            hoopInterval = setInterval(() => {
+                updateHoopPositions();
+            }, 50);
+        }
+
+        function updateHoopPositions() {
+            const hoops = document.querySelectorAll('.hoop');
+            hoops.forEach(hoop => {
+                const rim = hoop.querySelector('.hoop-rim');
+                const rimRect = rim.getBoundingClientRect();
+                
+                const targetIndex = targetPositions.findIndex(t => t.id === hoop.id);
+                if (targetIndex >= 0) {
+                    targetPositions[targetIndex] = {
+                        x: rimRect.left,
+                        y: window.innerHeight - rimRect.bottom,
+                        width: rimRect.width,
+                        height: rimRect.height,
+                        element: rim,
+                        id: hoop.id,
+                        hasBall: targetPositions[targetIndex].hasBall
+                    };
+                }
+            });
+        }
+
+        function updateBallCounter() {
+            if (gameState.currentLevel === 5) {
+                ballCounter.textContent = `Balls: ${gameState.level5Balls}/2`;
+                ballCounter.style.display = 'block';
+            } else if (gameState.currentLevel === 6) {
+                ballCounter.textContent = `Hoops: ${gameState.level6Balls}/1`;
+                ballCounter.style.display = 'block';
+            } else if (gameState.currentLevel === 7) {
+                ballCounter.textContent = `Hoops: ${gameState.level7Balls}/2`;
+                ballCounter.style.display = 'block';
+            } else if (gameState.currentLevel === 8) {
+                ballCounter.textContent = `Balls: ${gameState.level8Balls}/4`; // UPDATED
+                ballCounter.style.display = 'block';
+            } else if (gameState.currentLevel === 9) {
+                ballCounter.textContent = `Black Hole: ${gameState.level9Balls}/1`;
+                ballCounter.style.display = 'block';
+            } else if (gameState.currentLevel === 10) {
+                ballCounter.textContent = `Black Holes: ${gameState.level10Balls}/2`;
+                ballCounter.style.display = 'block';
+            } else if (gameState.currentLevel === 11) {
+                ballCounter.textContent = `Light Bulb: ${gameState.level11Balls}/1`;
+                ballCounter.style.display = 'block';
+            } else if (gameState.currentLevel === 12) {
+                ballCounter.textContent = `Light Bulbs: ${gameState.level12Balls}/2`;
+                ballCounter.style.display = 'block';
+            } else if (gameState.currentLevel === 13) {
+                ballCounter.textContent = `Clock: ${gameState.level13Balls}/1`;
+                ballCounter.style.display = 'block';
+            } else if (gameState.currentLevel === 14) {
+                ballCounter.textContent = `Clocks: ${gameState.level14Balls}/2`;
+                ballCounter.style.display = 'block';
+            } else if (gameState.currentLevel === 15) {
+                ballCounter.textContent = `Target Ball: ${gameState.level15Balls}/1`;
+                ballCounter.style.display = 'block';
+            } else if (gameState.currentLevel === 16) {
+                ballCounter.textContent = `Balls: ${gameState.level16Balls}/2`;
+                ballCounter.style.display = 'block';
+            } else if (gameState.currentLevel === 17) {
+                ballCounter.textContent = `Ring: ${gameState.level17Balls}/1`;
+                ballCounter.style.display = 'block';
+            } else if (gameState.currentLevel === 18) {
+                ballCounter.textContent = `Balls: ${gameState.level18Balls}/2`;
+                ballCounter.style.display = 'block';
+            } else {
+                ballCounter.style.display = 'none';
+            }
+        }
+
+        function updateMovingDustbinPosition() {
+            const dustbins = document.querySelectorAll('.dustbin.moving, .dustbin.moving-2');
+            dustbins.forEach(dustbin => {
+                const rect = dustbin.getBoundingClientRect();
+                const binBody = dustbin.querySelector('.dustbin-body');
+                const binBodyRect = binBody.getBoundingClientRect();
+                
+                const targetIndex = targetPositions.findIndex(t => t.id === dustbin.id);
+                if (targetIndex >= 0) {
+                    targetPositions[targetIndex] = {
+                        x: binBodyRect.left,
+                        y: window.innerHeight - binBodyRect.bottom,
+                        width: binBodyRect.width,
+                        height: binBodyRect.height,
+                        element: binBody,
+                        id: dustbin.id,
+                        hasBall: targetPositions[targetIndex].hasBall
+                    };
+                }
+            });
+        }
+
+        function createDustbin(right, bottom, id, isSmall, isVerySmall) {
+            const dustbin = document.createElement('div');
+            dustbin.className = `dustbin ${id.includes('higher') ? 'higher' : ''} ${isSmall ? (isVerySmall ? 'very-small' : 'small') : ''}`;
+            dustbin.id = id;
+            
+            const top = document.createElement('div');
+            top.className = 'dustbin-top';
+            
+            const lid = document.createElement('div');
+            lid.className = 'dustbin-lid';
+            
+            const body = document.createElement('div');
+            body.className = 'dustbin-body';
+            
+            dustbin.appendChild(top);
+            dustbin.appendChild(lid);
+            dustbin.appendChild(body);
+            dustbinsContainer.appendChild(dustbin);
+            
+            dustbin.style.right = right + 'px';
+            dustbin.style.bottom = bottom + 'px';
+            
+            const binRect = body.getBoundingClientRect();
+            targetPositions.push({
+                x: binRect.left,
+                y: window.innerHeight - binRect.bottom,
+                width: binRect.width,
+                height: binRect.height,
+                element: body,
+                id: id,
+                hasBall: false
+            });
+            
+            gameState.binStatus.push({
+                id: id,
+                hasBall: false
+            });
+            
+            return dustbin;
+        }
+
+        function closeLauncherGame() {
+            ensureAudio();
+            soundClick();
+            launcherGame.style.display = 'none';
+            levelScreen.style.display = 'flex';
+            resultScreen.style.display = 'none';
+            
+            if (movingDustbinInterval) {
+                clearInterval(movingDustbinInterval);
+                movingDustbinInterval = null;
+            }
+            
+            if (hoopInterval) {
+                clearInterval(hoopInterval);
+                hoopInterval = null;
+            }
+            
+            if (level8BallInterval) {
+                clearInterval(level8BallInterval);
+                level8BallInterval = null;
+            }
+            
+            if (blackHoleInterval) {
+                clearInterval(blackHoleInterval);
+                blackHoleInterval = null;
+            }
+            
+            if (lightBulbInterval) {
+                clearInterval(lightBulbInterval);
+                lightBulbInterval = null;
+            }
+            
+            if (fireRingInterval) {
+                clearInterval(fireRingInterval);
+                fireRingInterval = null;
+            }
+            
+            if (targetBallInterval) {
+                clearInterval(targetBallInterval);
+                targetBallInterval = null;
+            }
+            
+            if (level16BallInterval) {
+                clearInterval(level16BallInterval);
+                level16BallInterval = null;
+            }
+            
+            if (level16RingInterval) {
+                clearInterval(level16RingInterval);
+                level16RingInterval = null;
+            }
+            
+            if (electricLineInterval) {
+                clearInterval(electricLineInterval);
+                electricLineInterval = null;
+            }
+            
+            if (level18BallInterval) {
+                clearInterval(level18BallInterval);
+                level18BallInterval = null;
+            }
+            
+            if (level18ElectricLineInterval) {
+                clearInterval(level18ElectricLineInterval);
+                level18ElectricLineInterval = null;
+            }
+            
+            if (gameState.timerInterval) {
+                clearInterval(gameState.timerInterval);
+                gameState.timerInterval = null;
+            }
+        }
+
+        function showResultScreen(isWin, customMessage = null) {
+            launcherGame.style.display = 'none';
+            resultScreen.style.display = 'flex';
+
+            if (isWin) {
+                if (customMessage) {
+                    resultMessage.textContent = customMessage;
+                } else {
+                    resultMessage.textContent = `LEVEL ${gameState.currentLevel} COMPLETED!`;
+                }
+                unlockNextLevel();
+                soundWin();
+                
+                // Check if Level 18 is completed
+                if (gameState.currentLevel === 18 && !gameState.level18Completed) {
+                    showCongratulationCode();
+                }
+                
+                // Hide "Try Again" button and show "NEXT LEVEL" and "LEVELS" buttons
+                tryAgainButton.style.display = 'none';
+                nextLevelButton.style.display = 'block';
+                resultBackButton.style.display = 'block';
+                
+                // Show next level button only if there's a next level and it's unlocked
+                const maxLevelInSeason = gameState.currentSeason === 1 ? 9 : 18;
+                
+                if (gameState.currentLevel < maxLevelInSeason && gameState.currentLevel < gameState.unlockedLevels) {
+                    nextLevelButton.style.display = 'block';
+                } else {
+                    nextLevelButton.style.display = 'none';
+                }
+                
+                // Save progress to Firebase
+                if (window.firebaseFunctions) {
+                    window.firebaseFunctions.saveCompletedLevel(gameState.userId, gameState.currentLevel);
+                }
+                
+                // 馃憠 Level Complete ad trigger
+                triggerAd();
+            } else {
+                if (customMessage) {
+                    resultMessage.textContent = customMessage;
+                } else {
+                    resultMessage.textContent = 'TRY AGAIN!';
+                }
+                soundFail();
+                
+                // Show "Try Again" button and hide "NEXT LEVEL" button
+                tryAgainButton.style.display = 'block';
+                nextLevelButton.style.display = 'none';
+                resultBackButton.style.display = 'block';
+                
+                // Game Over ad trigger
+                triggerAd();
+            }
+            
+            // Clear intervals
+            if (movingDustbinInterval) {
+                clearInterval(movingDustbinInterval);
+                movingDustbinInterval = null;
+            }
+            
+            if (hoopInterval) {
+                clearInterval(hoopInterval);
+                hoopInterval = null;
+            }
+            
+            if (level8BallInterval) {
+                clearInterval(level8BallInterval);
+                level8BallInterval = null;
+            }
+            
+            if (blackHoleInterval) {
+                clearInterval(blackHoleInterval);
+                blackHoleInterval = null;
+            }
+            
+            if (lightBulbInterval) {
+                clearInterval(lightBulbInterval);
+                lightBulbInterval = null;
+            }
+            
+            if (fireRingInterval) {
+                clearInterval(fireRingInterval);
+                fireRingInterval = null;
+            }
+            
+            if (targetBallInterval) {
+                clearInterval(targetBallInterval);
+                targetBallInterval = null;
+            }
+            
+            if (level16BallInterval) {
+                clearInterval(level16BallInterval);
+                level16BallInterval = null;
+            }
+            
+            if (level16RingInterval) {
+                clearInterval(level16RingInterval);
+                level16RingInterval = null;
+            }
+            
+            if (electricLineInterval) {
+                clearInterval(electricLineInterval);
+                electricLineInterval = null;
+            }
+            
+            if (level18BallInterval) {
+                clearInterval(level18BallInterval);
+                level18BallInterval = null;
+            }
+            
+            if (level18ElectricLineInterval) {
+                clearInterval(level18ElectricLineInterval);
+                level18ElectricLineInterval = null;
+            }
+            
+            if (gameState.timerInterval) {
+                clearInterval(gameState.timerInterval);
+                gameState.timerInterval = null;
+            }
+        }
+
+        function showLevelCompleteAnimation() {
+            resultScreen.style.display = 'none';
+            levelCompleteAnimation.style.display = 'flex';
+            
+            // After 3 seconds, go back to level screen
+            setTimeout(() => {
+                levelCompleteAnimation.style.display = 'none';
+                levelScreen.style.display = 'flex';
+            }, 3000);
+        }
+
+        function unlockNextLevel() {
+            if (gameState.currentLevel === gameState.unlockedLevels) {
+                gameState.unlockedLevels++;
+                
+                // Check if we've completed all levels in current season
+                const maxLevelInSeason = gameState.currentSeason === 1 ? 9 : 18;
+                
+                if (gameState.unlockedLevels > maxLevelInSeason) {
+                    // Move to next season
+                    gameState.currentSeason++;
+                    gameState.unlockedLevels = maxLevelInSeason + 1; // Start with level 10 or 19
+                    
+                    // Update level display for new season
+                    updateLevelDisplay();
+                } else {
+                    // Update level display for current season
+                    updateLevelDisplay();
+                }
+                
+                saveGameProgress();
+                soundUnlock();
+            }
+        }
+
+        // Game functions
+        function updateAttemptsCounter() {
+            attemptsCounter.textContent = `Attempts: ${gameState.attemptsLeft}`;
+        }
+
+        function resetBall() {
+            ball.style.left = ballPosition.x + 'px';
+            ball.style.bottom = ballPosition.y + 'px';
+            ball.style.display = 'block';
+            gameState.currentPower = 0;
+            updatePowerIndicator(0);
+            gameState.isBallInMotion = false;
+        }
+
+        function updatePowerIndicator(power) {
+            powerIndicator.style.height = power + '%';
+        }
+
+        function launchBall(power) {
+            if (gameState.isBallInMotion || gameState.attemptsLeft <= 0) return;
+            
+            gameState.isBallInMotion = true;
+            gameState.attemptsLeft--;
+            updateAttemptsCounter();
+            
+            const distance = power * 12;
+            const duration = 3000;
+            
+            // Play launch sound
+            ensureAudio();
+            soundLaunch();
+            
+            // Hide ball initially during animation
+            ball.style.display = 'none';
+            
+            // Create animated ball
+            const animatedBall = ball.cloneNode(true);
+            animatedBall.style.display = 'block';
+            animatedBall.style.position = 'absolute';
+            animatedBall.style.left = ballPosition.x + 'px';
+            animatedBall.style.bottom = ballPosition.y + 'px';
+            document.getElementById('launcher-game').appendChild(animatedBall);
+            
+            let start = null;
+            let hitTarget = false;
+            let hitTargetIndex = -1;
+            let burnedInFireRing = false;
+            let hitTargetBall = false;
+            let burnedInLevel16Ring = false;
+            let hitElectricLine = false;
+            let hitLevel18ElectricLine = false;
+            
+            function animate(timestamp) {
+                if (!start) start = timestamp;
+                const progress = (timestamp - start) / duration;
+                
+                if (progress < 1) {
+                    const x = ballPosition.x + (progress * distance);
+                    const y = ballPosition.y + (Math.sin(progress * Math.PI) * 200);
+                    
+                    animatedBall.style.left = x + 'px';
+                    animatedBall.style.bottom = y + 'px';
+                    
+                    const ballRect = animatedBall.getBoundingClientRect();
+                    
+                    // Check for electric line collision (Level 17)
+                    if (gameState.currentLevel === 17 && !hitElectricLine) {
+                        for (let i = 0; i < gameState.electricLinePositions.length; i++) {
+                            const electricLine = gameState.electricLinePositions[i];
+                            const lineRect = electricLine.element.getBoundingClientRect();
+                            
+                            // Check if ball touches the electric line
+                            if (ballRect.left < lineRect.right && 
+                                ballRect.right > lineRect.left && 
+                                ballRect.top < lineRect.bottom && 
+                                ballRect.bottom > lineRect.top) {
+                                hitElectricLine = true;
+                                
+                                // Play electric shock sound
+                                ensureAudio();
+                                soundElectricShock();
+                                
+                                // Create electric spark effect
+                                const electricSpark = document.createElement('div');
+                                electricSpark.className = 'electric-spark active';
+                                electricSpark.style.left = (ballRect.left - 20) + 'px';
+                                electricSpark.style.bottom = (window.innerHeight - ballRect.bottom - 20) + 'px';
+                                electricSpark.style.width = (ballRect.width + 40) + 'px';
+                                electricSpark.style.height = (ballRect.height + 40) + 'px';
+                                document.getElementById('launcher-game').appendChild(electricSpark);
+                                
+                                // Remove spark after animation
+                                setTimeout(() => {
+                                    electricSpark.remove();
+                                }, 500);
+                                
+                                break;
+                            }
+                        }
+                    }
+                    
+                    // Check for Level 18 electric line collision
+                    if (gameState.currentLevel === 18 && !hitLevel18ElectricLine) {
+                        for (let i = 0; i < gameState.level18ElectricLinePositions.length; i++) {
+                            const electricLine = gameState.level18ElectricLinePositions[i];
+                            const lineRect = electricLine.element.getBoundingClientRect();
+                            
+                            // Check if ball touches the electric line
+                            if (ballRect.left < lineRect.right && 
+                                ballRect.right > lineRect.left && 
+                                ballRect.top < lineRect.bottom && 
+                                ballRect.bottom > lineRect.top) {
+                                hitLevel18ElectricLine = true;
+                                
+                                // Play electric shock sound
+                                ensureAudio();
+                                soundElectricShock();
+                                
+                                // Create electric spark effect
+                                const electricSpark = document.createElement('div');
+                                electricSpark.className = 'electric-spark active';
+                                electricSpark.style.left = (ballRect.left - 20) + 'px';
+                                electricSpark.style.bottom = (window.innerHeight - ballRect.bottom - 20) + 'px';
+                                electricSpark.style.width = (ballRect.width + 40) + 'px';
+                                electricSpark.style.height = (ballRect.height + 40) + 'px';
+                                document.getElementById('launcher-game').appendChild(electricSpark);
+                                
+                                // Remove spark after animation
+                                setTimeout(() => {
+                                    electricSpark.remove();
+                                }, 500);
+                                
+                                break;
+                            }
+                        }
+                    }
+                    
+                    // Check for fire ring collision (Level 15)
+                    if (gameState.currentLevel === 15 && gameState.fireRingPosition && !burnedInFireRing) {
+                        const ring = gameState.fireRingPosition;
+                        const ballCenterX = ballRect.left + ballRect.width/2;
+                        const ballCenterY = ballRect.top + ballRect.height/2;
+                        const ringCenterX = ring.x + ring.width/2;
+                        const ringCenterY = ring.y + ring.height/2;
+                        
+                        const distanceToCenter = Math.sqrt(
+                            Math.pow(ballCenterX - ringCenterX, 2) + 
+                            Math.pow(ballCenterY - ringCenterY, 2)
+                        );
+                        
+                        // Check if ball touches the fire ring (within 5px of the ring edge)
+                        const ringRadius = ring.width/2;
+                        const ballRadius = ballRect.width/2;
+                        
+                        if (distanceToCenter > ringRadius - 10 && distanceToCenter < ringRadius + 10) {
+                            burnedInFireRing = true;
+                            ensureAudio();
+                            soundBurn();
+                            animatedBall.style.opacity = '0.3';
+                        }
+                    }
+                    
+                    // Check for Level 16 ring collision
+                    if (gameState.currentLevel === 16 && gameState.level16RingPosition && !burnedInLevel16Ring) {
+                        const ring = gameState.level16RingPosition;
+                        const ballCenterX = ballRect.left + ballRect.width/2;
+                        const ballCenterY = ballRect.top + ballRect.height/2;
+                        const ringCenterX = ring.x + ring.width/2;
+                        const ringCenterY = ring.y + ring.height/2;
+                        
+                        const distanceToCenter = Math.sqrt(
+                            Math.pow(ballCenterX - ringCenterX, 2) + 
+                            Math.pow(ballCenterY - ringCenterY, 2)
+                        );
+                        
+                        // Check if ball touches the ring (within 5px of the ring edge)
+                        const ringRadius = ring.width/2;
+                        const ballRadius = ballRect.width/2;
+                        
+                        if (distanceToCenter > ringRadius - 10 && distanceToCenter < ringRadius + 10) {
+                            burnedInLevel16Ring = true;
+                            ensureAudio();
+                            soundBurn();
+                            animatedBall.style.opacity = '0.3';
+                        }
+                    }
+                    
+                    // Check for target ball collision (Level 15)
+                    if (gameState.currentLevel === 15 && gameState.targetBallPosition && !hitTargetBall) {
+                        const target = gameState.targetBallPosition;
+                        const targetRect = target.element.getBoundingClientRect();
+                        
+                        const ballCenterX = ballRect.left + ballRect.width/2;
+                        const ballCenterY = ballRect.top + ballRect.height/2;
+                        const targetCenterX = targetRect.left + targetRect.width/2;
+                        const targetCenterY = targetRect.top + targetRect.height/2;
+                        
+                        const distance = Math.sqrt(
+                            Math.pow(ballCenterX - targetCenterX, 2) + 
+                            Math.pow(ballCenterY - targetCenterY, 2)
+                        );
+                        
+                        if (distance < (ballRect.width/2 + targetRect.width/2)) {
+                            hitTargetBall = true;
+                            hitTarget = true;
+                            target.touched = true;
+                            target.element.style.opacity = '0.5';
+                        }
+                    }
+                    
+                    // Check for collisions based on level
+                    if (gameState.currentLevel === 8) {
+                        // Level 8: Check if ball touches any of the 4 balls - UPDATED
+                        for (let i = 0; i < gameState.level8BallPositions.length; i++) {
+                            const target = gameState.level8BallPositions[i];
+                            if (target.touched) continue;
+                            
+                            const targetRect = target.element.getBoundingClientRect();
+                            
+                            const ballCenterX = ballRect.left + ballRect.width/2;
+                            const ballCenterY = ballRect.top + ballRect.height/2;
+                            const targetCenterX = targetRect.left + targetRect.width/2;
+                            const targetCenterY = targetRect.top + targetRect.height/2;
+                            
+                            const distance = Math.sqrt(
+                                Math.pow(ballCenterX - targetCenterX, 2) + 
+                                Math.pow(ballCenterY - targetCenterY, 2)
+                            );
+                            
+                            if (distance < (ballRect.width/2 + targetRect.width/2)) {
+                                hitTarget = true;
+                                hitTargetIndex = i;
+                                target.touched = true;
+                                target.element.style.opacity = '0.5';
+                                break;
+                            }
+                        }
+                    } else if (gameState.currentLevel === 9) {
+                        // Level 9: Check if ball touches the black hole
+                        for (let i = 0; i < gameState.blackHolePositions.length; i++) {
+                            const target = gameState.blackHolePositions[i];
+                            if (target.touched) continue;
+                            
+                            const targetRect = target.element.getBoundingClientRect();
+                            
+                            const ballCenterX = ballRect.left + ballRect.width/2;
+                            const ballCenterY = ballRect.top + ballRect.height/2;
+                            const targetCenterX = targetRect.left + targetRect.width/2;
+                            const targetCenterY = targetRect.top + targetRect.height/2;
+                            
+                            const distance = Math.sqrt(
+                                Math.pow(ballCenterX - targetCenterX, 2) + 
+                                Math.pow(ballCenterY - targetCenterY, 2)
+                            );
+                            
+                            if (distance < (ballRect.width/2 + targetRect.width/2)) {
+                                hitTarget = true;
+                                hitTargetIndex = i;
+                                target.touched = true;
+                                target.element.style.opacity = '0.5';
+                                break;
+                            }
+                        }
+                    } else if (gameState.currentLevel === 10) {
+                        // Level 10: Check if ball touches any of the black holes
+                        for (let i = 0; i < gameState.blackHolePositions.length; i++) {
+                            const target = gameState.blackHolePositions[i];
+                            if (target.touched) continue;
+                            
+                            const targetRect = target.element.getBoundingClientRect();
+                            
+                            const ballCenterX = ballRect.left + ballRect.width/2;
+                            const ballCenterY = ballRect.top + ballRect.height/2;
+                            const targetCenterX = targetRect.left + targetRect.width/2;
+                            targetCenterY = targetRect.top + targetRect.height/2;
+                            
+                            const distance = Math.sqrt(
+                                Math.pow(ballCenterX - targetCenterX, 2) + 
+                                Math.pow(ballCenterY - targetCenterY, 2)
+                            );
+                            
+                            if (distance < (ballRect.width/2 + targetRect.width/2)) {
+                                hitTarget = true;
+                                hitTargetIndex = i;
+                                target.touched = true;
+                                target.element.style.opacity = '0.5';
+                                break;
+                            }
+                        }
+                    } else if (gameState.currentLevel === 11 || gameState.currentLevel === 12) {
+                        // Level 11 and 12: Check if ball touches any of the light bulbs
+                        for (let i = 0; i < gameState.lightBulbPositions.length; i++) {
+                            const target = gameState.lightBulbPositions[i];
+                            if (target.touched) continue;
+                            
+                            const targetRect = target.element.getBoundingClientRect();
+                            
+                            const ballCenterX = ballRect.left + ballRect.width/2;
+                            const ballCenterY = ballRect.top + ballRect.height/2;
+                            const targetCenterX = targetRect.left + targetRect.width/2;
+                            const targetCenterY = targetRect.top + targetRect.height/2;
+                            
+                            const distance = Math.sqrt(
+                                Math.pow(ballCenterX - targetCenterX, 2) + 
+                                Math.pow(ballCenterY - targetCenterY, 2)
+                            );
+                            
+                            if (distance < (ballRect.width/2 + targetRect.width/2)) {
+                                hitTarget = true;
+                                hitTargetIndex = i;
+                                target.touched = true;
+                                target.element.style.opacity = '0.5';
+                                break;
+                            }
+                        }
+                    } else if (gameState.currentLevel === 13 || gameState.currentLevel === 14) {
+                        // Level 13 and 14: Check if ball touches any of the clocks
+                        for (let i = 0; i < gameState.clockPositions.length; i++) {
+                            const target = gameState.clockPositions[i];
+                            if (target.touched) continue;
+                            
+                            const targetRect = target.element.getBoundingClientRect();
+                            
+                            const ballCenterX = ballRect.left + ballRect.width/2;
+                            const ballCenterY = ballRect.top + ballRect.height/2;
+                            const targetCenterX = targetRect.left + targetRect.width/2;
+                            const targetCenterY = targetRect.top + targetRect.height/2;
+                            
+                            const distance = Math.sqrt(
+                                Math.pow(ballCenterX - targetCenterX, 2) + 
+                                Math.pow(ballCenterY - targetCenterY, 2)
+                            );
+                            
+                            if (distance < (ballRect.width/2 + targetRect.width/2)) {
+                                hitTarget = true;
+                                hitTargetIndex = i;
+                                target.touched = true;
+                                target.element.style.opacity = '0.5';
+                                break;
+                            }
+                        }
+                    } else if (gameState.currentLevel === 16) {
+                        // Level 16: Check if ball touches any of the two balls
+                        for (let i = 0; i < gameState.level16BallPositions.length; i++) {
+                            const target = gameState.level16BallPositions[i];
+                            if (target.touched) continue;
+                            
+                            const targetRect = target.element.getBoundingClientRect();
+                            
+                            const ballCenterX = ballRect.left + ballRect.width/2;
+                            const ballCenterY = ballRect.top + ballRect.height/2;
+                            const targetCenterX = targetRect.left + targetRect.width/2;
+                            const targetCenterY = targetRect.top + targetRect.height/2;
+                            
+                            const distance = Math.sqrt(
+                                Math.pow(ballCenterX - targetCenterX, 2) + 
+                                Math.pow(ballCenterY - targetCenterY, 2)
+                            );
+                            
+                            if (distance < (ballRect.width/2 + targetRect.width/2)) {
+                                hitTarget = true;
+                                hitTargetIndex = i;
+                                target.touched = true;
+                                target.element.style.opacity = '0.5';
+                                break;
+                            }
+                        }
+                    } else if (gameState.currentLevel === 18) {
+                        // Level 18: Check if ball touches any of the two balls
+                        for (let i = 0; i < gameState.level18BallPositions.length; i++) {
+                            const target = gameState.level18BallPositions[i];
+                            if (target.touched) continue;
+                            
+                            const targetRect = target.element.getBoundingClientRect();
+                            
+                            const ballCenterX = ballRect.left + ballRect.width/2;
+                            const ballCenterY = ballRect.top + ballRect.height/2;
+                            const targetCenterX = targetRect.left + targetRect.width/2;
+                            const targetCenterY = targetRect.top + targetRect.height/2;
+                            
+                            const distance = Math.sqrt(
+                                Math.pow(ballCenterX - targetCenterX, 2) + 
+                                Math.pow(ballCenterY - targetCenterY, 2)
+                            );
+                            
+                            if (distance < (ballRect.width/2 + targetRect.width/2)) {
+                                hitTarget = true;
+                                hitTargetIndex = i;
+                                target.touched = true;
+                                target.element.style.opacity = '0.5';
+                                break;
+                            }
+                        }
+                    } else if (gameState.currentLevel === 17) {
+                        // Level 17: Check if ball goes through the electric ring
+                        const target = gameState.level17RingPosition;
+                        if (target) {
+                            const targetRect = target.element.getBoundingClientRect();
+                            
+                            const ballCenterX = ballRect.left + ballRect.width/2;
+                            const ballCenterY = ballRect.top + ballRect.height/2;
+                            const targetCenterX = targetRect.left + targetRect.width/2;
+                            const targetCenterY = targetRect.top + targetRect.height/2;
+                            
+                            const distance = Math.sqrt(
+                                Math.pow(ballCenterX - targetCenterX, 2) + 
+                                Math.pow(ballCenterY - targetCenterY, 2)
+                            );
+                            
+                            if (distance < (targetRect.width/2 - ballRect.width/2)) {
+                                hitTarget = true;
+                                hitTargetIndex = 0;
+                            }
+                        }
+                    } else {
+                        // Other levels: Check for target collisions
+                        for (let i = 0; i < targetPositions.length; i++) {
+                            const target = targetPositions[i];
+                            if ((gameState.currentLevel === 5 || gameState.currentLevel === 7 || 
+                                 gameState.currentLevel === 9) && target.hasBall) continue;
+                            
+                            const targetRect = target.element.getBoundingClientRect();
+                            
+                            if (gameState.currentLevel === 6 || gameState.currentLevel === 7) {
+                                // Hoop levels: Check if ball goes through hoop
+                                const ballCenterX = ballRect.left + ballRect.width/2;
+                                const ballCenterY = ballRect.top + ballRect.height/2;
+                                const targetCenterX = targetRect.left + targetRect.width/2;
+                                const targetCenterY = targetRect.top + targetRect.height/2;
+                                
+                                const distance = Math.sqrt(
+                                    Math.pow(ballCenterX - targetCenterX, 2) + 
+                                    Math.pow(ballCenterY - targetCenterY, 2)
+                                );
+                                
+                                if (distance < (targetRect.width/2 - ballRect.width/2)) {
+                                    hitTarget = true;
+                                    hitTargetIndex = i;
+                                    break;
+                                }
+                            } else {
+                                // Dustbin levels: Check if ball lands in dustbin
+                                const isOverBin = ballRect.left + ballRect.width/2 > targetRect.left && 
+                                                 ballRect.left + ballRect.width/2 < targetRect.right;
+                                                 
+                                const isInTopHalf = ballRect.bottom > targetRect.top && 
+                                                   ballRect.bottom < targetRect.top + (targetRect.height * 0.3);
+                                
+                                if (isOverBin && isInTopHalf) {
+                                    hitTarget = true;
+                                    hitTargetIndex = i;
+                                    break;
+                                }
+                            }
+                        }
+                    }
+                    
+                    requestAnimationFrame(animate);
+                } else {
+                    animatedBall.remove();
+                    
+                    // For Level 17, check if ball hit electric line
+                    if (gameState.currentLevel === 17 && hitElectricLine) {
+                        // Ball touched electric line - fail
+                        setTimeout(() => {
+                            showResultScreen(false, " Electric Shock!");
+                        }, 500);
+                        return;
+                    }
+                    
+                    // For Level 18, check if ball hit electric line
+                    if (gameState.currentLevel === 18 && hitLevel18ElectricLine) {
+                        // Ball touched electric line - fail
+                        setTimeout(() => {
+                            showResultScreen(false, " Electric Shock!");
+                        }, 500);
+                        return;
+                    }
+                    
+                    // For Level 15, check if ball passed through fire ring successfully and hit target ball
+                    if (gameState.currentLevel === 15) {
+                        if (burnedInFireRing) {
+                            // Ball touched the fire ring - fail
+                            setTimeout(() => {
+                                showResultScreen(false, " Burned!");
+                            }, 500);
+                            return;
+                        } else if (hitTargetBall) {
+                            // Ball passed through fire ring and hit target ball - success
+                            gameState.level15Balls++;
+                            updateBallCounter();
+                            
+                            setTimeout(() => {
+                                showResultScreen(true);
+                            }, 500);
+                        } else if (gameState.attemptsLeft <= 0) {
+                            setTimeout(() => {
+                                showResultScreen(false);
+                            }, 500);
+                        } else {
+                            resetBall();
+                        }
+                        return;
+                    }
+                    
+                    // For Level 16, check if ball touched the ring
+                    if (gameState.currentLevel === 16 && burnedInLevel16Ring) {
+                        // Ball touched the ring - fail
+                        setTimeout(() => {
+                            showResultScreen(false, " Ring Burned!");
+                        }, 500);
+                        return;
+                    }
+                    
+                    if (hitTarget) {
+                        // Play hit sound
+                        ensureAudio();
+                        soundHit();
+                        
+                        // Handle level-specific win conditions
+                        if (gameState.currentLevel === 5) {
+                            targetPositions[hitTargetIndex].hasBall = true;
+                            gameState.level5Balls++;
+                            updateBallCounter();
+                            
+                            if (gameState.level5Balls >= 2) {
+                                setTimeout(() => {
+                                    showResultScreen(true);
+                                }, 500);
+                            } else if (gameState.attemptsLeft <= 0) {
+                                setTimeout(() => {
+                                    showResultScreen(false);
+                                }, 500);
+                            } else {
+                                resetBall();
+                            }
+                        } else if (gameState.currentLevel === 6) {
+                            targetPositions[hitTargetIndex].hasBall = true;
+                            gameState.level6Balls++;
+                            updateBallCounter();
+                            
+                            setTimeout(() => {
+                                showResultScreen(true);
+                            }, 500);
+                        } else if (gameState.currentLevel === 7) {
+                            targetPositions[hitTargetIndex].hasBall = true;
+                            gameState.level7Balls++;
+                            updateBallCounter();
+                            
+                            if (gameState.level7Balls >= 2) {
+                                setTimeout(() => {
+                                    showResultScreen(true);
+                                }, 500);
+                            } else if (gameState.attemptsLeft <= 0) {
+                                setTimeout(() => {
+                                    showResultScreen(false);
+                                }, 500);
+                            } else {
+                                resetBall();
+                            }
+                        } else if (gameState.currentLevel === 8) {
+                            gameState.level8Balls++;
+                            updateBallCounter();
+                            
+                            if (gameState.level8Balls >= 4) { // UPDATED
+                                setTimeout(() => {
+                                    showResultScreen(true);
+                                }, 500);
+                            } else if (gameState.attemptsLeft <= 0) {
+                                setTimeout(() => {
+                                    showResultScreen(false);
+                                }, 500);
+                            } else {
+                                resetBall();
+                            }
+                        } else if (gameState.currentLevel === 9) {
+                            gameState.level9Balls++;
+                            updateBallCounter();
+                            
+                            setTimeout(() => {
+                                showResultScreen(true);
+                            }, 500);
+                        } else if (gameState.currentLevel === 10) {
+                            gameState.level10Balls++;
+                            updateBallCounter();
+                            
+                            if (gameState.level10Balls >= 2) {
+                                setTimeout(() => {
+                                    showResultScreen(true);
+                                }, 500);
+                            } else if (gameState.attemptsLeft <= 0) {
+                                setTimeout(() => {
+                                    showResultScreen(false);
+                                }, 500);
+                            } else {
+                                resetBall();
+                            }
+                        } else if (gameState.currentLevel === 11) {
+                            gameState.level11Balls++;
+                            updateBallCounter();
+                            
+                            setTimeout(() => {
+                                showResultScreen(true);
+                            }, 500);
+                        } else if (gameState.currentLevel === 12) {
+                            gameState.level12Balls++;
+                            updateBallCounter();
+                            
+                            if (gameState.level12Balls >= 2) {
+                                setTimeout(() => {
+                                    showResultScreen(true);
+                                }, 500);
+                            } else if (gameState.attemptsLeft <= 0) {
+                                setTimeout(() => {
+                                    showResultScreen(false);
+                                }, 500);
+                            } else {
+                                resetBall();
+                            }
+                        } else if (gameState.currentLevel === 13) {
+                            gameState.level13Balls++;
+                            updateBallCounter();
+                            
+                            // Stop the timer if level is completed
+                            if (gameState.timerInterval) {
+                                clearInterval(gameState.timerInterval);
+                                gameState.timerInterval = null;
+                            }
+                            
+                            setTimeout(() => {
+                                showResultScreen(true);
+                            }, 500);
+                        } else if (gameState.currentLevel === 14) {
+                            gameState.level14Balls++;
+                            updateBallCounter();
+                            
+                            if (gameState.level14Balls >= 2) {
+                                // Stop the timer if level is completed
+                                if (gameState.timerInterval) {
+                                    clearInterval(gameState.timerInterval);
+                                    gameState.timerInterval = null;
+                                }
+                                
+                                setTimeout(() => {
+                                    showResultScreen(true);
+                                }, 500);
+                            } else if (gameState.attemptsLeft <= 0) {
+                                setTimeout(() => {
+                                    showResultScreen(false);
+                                }, 500);
+                            } else {
+                                resetBall();
+                            }
+                        } else if (gameState.currentLevel === 16) {
+                            gameState.level16Balls++;
+                            updateBallCounter();
+                            
+                            if (gameState.level16Balls >= 2) {
+                                setTimeout(() => {
+                                    showResultScreen(true);
+                                }, 500);
+                            } else if (gameState.attemptsLeft <= 0) {
+                                setTimeout(() => {
+                                    showResultScreen(false);
+                                }, 500);
+                            } else {
+                                resetBall();
+                            }
+                        } else if (gameState.currentLevel === 18) {
+                            gameState.level18Balls++;
+                            updateBallCounter();
+                            
+                            if (gameState.level18Balls >= 2) {
+                                setTimeout(() => {
+                                    showResultScreen(true);
+                                }, 500);
+                            } else if (gameState.attemptsLeft <= 0) {
+                                setTimeout(() => {
+                                    showResultScreen(false);
+                                }, 500);
+                            } else {
+                                resetBall();
+                            }
+                        } else if (gameState.currentLevel === 17) {
+                            gameState.level17Balls++;
+                            updateBallCounter();
+                            
+                            setTimeout(() => {
+                                showResultScreen(true);
+                            }, 500);
+                        } else {
+                            targetPositions[hitTargetIndex].hasBall = true;
+                            gameState.ballsInBins++;
+                            
+                            if (gameState.ballsInBins >= gameState.requiredBalls) {
+                                setTimeout(() => {
+                                    showResultScreen(true);
+                                }, 500);
+                            } else if (gameState.attemptsLeft <= 0) {
+                                setTimeout(() => {
+                                    showResultScreen(false);
+                                }, 500);
+                            } else {
+                                resetBall();
+                            }
+                        }
+                    } else if (gameState.attemptsLeft <= 0) {
+                        setTimeout(() => {
+                            showResultScreen(false);
+                        }, 500);
+                    } else {
+                        resetBall();
+                    }
+                }
+            }
+            
+            requestAnimationFrame(animate);
+        }
+
+        // Tutorial functions
+        function showTutorial() {
+            tutorialOverlay.style.display = 'flex';
+        }
+
+        function hideTutorial() {
+            ensureAudio();
+            soundClick();
+            tutorialOverlay.style.display = 'none';
+            gameState.isFirstLevelPlay = false;
+            saveGameProgress();
+        }
+
+        // Initialize the game
+        async function initGame() {
+            // Initialize user
+            await initializeUser();
+            
+            // Load saved progress
+            loadGameProgress();
+            
+            // Set up event listeners
+            startButton.addEventListener('click', startGame);
+            startButton.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                startGame();
+            }, {passive: false});
+            
+            settingsButton.addEventListener('click', showSettings);
+            settingsButton.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                showSettings();
+            }, {passive: false});
+            
+            closeSettings.addEventListener('click', hideSettings);
+            closeSettings.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                hideSettings();
+            }, {passive: false});
+            
+            // Ball selection
+            ballOptions.forEach(option => {
+                option.addEventListener('click', function() {
+                    if (!this.classList.contains('locked')) {
+                        const color = this.getAttribute('data-color');
+                        gameState.ballColor = color;
+                        
+                        ballOptions.forEach(opt => opt.classList.remove('selected'));
+                        this.classList.add('selected');
+                        
+                        updateBallAppearance();
+                        saveGameProgress();
+                        
+                        ensureAudio();
+                        soundClick();
+                    }
+                });
+                
+                option.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    if (!this.classList.contains('locked')) {
+                        const color = this.getAttribute('data-color');
+                        gameState.ballColor = color;
+                        
+                        ballOptions.forEach(opt => opt.classList.remove('selected'));
+                        this.classList.add('selected');
+                        
+                        updateBallAppearance();
+                        saveGameProgress();
+                        
+                        ensureAudio();
+                        soundClick();
+                    }
+                }, {passive: false});
+            });
+            
+            // Back button for level screen
+            backButtonLevels.addEventListener('click', () => {
+                ensureAudio();
+                soundClick();
+                levelScreen.style.display = 'none';
+                startScreen.style.display = 'flex';
+            });
+            
+            backButtonLevels.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                ensureAudio();
+                soundClick();
+                levelScreen.style.display = 'none';
+                startScreen.style.display = 'flex';
+            }, {passive: false});
+            
+            // Season buttons
+            season1Button.addEventListener('click', () => {
+                ensureAudio();
+                soundClick();
+                gameState.currentSeason = 1;
+                updateLevelDisplay();
+            });
+            
+            season2Button.addEventListener('click', () => {
+                ensureAudio();
+                soundClick();
+                gameState.currentSeason = 2;
+                updateLevelDisplay();
+            });
+            
+            // Set up drag-based power control
+            let startY = 0;
+            
+            // Mouse events
+            powerDragArea.addEventListener('mousedown', (e) => {
+                if (gameState.isBallInMotion || gameState.attemptsLeft <= 0) return;
+                gameState.isDragging = true;
+                startY = e.clientY;
+                e.preventDefault();
+            });
+            
+            document.addEventListener('mousemove', (e) => {
+                if (!gameState.isDragging) return;
+                
+                const currentY = e.clientY;
+                const diff = startY - currentY;
+                let power = Math.min(100, Math.max(0, (diff / 2)));
+                
+                gameState.currentPower = power;
+                updatePowerIndicator(power);
+            });
+            
+            document.addEventListener('mouseup', () => {
+                if (!gameState.isDragging) return;
+                gameState.isDragging = false;
+                
+                if (gameState.currentPower > 5) {
+                    launchBall(gameState.currentPower);
+                } else {
+                    updatePowerIndicator(0);
+                }
+            });
+            
+            // Touch events
+            powerDragArea.addEventListener('touchstart', (e) => {
+                if (gameState.isBallInMotion || gameState.attemptsLeft <= 0) return;
+                gameState.isDragging = true;
+                startY = e.touches[0].clientY;
+                e.preventDefault();
+            }, {passive: false});
+            
+            document.addEventListener('touchmove', (e) => {
+                if (!gameState.isDragging) return;
+                
+                const currentY = e.touches[0].clientY;
+                const diff = startY - currentY;
+                let power = Math.min(100, Math.max(0, (diff / 2)));
+                
+                gameState.currentPower = power;
+                updatePowerIndicator(power);
+                e.preventDefault();
+            }, {passive: false});
+            
+            document.addEventListener('touchend', () => {
+                if (!gameState.isDragging) return;
+                gameState.isDragging = false;
+                
+                if (gameState.currentPower > 5) {
+                    launchBall(gameState.currentPower);
+                } else {
+                    updatePowerIndicator(0);
+                }
+            });
+            
+            gameBackButton.addEventListener('click', () => { 
+                ensureAudio();
+                soundClick();
+                closeLauncherGame(); 
+            });
+            gameBackButton.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                ensureAudio();
+                soundClick();
+                closeLauncherGame();
+            }, {passive: false});
+            
+            tryAgainButton.addEventListener('click', () => { 
+                ensureAudio();
+                soundClick();
+                resultScreen.style.display = 'none';
+                openLauncherGame(gameState.currentLevel);
+            });
+            
+            tryAgainButton.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                ensureAudio();
+                soundClick();
+                resultScreen.style.display = 'none';
+                openLauncherGame(gameState.currentLevel);
+            }, {passive: false});
+            
+            nextLevelButton.addEventListener('click', () => { 
+                ensureAudio();
+                soundClick();
+                resultScreen.style.display = 'none';
+                openLauncherGame(gameState.currentLevel + 1);
+            });
+            
+            nextLevelButton.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                ensureAudio();
+                soundClick();
+                resultScreen.style.display = 'none';
+                openLauncherGame(gameState.currentLevel + 1);
+            }, {passive: false});
+            
+            resultBackButton.addEventListener('click', () => { 
+                ensureAudio();
+                soundClick();
+                resultScreen.style.display = 'none';
+                levelScreen.style.display = 'flex';
+            });
+            
+            resultBackButton.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                ensureAudio();
+                soundClick();
+                resultScreen.style.display = 'none';
+                levelScreen.style.display = 'flex';
+            }, {passive: false});
+            
+            // Tutorial button
+            tutorialButton.addEventListener('click', hideTutorial);
+            tutorialButton.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                hideTutorial();
+            }, {passive: false});
+            
+            // Set up level click handlers initially
+            updateLevelDisplay();
+        }
+
+        // Start the game when page loads
+        window.onload = initGame;
+    </script>
+</body>
+</html>
