@@ -1965,6 +1965,7 @@
     <div class="code-display" id="codeDisplay" style="display: none;">
         <h2>🎉 CONGRATULATIONS! 🎉</h2>
         <p style="color: white; font-size: 1.2rem;">You've completed Level 18!</p>
+        <p style="color: #ffd700; font-size: 1rem;">Game will restart in 5 seconds...</p>
         <div class="code-box">
             <div class="code-number" id="congratsCode"></div>
         </div>
@@ -2466,6 +2467,31 @@
             }
         }
 
+        // Reset game to beginning state
+        function resetGameToBeginning() {
+            // Reset game state
+            gameState.currentLevel = 1;
+            gameState.unlockedLevels = 1;
+            gameState.currentSeason = 1;
+            gameState.level18Completed = false;
+            gameState.ballColor = 'white';
+            gameState.isFirstLevelPlay = true;
+            
+            // Clear localStorage progress (optional - you can keep it or clear it)
+            // localStorage.removeItem('ballLauncherProgress');
+            
+            // Reset ball appearance
+            updateBallAppearance();
+            
+            // Update level display
+            updateLevelDisplay();
+            
+            // Save the reset state
+            saveGameProgress();
+            
+            console.log("Game has been reset to beginning");
+        }
+
         // Show congratulation code
         function showCongratulationCode() {
             if (window.firebaseFunctions && !gameState.level18Completed) {
@@ -2491,6 +2517,15 @@
 
         closeCodeDisplay.addEventListener('click', () => {
             codeDisplay.style.display = 'none';
+            
+            // After closing code, restart the game to beginning
+            resetGameToBeginning();
+            
+            // Show start screen
+            startScreen.style.display = 'flex';
+            levelScreen.style.display = 'none';
+            launcherGame.style.display = 'none';
+            resultScreen.style.display = 'none';
         });
 
         // Save game progress to localStorage
@@ -4074,29 +4109,47 @@
                 // Check if Level 18 is completed
                 if (gameState.currentLevel === 18 && !gameState.level18Completed) {
                     showCongratulationCode();
-                }
-                
-                // Hide "Try Again" button and show "NEXT LEVEL" and "LEVELS" buttons
-                tryAgainButton.style.display = 'none';
-                nextLevelButton.style.display = 'block';
-                resultBackButton.style.display = 'block';
-                
-                // Show next level button only if there's a next level and it's unlocked
-                const maxLevelInSeason = gameState.currentSeason === 1 ? 9 : 18;
-                
-                if (gameState.currentLevel < maxLevelInSeason && gameState.currentLevel < gameState.unlockedLevels) {
-                    nextLevelButton.style.display = 'block';
+                    
+                    // After showing the code, restart the game to beginning after 5 seconds
+                    setTimeout(() => {
+                        // Hide result screen and code display
+                        resultScreen.style.display = 'none';
+                        codeDisplay.style.display = 'none';
+                        
+                        // Reset game state to beginning
+                        resetGameToBeginning();
+                        
+                        // Show start screen
+                        startScreen.style.display = 'flex';
+                        levelScreen.style.display = 'none';
+                        launcherGame.style.display = 'none';
+                        
+                        // Show interstitial ad on game restart
+                        triggerGameEventAd();
+                    }, 5000); // Wait 5 seconds to let user see the code
                 } else {
-                    nextLevelButton.style.display = 'none';
+                    // Hide "Try Again" button and show "NEXT LEVEL" and "LEVELS" buttons
+                    tryAgainButton.style.display = 'none';
+                    nextLevelButton.style.display = 'block';
+                    resultBackButton.style.display = 'block';
+                    
+                    // Show next level button only if there's a next level and it's unlocked
+                    const maxLevelInSeason = gameState.currentSeason === 1 ? 9 : 18;
+                    
+                    if (gameState.currentLevel < maxLevelInSeason && gameState.currentLevel < gameState.unlockedLevels) {
+                        nextLevelButton.style.display = 'block';
+                    } else {
+                        nextLevelButton.style.display = 'none';
+                    }
+                    
+                    // Save progress to Firebase
+                    if (window.firebaseFunctions) {
+                        window.firebaseFunctions.saveCompletedLevel(gameState.userId, gameState.currentLevel);
+                    }
+                    
+                    // Show interstitial ad on level complete
+                    await triggerGameEventAd();
                 }
-                
-                // Save progress to Firebase
-                if (window.firebaseFunctions) {
-                    window.firebaseFunctions.saveCompletedLevel(gameState.userId, gameState.currentLevel);
-                }
-                
-                // Show interstitial ad on level complete
-                await triggerGameEventAd();
             } else {
                 if (customMessage) {
                     resultMessage.textContent = customMessage;
