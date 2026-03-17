@@ -2009,14 +2009,13 @@
 
         // Your web app's Firebase configuration
         const firebaseConfig = {
-            apiKey: "AIzaSyDQoJn8Pl-4QGBX8quMRo9BkO-TWfa2oMA",
-            authDomain: "earn-for-earn.firebaseapp.com",
-            databaseURL: "https://earn-for-earn-default-rtdb.firebaseio.com",
-            projectId: "earn-for-earn",
-            storageBucket: "earn-for-earn.firebasestorage.app",
-            messagingSenderId: "730217056305",
-            appId: "1:730217056305:web:5787ccc6a05495db742d10",
-            measurementId: "G-P46D3WDMVG"
+            apiKey: "AIzaSyDSsIf-rV5Ph8p9704GMuCuIsW9ZRGCDME",
+            authDomain: "lunch-the-ball.firebaseapp.com",
+            projectId: "lunch-the-ball",
+            storageBucket: "lunch-the-ball.firebasestorage.app",
+            messagingSenderId: "683159129796",
+            appId: "1:683159129796:web:f3e4a3ad01ffd4390dc391",
+            measurementId: "G-EL67PNJF5G"
         };
 
         // Initialize Firebase
@@ -2043,7 +2042,9 @@
                 // Save user to Firebase
                 set(ref(database, 'users/' + userId), {
                     createdAt: new Date().toISOString(),
-                    completedLevels: 0
+                    completedLevels: [],
+                    ballColor: 'white',
+                    lastPlayed: new Date().toISOString()
                 });
             }
             return userId;
@@ -2056,10 +2057,10 @@
             try {
                 // Get current user data
                 const snapshot = await get(child(ref(database), 'users/' + userId));
-                const userData = snapshot.val() || {};
+                let userData = snapshot.val() || {};
                 
                 // Update completed levels
-                const completedLevels = userData.completedLevels || [];
+                let completedLevels = userData.completedLevels || [];
                 if (!Array.isArray(completedLevels)) {
                     completedLevels = [];
                 }
@@ -2077,9 +2078,38 @@
                     completionCode: code || null
                 });
                 
-                console.log('Progress saved to Firebase');
+                console.log('Progress saved to Firebase for level', levelNumber);
+                return true;
             } catch (error) {
                 console.error('Error saving to Firebase:', error);
+                return false;
+            }
+        }
+
+        // Get user data from Firebase
+        async function getUserData(userId) {
+            try {
+                const snapshot = await get(child(ref(database), 'users/' + userId));
+                if (snapshot.exists()) {
+                    return snapshot.val();
+                } else {
+                    return null;
+                }
+            } catch (error) {
+                console.error('Error getting user data:', error);
+                return null;
+            }
+        }
+
+        // Save game progress to Firebase
+        async function saveGameProgressToFirebase(userId, progress) {
+            try {
+                await set(ref(database, 'users/' + userId + '/progress'), progress);
+                console.log('Game progress saved to Firebase');
+                return true;
+            } catch (error) {
+                console.error('Error saving game progress:', error);
+                return false;
             }
         }
 
@@ -2087,7 +2117,9 @@
         window.firebaseFunctions = {
             generate11DigitCode,
             getUserId,
-            saveCompletedLevel
+            saveCompletedLevel,
+            getUserData,
+            saveGameProgressToFirebase
         };
     </script>
 
@@ -2464,6 +2496,38 @@
             if (window.firebaseFunctions) {
                 gameState.userId = window.firebaseFunctions.getUserId();
                 console.log('User ID:', gameState.userId);
+                
+                // Load user data from Firebase
+                const userData = await window.firebaseFunctions.getUserData(gameState.userId);
+                if (userData && userData.progress) {
+                    // Load saved progress from Firebase
+                    gameState.unlockedLevels = userData.progress.unlockedLevels || 1;
+                    gameState.ballColor = userData.progress.ballColor || 'white';
+                    gameState.currentSeason = userData.progress.currentSeason || 1;
+                    gameState.isFirstLevelPlay = userData.progress.isFirstLevelPlay !== undefined ? userData.progress.isFirstLevelPlay : true;
+                    
+                    // Update UI with loaded data
+                    updateBallAppearance();
+                    updateLevelDisplay();
+                    updateBallOptions();
+                } else {
+                    // First time user, save initial data
+                    saveGameProgressToFirebase();
+                }
+            }
+        }
+
+        // Save game progress to Firebase
+        async function saveGameProgressToFirebase() {
+            if (window.firebaseFunctions && gameState.userId) {
+                const progress = {
+                    unlockedLevels: gameState.unlockedLevels,
+                    ballColor: gameState.ballColor,
+                    currentSeason: gameState.currentSeason,
+                    isFirstLevelPlay: gameState.isFirstLevelPlay,
+                    level18Completed: gameState.level18Completed || false
+                };
+                await window.firebaseFunctions.saveGameProgressToFirebase(gameState.userId, progress);
             }
         }
 
@@ -2477,8 +2541,8 @@
             gameState.ballColor = 'white';
             gameState.isFirstLevelPlay = true;
             
-            // Clear localStorage progress (optional - you can keep it or clear it)
-            // localStorage.removeItem('ballLauncherProgress');
+            // Clear localStorage progress
+            localStorage.removeItem('ballLauncherProgress');
             
             // Reset ball appearance
             updateBallAppearance();
@@ -2486,8 +2550,8 @@
             // Update level display
             updateLevelDisplay();
             
-            // Save the reset state
-            saveGameProgress();
+            // Save the reset state to Firebase
+            saveGameProgressToFirebase();
             
             console.log("Game has been reset to beginning");
         }
@@ -2502,6 +2566,9 @@
                 
                 // Save to Firebase
                 window.firebaseFunctions.saveCompletedLevel(gameState.userId, 18, code);
+                
+                // Save progress to Firebase
+                saveGameProgressToFirebase();
             }
         }
 
@@ -2528,7 +2595,7 @@
             resultScreen.style.display = 'none';
         });
 
-        // Save game progress to localStorage
+        // Save game progress to localStorage (backup)
         function saveGameProgress() {
             localStorage.setItem('ballLauncherProgress', JSON.stringify({
                 unlockedLevels: gameState.unlockedLevels,
@@ -2537,9 +2604,12 @@
                 currentSeason: gameState.currentSeason,
                 level18Completed: gameState.level18Completed
             }));
+            
+            // Also save to Firebase
+            saveGameProgressToFirebase();
         }
 
-        // Load game progress from localStorage
+        // Load game progress from localStorage (backup)
         function loadGameProgress() {
             const savedProgress = localStorage.getItem('ballLauncherProgress');
             if (savedProgress) {
@@ -2781,7 +2851,7 @@
             }
             
             // Check if level is in current season
-            if ((gameState.currentSeason === 1 && level > 9) || (gameState.currentSeason === 2 && level > 19)) {
+            if ((gameState.currentSeason === 1 && level > 9) || (gameState.currentSeason === 2 && level > 18)) {
                 // Show coming soon message for levels beyond current season
                 comingSoon.style.display = 'block';
                 return;
@@ -4106,6 +4176,11 @@
                 unlockNextLevel();
                 soundWin();
                 
+                // Save completed level to Firebase
+                if (window.firebaseFunctions) {
+                    await window.firebaseFunctions.saveCompletedLevel(gameState.userId, gameState.currentLevel);
+                }
+                
                 // Check if Level 18 is completed
                 if (gameState.currentLevel === 18 && !gameState.level18Completed) {
                     showCongratulationCode();
@@ -4140,11 +4215,6 @@
                         nextLevelButton.style.display = 'block';
                     } else {
                         nextLevelButton.style.display = 'none';
-                    }
-                    
-                    // Save progress to Firebase
-                    if (window.firebaseFunctions) {
-                        window.firebaseFunctions.saveCompletedLevel(gameState.userId, gameState.currentLevel);
                     }
                     
                     // Show interstitial ad on level complete
@@ -5011,7 +5081,7 @@
             // Initialize user
             await initializeUser();
             
-            // Load saved progress
+            // Load saved progress from localStorage (backup)
             loadGameProgress();
             
             // Set up event listeners
@@ -5091,6 +5161,7 @@
                 soundClick();
                 gameState.currentSeason = 1;
                 updateLevelDisplay();
+                saveGameProgress();
             });
             
             season2Button.addEventListener('click', () => {
@@ -5098,6 +5169,7 @@
                 soundClick();
                 gameState.currentSeason = 2;
                 updateLevelDisplay();
+                saveGameProgress();
             });
             
             // Set up drag-based power control
