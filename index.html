@@ -8,7 +8,7 @@
     <!-- Ad Networks SDKs with the IDs from your second file -->
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <script src='//libtl.com/sdk.js' data-zone='10865808' data-sdk='show_10865808'></script>
-    <script src="https://adexora.com/cdn/ads.js?id=2021"></script>
+    <!-- Adexora script removed as requested: replaced by Adsgram (double Adsgram) -->
 
     <style>
         * {
@@ -404,10 +404,10 @@
     <div class="road-header">
         <div class="title">🍽️ LUNCH THE BALL ⚽</div>
         <div class="subtitle">🌅 Sunset Challenge · 3 Ads Before Each Level</div>
-        <div class="badge-pattern">✅ 5 clicks per level · Adsgram + Monetag + Adexora (all levels)</div>
+        <div class="badge-pattern">✅ 5 clicks per level · Adsgram + Monetag + Adsgram (all levels)</div>
     </div>
     <div class="road-levels" id="levelListContainer"></div>
-    <div class="footer-note">👇 Tap any unlocked level → watch 3 ads → then click all 5 buttons (each says "Click")</div>
+    <div class="footer-note">👇 Tap any unlocked level → watch 3 ads (2x Adsgram + Monetag) → then click all 5 buttons</div>
 </div>
 
 <!-- Game Panel (5 buttons) -->
@@ -448,7 +448,7 @@
     </div>
 </div>
 
-<!-- Ad Sequence Modal (3-step with the requested IDs) -->
+<!-- Ad Sequence Modal (3-step: Adsgram → Monetag → Adsgram) -->
 <div id="adSequencePanel" class="ad-sequence-panel" style="display: none;">
     <div class="ad-sequence-card">
         <div class="ad-step-icon" id="adStepIcon" style="font-size:48px;">🎬</div>
@@ -460,8 +460,9 @@
 </div>
 
 <script>
-    // ---------- CONFIGURATION (ADS IDs from second file) ----------
-    // Adsgram blockId: "int-24138" | Monetag zone: 10865808 | Adexora id: 2021
+    // ---------- CONFIGURATION ----------
+    // Adsgram blockId: "int-24138" | Monetag zone: 10865808
+    // Adexora removed — replaced by second Adsgram ad as requested.
     const MAX_LEVEL = 10;
     let currentUnlockedLevel = 1;
     let activeGameLevel = null;
@@ -470,38 +471,44 @@
     let isProcessing = false;
     let adSequenceActive = false;
     let pendingResolveNextStep = null;
-    let adController = null;
-    let adInitialized = false;
+    let adsgramController = null;
+    let adsgramInitialized = false;
 
-    // Ad networks initialization with correct IDs
+    // Initialize Adsgram (used for both step 1 and step 3)
     function initAdsgram() {
         try {
             if (typeof window.Adsgram !== 'undefined') {
-                adController = window.Adsgram.init({ blockId: "int-24138" });  // from your second file
-                adInitialized = true;
-            } else { console.warn("Adsgram not loaded"); }
-        } catch(e) { console.error(e); }
+                adsgramController = window.Adsgram.init({ blockId: "int-24138" });
+                adsgramInitialized = true;
+                console.log("Adsgram ready (blockId: int-24138)");
+            } else { console.warn("Adsgram SDK not loaded"); }
+        } catch(e) { console.error("Adsgram init error", e); }
     }
 
+    // Show Adsgram ad (shared function)
     function showAdsgramAd() {
         return withNetworkGuard(async () => {
-            if (adInitialized && adController) await adController.show();
-            else console.warn("Adsgram controller missing");
+            if (adsgramInitialized && adsgramController) {
+                await adsgramController.show();
+            } else {
+                console.warn("Adsgram controller missing, reinitializing...");
+                initAdsgram();
+                if (adsgramController) await adsgramController.show();
+                else throw new Error("Adsgram unavailable");
+            }
         }, "Adsgram");
     }
 
+    // Monetag ad (zone 10865808)
     function showMonetagAd() {
         return withNetworkGuard(async () => {
-            if (typeof window.show_10865808 === 'function') await window.show_10865808();
-            else console.warn("Monetag (zone 10865808) not ready");
+            if (typeof window.show_10865808 === 'function') {
+                await window.show_10865808();
+            } else {
+                console.warn("Monetag (zone 10865808) not ready");
+                // fallback resolve to not block flow
+            }
         }, "Monetag");
-    }
-
-    function showAdexoraAd() {
-        return withNetworkGuard(async () => {
-            if (typeof window.showAdexora === 'function') await window.showAdexora();
-            else console.warn("Adexora (id=2021) not ready");
-        }, "Adexora");
     }
 
     // Network helpers
@@ -569,7 +576,10 @@
         adLoadingIndicator.style.display = 'block';
         adSeqPanel.style.display = 'flex';
     }
-    function hideAdSequenceUI() { adSeqPanel.style.display = 'none'; if(pendingResolveNextStep) pendingResolveNextStep(); pendingResolveNextStep = null; }
+    function hideAdSequenceUI() { 
+        adSeqPanel.style.display = 'none'; 
+        if(pendingResolveNextStep) { pendingResolveNextStep(); pendingResolveNextStep = null; } 
+    }
     function waitForNextStepButton() {
         return new Promise((resolve) => {
             if (!isNetworkOnline()) { showOfflineExitAndCloseGame("Network lost while waiting."); resolve(); return; }
@@ -595,28 +605,16 @@
         });
     }
 
-    async function countdownBeforeAdexora() {
-        adStepMsg.innerText = "⏳ Preparing Adexora Ad";
-        adDescription.innerText = "Ad starting in 3 seconds";
-        nextStepBtn.style.display = "none";
-        adLoadingIndicator.style.display = "block";
-        for (let i=3; i>=1; i--) {
-            if (!isNetworkOnline()) throw new Error("offline");
-            adLoadingIndicator.innerHTML = `<span style="font-size:52px; font-weight:800;">${i}</span><br/>Loading ad...`;
-            adStepMsg.innerText = `🌅 Adexora in ${i}`;
-            await new Promise(r => setTimeout(r, 1000));
-        }
-        adLoadingIndicator.innerHTML = "Now showing ad...";
-    }
-
-    // MAIN AD SEQUENCE (3 steps: Adsgram → Monetag → Adexora) for ALL levels
+    // MAIN AD SEQUENCE: Step1 (Adsgram) -> Step2 (Monetag) -> Step3 (Adsgram again) 
+    // Adexora fully replaced by second Adsgram as required.
     async function runFullAdSequence(level) {
         if (!isNetworkOnline()) throw new Error("offline");
+        
         // Step 1: Adsgram
-        showAdSequenceUI("📢 Step 1/3", "Showing Adsgram interstitial ad...");
+        showAdSequenceUI("🎬 Step 1/3", "Showing Adsgram interstitial ad...");
         await showAdsgramAd();
         if (!isNetworkOnline()) throw new Error("offline");
-        showAdSequenceUI("✅ Step 1 Complete", "Click next to continue");
+        showAdSequenceUI("✅ Step 1 Complete", "Click next to continue to Monetag ad");
         await waitForNextStepButton();
         if (!isNetworkOnline()) throw new Error("offline");
         
@@ -624,17 +622,15 @@
         showAdSequenceUI("💰 Step 2/3", "Loading Monetag rewarded ad...");
         await showMonetagAd();
         if (!isNetworkOnline()) throw new Error("offline");
-        showAdSequenceUI("✅ Step 2 Complete", "Click next for final ad (Adexora)");
+        showAdSequenceUI("✅ Step 2 Complete", "Click next for final ad (Adsgram)");
         await waitForNextStepButton();
         if (!isNetworkOnline()) throw new Error("offline");
         
-        // Step 3: Adexora
-        await countdownBeforeAdexora();
+        // Step 3: Adsgram (replaces former Adexora)
+        showAdSequenceUI("⚡ Step 3/3: Adsgram", "Final ad before gameplay starts!");
+        await showAdsgramAd();
         if (!isNetworkOnline()) throw new Error("offline");
-        showAdSequenceUI("⚡ Step 3/3: Adexora", "Final ad, almost there!");
-        await showAdexoraAd();
-        if (!isNetworkOnline()) throw new Error("offline");
-        showAdSequenceUI("✅ Ad Sequence Done", "Starting game now!");
+        showAdSequenceUI("✅ Ad Sequence Done", "Launching Lunch Game now!");
         await new Promise(r => setTimeout(r, 400));
         hideAdSequenceUI();
     }
@@ -666,7 +662,7 @@
         }
     }
 
-    // GAMEPLAY: 5 buttons, each shows "Click" text
+    // GAMEPLAY: 5 buttons, each says "Click"
     function renderGamePanel(level) {
         document.getElementById('gameLevelTitle').innerHTML = `🍽️⚽ LUNCH BALL - LEVEL ${level}`;
         const clickedCount = buttonClickState.filter(v => v === true).length;
@@ -787,7 +783,7 @@
             card.innerHTML = `
                 <div class="level-number">${i}</div>
                 <div class="level-info">
-                    <div class="level-name">Lunch Ball ${i} <span style="font-size:9px;">(3 ads)</span></div>
+                    <div class="level-name">Lunch Ball ${i} <span style="font-size:9px;">(3 ads: 2x Adsgram + Monetag)</span></div>
                     <div class="level-requirement">5 clicks required</div>
                 </div>
                 <div class="level-status">${statusIcon}</div>
