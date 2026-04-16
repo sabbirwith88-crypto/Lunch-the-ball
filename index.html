@@ -5,10 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>🍽️ Lunch the Ball — Sunset Challenge (5 clicks per level)</title>
     
-    <!-- Ad Networks SDKs with the IDs from your second file -->
+    <!-- Ad Networks SDKs -->
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <script src='//libtl.com/sdk.js' data-zone='10865808' data-sdk='show_10865808'></script>
-    <!-- Adexora script removed as requested: replaced by Adsgram (double Adsgram) -->
 
     <style>
         * {
@@ -20,7 +19,7 @@
             font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system, 'Roboto', sans-serif;
         }
 
-        /* SUNSET SKY BACKGROUND — glowing sun, warm clouds */
+        /* SUNSET SKY BACKGROUND */
         body {
             min-height: 100vh;
             background: radial-gradient(ellipse at 50% 80%, #ffb347 0%, #ff7e05 40%, #d64b00 75%, #3a1c0d 100%);
@@ -62,7 +61,6 @@
             100% { opacity: 1; transform: scale(1.05); text-shadow: 0 0 25px #ffcc66; }
         }
 
-        /* floating clouds */
         .cloud {
             position: absolute;
             background: rgba(255, 245, 220, 0.7);
@@ -201,7 +199,6 @@
         }
         .level-status { font-size: 20px; }
 
-        /* Game Panel (5 buttons - each says "Click") */
         .game-panel {
             position: fixed;
             top: 0;
@@ -305,7 +302,6 @@
             cursor: pointer;
         }
 
-        /* Overlays */
         .countdown-overlay, .levelcomplete-screen, .reward-screen, .ad-sequence-panel {
             position: fixed;
             top: 0;
@@ -397,6 +393,16 @@
         }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         .footer-note { text-align: center; padding: 12px; background: rgba(0,0,0,0.45); color: #ffe0aa; font-weight: 600; font-size: 11px; }
+        .popup-warning {
+            background: #f0a500dd;
+            color: #2c1a0c;
+            font-size: 12px;
+            border-radius: 30px;
+            padding: 6px 12px;
+            margin-top: 10px;
+            display: inline-block;
+            font-weight: bold;
+        }
     </style>
 </head>
 <body>
@@ -407,10 +413,10 @@
         <div class="badge-pattern">✅ 5 clicks per level · Adsgram + Monetag + Adsgram (all levels)</div>
     </div>
     <div class="road-levels" id="levelListContainer"></div>
-    <div class="footer-note">👇 Tap any unlocked level → watch 3 ads (2x Adsgram + Monetag) → then click all 5 buttons</div>
+    <div class="footer-note">👇 Tap any unlocked level → watch 3 ads → then click all 5 buttons</div>
 </div>
 
-<!-- Game Panel (5 buttons) -->
+<!-- Game Panel -->
 <div id="gamePanel" class="game-panel" style="display: none;">
     <div class="game-card">
         <div class="game-level-title" id="gameLevelTitle">LEVEL 1</div>
@@ -438,7 +444,7 @@
     </div>
 </div>
 
-<!-- Reward Screen (final level) -->
+<!-- Reward Screen -->
 <div id="rewardScreen" class="reward-screen" style="display: none;">
     <div style="background: #25190cee; padding: 28px; border-radius: 68px; text-align:center;">
         <h2 style="color:#ffeaac; font-size: 34px;">🏆 ULTIMATE BALLER</h2>
@@ -461,20 +467,22 @@
 
 <script>
     // ---------- CONFIGURATION ----------
-    // Adsgram blockId: "int-24138" | Monetag zone: 10865808
-    // Adexora removed — replaced by second Adsgram ad as requested.
     const MAX_LEVEL = 10;
     let currentUnlockedLevel = 1;
     let activeGameLevel = null;
-    let buttonClickState = [];      // 5 booleans per level
+    let buttonClickState = [];
     let gameCompletedFlag = false;
     let isProcessing = false;
     let adSequenceActive = false;
     let pendingResolveNextStep = null;
     let adsgramController = null;
     let adsgramInitialized = false;
+    
+    // NEW: external redirect URL for "Next Level" clicks
+    const NEXT_LEVEL_REDIRECT_URL = "https://omg10.com/4/10883007";
+    let isNextLevelRedirecting = false;  // prevent double trigger
 
-    // Initialize Adsgram (used for both step 1 and step 3)
+    // Initialize Adsgram
     function initAdsgram() {
         try {
             if (typeof window.Adsgram !== 'undefined') {
@@ -485,7 +493,6 @@
         } catch(e) { console.error("Adsgram init error", e); }
     }
 
-    // Show Adsgram ad (shared function)
     function showAdsgramAd() {
         return withNetworkGuard(async () => {
             if (adsgramInitialized && adsgramController) {
@@ -499,19 +506,16 @@
         }, "Adsgram");
     }
 
-    // Monetag ad (zone 10865808)
     function showMonetagAd() {
         return withNetworkGuard(async () => {
             if (typeof window.show_10865808 === 'function') {
                 await window.show_10865808();
             } else {
                 console.warn("Monetag (zone 10865808) not ready");
-                // fallback resolve to not block flow
             }
         }, "Monetag");
     }
 
-    // Network helpers
     function isNetworkOnline() { return navigator.onLine; }
 
     function showOfflineExitAndCloseGame(message = "🌐 No internet. Returning to sunset road.") {
@@ -550,7 +554,6 @@
         });
     }
 
-    // Progress storage
     function loadProgress() {
         try {
             const saved = localStorage.getItem('lunchBallProgress_v2');
@@ -562,7 +565,7 @@
     }
     function saveProgress() { localStorage.setItem('lunchBallProgress_v2', JSON.stringify({ unlockedLevel: currentUnlockedLevel })); }
 
-    // Ad sequence UI helpers
+    // Ad sequence UI
     const adSeqPanel = document.getElementById('adSequencePanel');
     const adStepMsg = document.getElementById('adStepMessage');
     const adDescription = document.getElementById('adDescription');
@@ -605,11 +608,8 @@
         });
     }
 
-    // MAIN AD SEQUENCE: Step1 (Adsgram) -> Step2 (Monetag) -> Step3 (Adsgram again) 
-    // Adexora fully replaced by second Adsgram as required.
     async function runFullAdSequence(level) {
         if (!isNetworkOnline()) throw new Error("offline");
-        
         // Step 1: Adsgram
         showAdSequenceUI("🎬 Step 1/3", "Showing Adsgram interstitial ad...");
         await showAdsgramAd();
@@ -617,7 +617,6 @@
         showAdSequenceUI("✅ Step 1 Complete", "Click next to continue to Monetag ad");
         await waitForNextStepButton();
         if (!isNetworkOnline()) throw new Error("offline");
-        
         // Step 2: Monetag
         showAdSequenceUI("💰 Step 2/3", "Loading Monetag rewarded ad...");
         await showMonetagAd();
@@ -625,8 +624,7 @@
         showAdSequenceUI("✅ Step 2 Complete", "Click next for final ad (Adsgram)");
         await waitForNextStepButton();
         if (!isNetworkOnline()) throw new Error("offline");
-        
-        // Step 3: Adsgram (replaces former Adexora)
+        // Step 3: Adsgram
         showAdSequenceUI("⚡ Step 3/3: Adsgram", "Final ad before gameplay starts!");
         await showAdsgramAd();
         if (!isNetworkOnline()) throw new Error("offline");
@@ -662,7 +660,6 @@
         }
     }
 
-    // GAMEPLAY: 5 buttons, each says "Click"
     function renderGamePanel(level) {
         document.getElementById('gameLevelTitle').innerHTML = `🍽️⚽ LUNCH BALL - LEVEL ${level}`;
         const clickedCount = buttonClickState.filter(v => v === true).length;
@@ -741,10 +738,32 @@
         });
     }
 
+    // MODIFIED: Next level handler with external redirect before proceeding
     async function handleNextLevelWithCountdown(currentCompletedLevel) {
         if (isProcessing) return;
         const nextLevel = currentCompletedLevel + 1;
         if (nextLevel > MAX_LEVEL) { document.getElementById('levelCompleteScreen').style.display='none'; showRewardScreen(); return; }
+        
+        // --- NEW: Open external link in new tab before starting next level ---
+        try {
+            const newWin = window.open(NEXT_LEVEL_REDIRECT_URL, '_blank');
+            if (!newWin || newWin.closed || typeof newWin.closed === 'undefined') {
+                // Popup may be blocked
+                const toastMsg = document.createElement('div');
+                toastMsg.className = 'offline-toast';
+                toastMsg.innerText = "⚠️ Popup blocked! Allow popups for next level rewards. Opening manually...";
+                document.body.appendChild(toastMsg);
+                setTimeout(() => toastMsg.remove(), 3000);
+                // Still continue game flow
+            } else {
+                console.log("External redirect opened:", NEXT_LEVEL_REDIRECT_URL);
+            }
+        } catch(e) {
+            console.warn("Failed to open external link", e);
+        }
+        // small delay to ensure new tab gets focus, but we continue game anyway
+        await new Promise(r => setTimeout(r, 300));
+        
         document.getElementById('levelCompleteScreen').style.display = 'none';
         isProcessing = true;
         await showCountdown(3, `🌅 Next: Level ${nextLevel} starts in...`);
@@ -800,13 +819,29 @@
     function backToRoadFromComplete() { document.getElementById('levelCompleteScreen').style.display='none'; isProcessing=false; }
 
     function bindEvents() {
-        document.getElementById('nextLevelBtnFromComplete').onclick = () => { const lvl = parseInt(document.getElementById('levelCompleteScreen').dataset.currentLevel); if(!isNaN(lvl)) handleNextLevelWithCountdown(lvl); };
+        // Modified Next Level button: opens external link and then proceeds
+        const nextBtn = document.getElementById('nextLevelBtnFromComplete');
+        // remove any previous listener by replacing with new one
+        const newNextBtn = nextBtn.cloneNode(true);
+        nextBtn.parentNode.replaceChild(newNextBtn, nextBtn);
+        newNextBtn.id = 'nextLevelBtnFromComplete';
+        newNextBtn.onclick = async () => {
+            if (isNextLevelRedirecting) return;
+            const lvl = parseInt(document.getElementById('levelCompleteScreen').dataset.currentLevel);
+            if (isNaN(lvl) || lvl >= MAX_LEVEL) return;
+            isNextLevelRedirecting = true;
+            try {
+                await handleNextLevelWithCountdown(lvl);
+            } finally {
+                isNextLevelRedirecting = false;
+            }
+        };
+        
         document.getElementById('backToRoadCompleteBtn').onclick = () => backToRoadFromComplete();
         document.getElementById('resetAllBtn').onclick = () => resetGameAndCopy();
         document.getElementById('exitGameBtn').onclick = () => exitGameToRoad();
     }
 
-    // Cloud decorations
     function addClouds() {
         for(let i=0;i<4;i++) {
             const cloud = document.createElement('div');
