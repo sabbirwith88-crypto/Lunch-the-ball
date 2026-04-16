@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Green Road — Double Adsgram + Reward Ads | Next Level Link</title>
+    <title>Green Road — Auto Next Level After Link Return</title>
     <!-- Adsgram SDK -->
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <!-- Monetag SDK (Rewarded Interstitial) -->
@@ -357,6 +357,25 @@
             color: #f5c542;
         }
 
+        .waiting-message {
+            background: #2c2c2c;
+            padding: 12px;
+            border-radius: 28px;
+            margin: 15px 0;
+            color: #f5d742;
+            font-size: 14px;
+            font-weight: bold;
+            border: 1px solid #f5b81b;
+        }
+        
+        .manual-continue-btn {
+            background: #f5c542;
+            color: #1b4d1a;
+            margin-top: 8px;
+            padding: 8px 20px;
+            font-size: 15px;
+        }
+
         .reward-screen {
             position: fixed;
             top: 0;
@@ -486,25 +505,6 @@
             from { opacity: 0; transform: translateY(20px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        
-        .waiting-message {
-            background: #2c2c2c;
-            padding: 12px;
-            border-radius: 28px;
-            margin: 15px 0;
-            color: #f5d742;
-            font-size: 14px;
-            font-weight: bold;
-            border: 1px solid #f5b81b;
-        }
-        
-        .manual-continue-btn {
-            background: #f5c542;
-            color: #1b4d1a;
-            margin-top: 8px;
-            padding: 8px 20px;
-            font-size: 15px;
-        }
     </style>
 </head>
 <body>
@@ -512,7 +512,7 @@
         <div class="road-header">
             <div class="title">GREEN ROAD</div>
             <div class="subtitle">🚀 3 Ads Before Every Ride: 2x Adsgram + Monetag</div>
-            <div class="badge-pattern">🎯 NEXT LEVEL: Open link first → Then Ads</div>
+            <div class="badge-pattern">🎯 NEXT LEVEL: Open link → Return → Auto-starts!</div>
         </div>
         <div class="road-levels" id="levelListContainer"></div>
         <div class="footer-note">Each level: tap 5 road tasks to complete</div>
@@ -530,21 +530,24 @@
         </div>
     </div>
 
-    <!-- Countdown Overlay (3 sec before next level) -->
+    <!-- Countdown Overlay -->
     <div id="countdownOverlay" class="countdown-overlay" style="display: none;">
         <div class="countdown-number" id="countdownNum">3</div>
         <div class="countdown-message" id="countdownMsg">Next Level Starting in...</div>
     </div>
 
-    <!-- Level Complete Screen (Modified: includes waiting panel for external link) -->
+    <!-- Level Complete Screen (Auto-start on return) -->
     <div id="levelCompleteScreen" class="levelcomplete-screen" style="display: none;">
         <div class="complete-title">Level Clear!</div>
         <div style="color: white; font-size: 18px; margin-bottom: 20px;" id="completeLevelMsg"></div>
         
-        <!-- Dynamic area for external link waiting -->
         <div id="waitingForLinkArea" style="width:100%; margin: 10px 0;">
-            <div id="externalLinkWaitingMsg" class="waiting-message" style="display: none;">🔗 Opening offer... Please click the link, then return to this tab → Next level will start automatically.</div>
-            <button id="manualResumeAfterLinkBtn" class="btn manual-continue-btn" style="display: none; background:#f5c542;">▶ I've returned, Continue</button>
+            <div id="externalLinkWaitingMsg" class="waiting-message" style="display: none;">
+                🔗 <strong>Open this link to unlock next level</strong><br>
+                After you open it and return to this tab, the next level will start automatically.<br><br>
+                <a href="#" id="dynamicExternalLink" target="_blank" style="background:#f5c542; color:#1b4d1a; padding:8px 16px; border-radius:40px; text-decoration:none; display:inline-block; margin-top:6px; font-weight:bold;">👉 OPEN OFFER LINK 👈</a>
+            </div>
+            <button id="manualResumeAfterLinkBtn" class="btn manual-continue-btn" style="display: none;">✅ I've returned, continue (manual)</button>
         </div>
         
         <button class="btn" id="nextLevelBtnFromComplete">Next Level →</button>
@@ -561,7 +564,7 @@
         <button class="btn" id="resetAllBtn">Copy & Reset Game</button>
     </div>
 
-    <!-- Ad Sequence Modal (dynamic) - Only Adsgram + Monetag -->
+    <!-- Ad Sequence Modal -->
     <div id="adSequencePanel" class="ad-sequence-panel" style="display: none;">
         <div class="ad-sequence-card">
             <div class="ad-step-icon" id="adStepIcon">🎬</div>
@@ -586,11 +589,12 @@
         let adController = null;
         let adInitialized = false;
         
-        // --- NEW: External link requirement before next level ---
+        // External link requirement - AUTO START when returning
         const EXTERNAL_NEXT_LEVEL_URL = "https://www.profitablecpmratenetwork.com/xan60uuv?key=369dc68341066c06e3d471f3785f73fb";
-        let waitingForExternalReturn = false;
-        let pendingNextLevel = null;    // store the level to proceed after return
+        let externalLinkVisitedForCurrentLevel = false;
+        let currentCompleteLevel = null;
         let visibilityListenerAttached = false;
+        let autoStartScheduled = false;   // prevent multiple auto starts
         
         // ---------- NETWORK HANDLERS ----------
         function showOfflineExitAndCloseGame(message = "No internet connection. Exiting to Road Menu.") {
@@ -605,7 +609,6 @@
         }
         
         function forceExitAllGameScreens() {
-            // clear waiting flag
             clearWaitingForLink();
             document.getElementById('gamePanel').style.display = 'none';
             document.getElementById('adSequencePanel').style.display = 'none';
@@ -620,21 +623,19 @@
             isProcessing = false;
             gameCompletedFlag = false;
             activeGameLevel = null;
+            externalLinkVisitedForCurrentLevel = false;
+            currentCompleteLevel = null;
+            autoStartScheduled = false;
         }
         
         function clearWaitingForLink() {
-            if(waitingForExternalReturn) {
-                waitingForExternalReturn = false;
-                pendingNextLevel = null;
-                const waitingMsgDiv = document.getElementById('externalLinkWaitingMsg');
-                const manualBtn = document.getElementById('manualResumeAfterLinkBtn');
-                if(waitingMsgDiv) waitingMsgDiv.style.display = 'none';
-                if(manualBtn) manualBtn.style.display = 'none';
-                // remove visibility listener if exists
-                if(visibilityListenerAttached) {
-                    document.removeEventListener('visibilitychange', onVisibilityChange);
-                    visibilityListenerAttached = false;
-                }
+            const waitingMsgDiv = document.getElementById('externalLinkWaitingMsg');
+            const manualBtn = document.getElementById('manualResumeAfterLinkBtn');
+            if(waitingMsgDiv) waitingMsgDiv.style.display = 'none';
+            if(manualBtn) manualBtn.style.display = 'none';
+            if(visibilityListenerAttached) {
+                document.removeEventListener('visibilitychange', onVisibilityChange);
+                visibilityListenerAttached = false;
             }
         }
         
@@ -879,76 +880,19 @@
         
         function showLevelCompleteScreen(level) {
             const completeDiv = document.getElementById('levelCompleteScreen');
-            document.getElementById('completeLevelMsg').innerHTML = `Route ${level} completed! 🎉`;
+            document.getElementById('completeLevelMsg').innerHTML = `Route ${level} completed! 🎉<br><span style="font-size:14px;">➡️ Open the link below, then return here → Next level auto-starts!</span>`;
             completeDiv.dataset.currentLevel = level;
-            // Reset waiting UI elements
+            currentCompleteLevel = level;
+            externalLinkVisitedForCurrentLevel = false;
+            autoStartScheduled = false;
+            
             clearWaitingForLink();
             const waitingMsgDiv = document.getElementById('externalLinkWaitingMsg');
             const manualBtn = document.getElementById('manualResumeAfterLinkBtn');
-            waitingMsgDiv.style.display = 'none';
-            manualBtn.style.display = 'none';
-            completeDiv.style.display = 'flex';
-        }
-        
-        // Visibility change: auto resume when user returns after opening link
-        function onVisibilityChange() {
-            if(document.visibilityState === 'visible' && waitingForExternalReturn && pendingNextLevel !== null) {
-                console.log("Tab visible, auto-resuming next level");
-                proceedToNextLevelAfterLink(pendingNextLevel);
-            }
-        }
-        
-        async function proceedToNextLevelAfterLink(levelToProceed) {
-            if(!waitingForExternalReturn) return;
-            // Clear waiting state
-            waitingForExternalReturn = false;
-            if(visibilityListenerAttached) {
-                document.removeEventListener('visibilitychange', onVisibilityChange);
-                visibilityListenerAttached = false;
-            }
-            const waitingMsgDiv = document.getElementById('externalLinkWaitingMsg');
-            const manualBtn = document.getElementById('manualResumeAfterLinkBtn');
-            if(waitingMsgDiv) waitingMsgDiv.style.display = 'none';
-            if(manualBtn) manualBtn.style.display = 'none';
-            const completeScreen = document.getElementById('levelCompleteScreen');
-            if(completeScreen.style.display !== 'flex') return;
-            // Now continue actual next level flow: countdown + ads
-            completeScreen.style.display = 'none';
-            isProcessing = true;
-            await showCountdown(3, `Next: Route ${levelToProceed}<br>Starting in...`);
-            if(!isNetworkOnline()) {
-                showOfflineExitAndCloseGame("Network lost before next level.");
-                isProcessing = false;
-                return;
-            }
-            const success = await startLevelEntrySequence(levelToProceed);
-            isProcessing = false;
-            if(!success) forceExitAllGameScreens();
-        }
-        
-        // New: handle next level click with external link requirement
-        function handleNextLevelWithExternalLink(currentLevel) {
-            if(waitingForExternalReturn) {
-                // Already waiting, just remind
-                alert("Please return to the game after opening the link, it will auto-start.");
-                return;
-            }
-            const nextLevel = currentLevel + 1;
-            if(nextLevel > MAX_LEVEL) {
-                document.getElementById('levelCompleteScreen').style.display = 'none';
-                showRewardScreen();
-                return;
-            }
-            // Set waiting flag
-            waitingForExternalReturn = true;
-            pendingNextLevel = nextLevel;
-            
-            // Show waiting UI on complete screen
-            const waitingMsgDiv = document.getElementById('externalLinkWaitingMsg');
-            const manualBtn = document.getElementById('manualResumeAfterLinkBtn');
             waitingMsgDiv.style.display = 'block';
-            waitingMsgDiv.innerHTML = "🔗 Click the link below to continue:<br><span style='font-size:12px;'>After opening, return to this tab → Next level ads will start automatically</span><br><br><a href='#' id='dynamicExternalLink' target='_blank' style='background:#f5c542; color:#1b4d1a; padding:8px 16px; border-radius:40px; text-decoration:none; display:inline-block; margin-top:8px; font-weight:bold;'>👉 OPEN OFFER LINK 👈</a>";
-            // Attach click for dynamic link
+            manualBtn.style.display = 'none';
+            
+            // Attach dynamic link
             const dynamicLink = document.getElementById('dynamicExternalLink');
             if(dynamicLink) {
                 dynamicLink.onclick = (e) => {
@@ -956,20 +900,100 @@
                     window.open(EXTERNAL_NEXT_LEVEL_URL, '_blank');
                 };
             }
-            manualBtn.style.display = 'inline-block';
+            
+            // Manual fallback button
             manualBtn.onclick = () => {
-                if(waitingForExternalReturn && pendingNextLevel) {
-                    proceedToNextLevelAfterLink(pendingNextLevel);
+                if(!externalLinkVisitedForCurrentLevel) {
+                    markLinkVisitedAndAutoStart();
                 }
             };
             
-            // Also automatically open in new tab for convenience (popup may be blocked, but we also show manual link)
-            window.open(EXTERNAL_NEXT_LEVEL_URL, '_blank');
-            
-            // Attach visibility listener
             if(!visibilityListenerAttached) {
                 document.addEventListener('visibilitychange', onVisibilityChange);
                 visibilityListenerAttached = true;
+            }
+            
+            completeDiv.style.display = 'flex';
+        }
+        
+        // Called when user returns from link OR clicks manual button
+        function markLinkVisitedAndAutoStart() {
+            if(externalLinkVisitedForCurrentLevel) return;
+            if(autoStartScheduled) return;
+            externalLinkVisitedForCurrentLevel = true;
+            autoStartScheduled = true;
+            
+            // Hide waiting UI
+            const waitingMsgDiv = document.getElementById('externalLinkWaitingMsg');
+            const manualBtn = document.getElementById('manualResumeAfterLinkBtn');
+            if(waitingMsgDiv) waitingMsgDiv.style.display = 'none';
+            if(manualBtn) manualBtn.style.display = 'none';
+            
+            // Show a brief toast
+            const toast = document.createElement('div');
+            toast.className = 'offline-toast';
+            toast.style.background = '#2e7d32';
+            toast.innerText = '✅ Link visited! Starting next level automatically...';
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+            
+            // Auto-start next level after a short delay (give time to close toast)
+            setTimeout(() => {
+                if(currentCompleteLevel && currentCompleteLevel < MAX_LEVEL) {
+                    proceedToActualNextLevel(currentCompleteLevel);
+                }
+            }, 800);
+        }
+        
+        function onVisibilityChange() {
+            if(document.visibilityState === 'visible' && !externalLinkVisitedForCurrentLevel && currentCompleteLevel && 
+               document.getElementById('levelCompleteScreen').style.display === 'flex' && !autoStartScheduled) {
+                markLinkVisitedAndAutoStart();
+            }
+        }
+        
+        async function proceedToActualNextLevel(currentLevel) {
+            const nextLevel = currentLevel + 1;
+            if(nextLevel > MAX_LEVEL) {
+                document.getElementById('levelCompleteScreen').style.display = 'none';
+                showRewardScreen();
+                return;
+            }
+            // Close complete screen
+            document.getElementById('levelCompleteScreen').style.display = 'none';
+            isProcessing = true;
+            await showCountdown(3, `Next: Route ${nextLevel}<br>Starting in...`);
+            if(!isNetworkOnline()) {
+                showOfflineExitAndCloseGame("Network lost before next level.");
+                isProcessing = false;
+                return;
+            }
+            const success = await startLevelEntrySequence(nextLevel);
+            isProcessing = false;
+            if(!success) forceExitAllGameScreens();
+            // reset flags
+            externalLinkVisitedForCurrentLevel = false;
+            currentCompleteLevel = null;
+            autoStartScheduled = false;
+        }
+        
+        // Manual next level button (in case auto-start fails)
+        function handleNextLevelClick() {
+            if(!currentCompleteLevel) return;
+            if(currentCompleteLevel >= MAX_LEVEL) {
+                document.getElementById('levelCompleteScreen').style.display = 'none';
+                showRewardScreen();
+                return;
+            }
+            if(!externalLinkVisitedForCurrentLevel) {
+                // Show waiting UI again and open link
+                const waitingMsgDiv = document.getElementById('externalLinkWaitingMsg');
+                if(waitingMsgDiv) waitingMsgDiv.style.display = 'block';
+                const manualBtn = document.getElementById('manualResumeAfterLinkBtn');
+                manualBtn.style.display = 'inline-block';
+                window.open(EXTERNAL_NEXT_LEVEL_URL, '_blank');
+            } else {
+                proceedToActualNextLevel(currentCompleteLevel);
             }
         }
         
@@ -1053,22 +1077,22 @@
             clearWaitingForLink();
             document.getElementById('gamePanel').style.display = 'none';
             isProcessing = false;
+            externalLinkVisitedForCurrentLevel = false;
+            currentCompleteLevel = null;
+            autoStartScheduled = false;
         }
         
         function backToRoadFromComplete() {
             clearWaitingForLink();
             document.getElementById('levelCompleteScreen').style.display = 'none';
             isProcessing = false;
+            externalLinkVisitedForCurrentLevel = false;
+            currentCompleteLevel = null;
+            autoStartScheduled = false;
         }
         
         function bindEvents() {
-            document.getElementById('nextLevelBtnFromComplete').onclick = () => {
-                const completeDiv = document.getElementById('levelCompleteScreen');
-                const currentLvl = parseInt(completeDiv.dataset.currentLevel);
-                if(!isNaN(currentLvl)) {
-                    handleNextLevelWithExternalLink(currentLvl);
-                }
-            };
+            document.getElementById('nextLevelBtnFromComplete').onclick = () => handleNextLevelClick();
             document.getElementById('backToRoadCompleteBtn').onclick = () => backToRoadFromComplete();
             document.getElementById('resetAllBtn').onclick = () => resetGameAndCopy();
             document.getElementById('exitGameBtn').onclick = () => exitGameToRoad();
