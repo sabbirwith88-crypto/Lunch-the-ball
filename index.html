@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>🍽️ Lunch the Ball — Sunset Challenge | Adsgram + Monetag + Giga Pub</title>
+    <title>🍽️ Lunch the Ball — Sunset Challenge | Adsgram + Monetag + Giga Pub (fixed)</title>
     
-    <!-- Ad Networks: Adsgram + Monetag + Giga Pub (replaces Adexora) -->
+    <!-- Ad Networks: Adsgram + Monetag + Giga Pub (correct SDK) -->
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <script src='//libtl.com/sdk.js' data-zone='10865808' data-sdk='show_10865808'></script>
     
-    <!-- Giga Pub SDK – Project ID 6331 (as provided) -->
-    <script src="https://ad.gigapub.tech/script?id=6331"></script>
+    <!-- ✅ Giga Pub SDK – correct URL from partner.giga.pub (project ID 6331) -->
+    <script src="https://partner.giga.pub/sdk.js"></script>
 
     <style>
         * {
@@ -22,7 +22,6 @@
             font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system, 'Roboto', sans-serif;
         }
 
-        /* SUNSET SKY BACKGROUND */
         body {
             min-height: 100vh;
             background: radial-gradient(ellipse at 50% 80%, #ffb347 0%, #ff7e05 40%, #d64b00 75%, #3a1c0d 100%);
@@ -403,7 +402,7 @@
     <div class="road-header">
         <div class="title">🍽️ LUNCH THE BALL ⚽</div>
         <div class="subtitle">🌅 Sunset Challenge · 3 Ads Before Each Level</div>
-        <div class="badge-pattern">🎯 Adsgram + Monetag + Giga Pub | 5 clicks per level</div>
+        <div class="badge-pattern">🎯 Adsgram + Monetag + Giga Pub (fixed) | 5 clicks per level</div>
     </div>
     <div class="road-levels" id="levelListContainer"></div>
     <div class="footer-note">👇 Tap any unlocked level → watch 3 ads (Adsgram ➜ Monetag ➜ Giga Pub) → then click all 5 buttons</div>
@@ -508,15 +507,17 @@
         }, "Monetag");
     }
 
-    // Giga Pub Ad (replaces Adexora) – using the exact API you provided: window.showGiga()
+    // ✅ Giga Pub Ad – fixed: correct SDK and placement "main"
     function showGigaPubAd() {
         return withNetworkGuard(async () => {
             if (typeof window.showGiga === 'function') {
-                console.log("Launching Giga Pub ad (project 6331)");
-                await window.showGiga();   // matches the snippet: window.showGiga().then(...).catch(...)
+                console.log("Launching Giga Pub ad with placement 'main' (project 6331)");
+                // Using the exact API: window.showGiga("main").then(...).catch(...)
+                await window.showGiga("main");
+                console.log("Giga Pub ad completed successfully");
             } else {
-                console.warn("Giga Pub SDK not loaded or showGiga missing. Using fallback.");
-                // Fallback: just wait a moment so the ad flow still feels consistent
+                console.warn("Giga Pub SDK not loaded or showGiga missing. Check script URL.");
+                // Fallback: wait a moment to simulate ad (but no Monetag here)
                 await new Promise(resolve => setTimeout(resolve, 1500));
             }
         }, "Giga Pub");
@@ -617,7 +618,7 @@
         });
     }
 
-    // Ad sequence: Adsgram → Monetag → Giga Pub (replaces Adexora)
+    // Ad sequence: Adsgram → Monetag → Giga Pub (correct order)
     async function runFullAdSequence(level) {
         if (!isNetworkOnline()) throw new Error("offline");
         // Step 1: Adsgram
@@ -634,8 +635,8 @@
         showAdSequenceUI("✅ Step 2 Complete", "Click next for final ad (Giga Pub)");
         await waitForNextStepButton();
         if (!isNetworkOnline()) throw new Error("offline");
-        // Step 3: Giga Pub
-        showAdSequenceUI("🌟 Step 3/3: Giga Pub", "Final ad before gameplay starts! (Project 6331)");
+        // Step 3: Giga Pub (fixed – now correctly shows Giga Pub, not Monetag)
+        showAdSequenceUI("🌟 Step 3/3: Giga Pub", "Final ad from Giga Pub (project 6331) – please watch");
         await showGigaPubAd();
         if (!isNetworkOnline()) throw new Error("offline");
         showAdSequenceUI("✅ Ad Sequence Done", "Launching Lunch Game now!");
@@ -753,7 +754,6 @@
         const nextLevel = currentCompletedLevel + 1;
         if (nextLevel > MAX_LEVEL) { document.getElementById('levelCompleteScreen').style.display='none'; showRewardScreen(); return; }
         
-        // Optional external link
         try {
             const newWin = window.open(NEXT_LEVEL_REDIRECT_URL, '_blank');
             if (!newWin || newWin.closed || typeof newWin.closed === 'undefined') {
@@ -865,9 +865,12 @@
         buildLevelList();
         bindEvents();
         addClouds();
-        // Verify Giga Pub SDK presence
-        if (typeof window.showGiga !== 'function') console.warn("Giga Pub showGiga not available, fallback active");
-        else console.log("✅ Giga Pub SDK ready (project 6331)");
+        // Verify Giga Pub SDK is present and has showGiga method
+        if (typeof window.showGiga === 'function') {
+            console.log("✅ Giga Pub SDK ready (project 6331) – showGiga available");
+        } else {
+            console.warn("❌ Giga Pub showGiga not available. Check SDK URL: https://partner.giga.pub/sdk.js");
+        }
     });
     window.addEventListener('beforeunload', () => saveProgress());
     window.addEventListener('online', () => console.log("online"));
