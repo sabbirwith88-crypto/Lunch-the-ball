@@ -3,13 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>🍽️ Lunch the Ball — Sunset Challenge (5 clicks per level)</title>
+    <title>🍽️ Lunch the Ball — Sunset Challenge | Adsgram + Monetag + Giga Pub</title>
     
-    <!-- Ad Networks SDKs: Adsgram + Monetag + Adexora -->
+    <!-- Ad Networks: Adsgram + Monetag + Giga Pub (replaces Adexora) -->
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
     <script src='//libtl.com/sdk.js' data-zone='10865808' data-sdk='show_10865808'></script>
-    <!-- Adexora SDK (App ID is embedded in SDK, not shown in game UI) -->
-    <script src="https://adexora.com/cdn/ads.js?id=1964"></script>
+    
+    <!-- Giga Pub SDK – Project ID 6331 (as provided) -->
+    <script src="https://ad.gigapub.tech/script?id=6331"></script>
 
     <style>
         * {
@@ -402,10 +403,10 @@
     <div class="road-header">
         <div class="title">🍽️ LUNCH THE BALL ⚽</div>
         <div class="subtitle">🌅 Sunset Challenge · 3 Ads Before Each Level</div>
-        <div class="badge-pattern">🎯 Adsgram + Monetag + Adexora | 5 clicks per level</div>
+        <div class="badge-pattern">🎯 Adsgram + Monetag + Giga Pub | 5 clicks per level</div>
     </div>
     <div class="road-levels" id="levelListContainer"></div>
-    <div class="footer-note">👇 Tap any unlocked level → watch 3 ads (Adsgram ➜ Monetag ➜ Adexora) → then click all 5 buttons</div>
+    <div class="footer-note">👇 Tap any unlocked level → watch 3 ads (Adsgram ➜ Monetag ➜ Giga Pub) → then click all 5 buttons</div>
 </div>
 
 <!-- Game Panel -->
@@ -446,7 +447,7 @@
     </div>
 </div>
 
-<!-- Ad Sequence Modal (3-step: Adsgram → Monetag → Adexora) -->
+<!-- Ad Sequence Modal (3-step: Adsgram → Monetag → Giga Pub) -->
 <div id="adSequencePanel" class="ad-sequence-panel" style="display: none;">
     <div class="ad-sequence-card">
         <div class="ad-step-icon" id="adStepIcon" style="font-size:48px;">🎬</div>
@@ -507,17 +508,18 @@
         }, "Monetag");
     }
 
-    // Adexora Ad (App ID is embedded in SDK, no visible ID)
-    function showAdexoraAd() {
+    // Giga Pub Ad (replaces Adexora) – using the exact API you provided: window.showGiga()
+    function showGigaPubAd() {
         return withNetworkGuard(async () => {
-            if (typeof window.showAdexora === 'function') {
-                console.log("Launching Adexora ad");
-                await window.showAdexora();
+            if (typeof window.showGiga === 'function') {
+                console.log("Launching Giga Pub ad (project 6331)");
+                await window.showGiga();   // matches the snippet: window.showGiga().then(...).catch(...)
             } else {
-                console.warn("Adexora not ready. Using fallback.");
+                console.warn("Giga Pub SDK not loaded or showGiga missing. Using fallback.");
+                // Fallback: just wait a moment so the ad flow still feels consistent
                 await new Promise(resolve => setTimeout(resolve, 1500));
             }
-        }, "Adexora");
+        }, "Giga Pub");
     }
 
     function isNetworkOnline() { return navigator.onLine; }
@@ -615,7 +617,7 @@
         });
     }
 
-    // Ad sequence: Adsgram → Monetag → Adexora (no visible ID)
+    // Ad sequence: Adsgram → Monetag → Giga Pub (replaces Adexora)
     async function runFullAdSequence(level) {
         if (!isNetworkOnline()) throw new Error("offline");
         // Step 1: Adsgram
@@ -629,12 +631,12 @@
         showAdSequenceUI("💰 Step 2/3", "Loading Monetag rewarded ad...");
         await showMonetagAd();
         if (!isNetworkOnline()) throw new Error("offline");
-        showAdSequenceUI("✅ Step 2 Complete", "Click next for final ad (Adexora)");
+        showAdSequenceUI("✅ Step 2 Complete", "Click next for final ad (Giga Pub)");
         await waitForNextStepButton();
         if (!isNetworkOnline()) throw new Error("offline");
-        // Step 3: Adexora
-        showAdSequenceUI("🌟 Step 3/3: Adexora", "Final ad before gameplay starts!");
-        await showAdexoraAd();
+        // Step 3: Giga Pub
+        showAdSequenceUI("🌟 Step 3/3: Giga Pub", "Final ad before gameplay starts! (Project 6331)");
+        await showGigaPubAd();
         if (!isNetworkOnline()) throw new Error("offline");
         showAdSequenceUI("✅ Ad Sequence Done", "Launching Lunch Game now!");
         await new Promise(r => setTimeout(r, 400));
@@ -804,7 +806,7 @@
             card.innerHTML = `
                 <div class="level-number">${i}</div>
                 <div class="level-info">
-                    <div class="level-name">Lunch Ball ${i} <span style="font-size:9px;">(Adsgram ➜ Monetag ➜ Adexora)</span></div>
+                    <div class="level-name">Lunch Ball ${i} <span style="font-size:9px;">(Adsgram ➜ Monetag ➜ Giga Pub)</span></div>
                     <div class="level-requirement">5 clicks required</div>
                 </div>
                 <div class="level-status">${statusIcon}</div>
@@ -863,8 +865,9 @@
         buildLevelList();
         bindEvents();
         addClouds();
-        if (typeof window.showAdexora !== 'function') console.warn("Adexora not loaded, fallback active");
-        else console.log("Adexora SDK ready");
+        // Verify Giga Pub SDK presence
+        if (typeof window.showGiga !== 'function') console.warn("Giga Pub showGiga not available, fallback active");
+        else console.log("✅ Giga Pub SDK ready (project 6331)");
     });
     window.addEventListener('beforeunload', () => saveProgress());
     window.addEventListener('online', () => console.log("online"));
