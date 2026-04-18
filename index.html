@@ -1,889 +1,393 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>🍽️ Lunch the Ball — Sunset Challenge (3 Ads: Adsgram + Monetag + GigaPub)</title>
-    
-    <!-- Ad Networks SDKs -->
-    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-    <script src='//libtl.com/sdk.js' data-zone='10865808' data-sdk='show_10865808'></script>
-    <!-- Giga Pub SDK (third ad network) - FIXED: now properly loaded and called -->
-    <script src="https://ad.gigapub.tech/script?id=6332"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+  <title>গিগা পাব অ্যাডস | জিগা পাব এড ইন্টিগ্রেশন</title>
+  <!-- Giga Pub Ad Script (এড নেটওয়ার্ক স্ক্রিপ্ট) -->
+  <script src="https://ad.gigapub.tech/script?id=6331"></script>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', 'Inter', system-ui, -apple-system, 'Poppins', sans-serif;
+    }
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-            font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system, 'Roboto', sans-serif;
-        }
+    body {
+      min-height: 100vh;
+      background: linear-gradient(135deg, #0c111f 0%, #141b2b 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 1.5rem;
+    }
 
-        body {
-            min-height: 100vh;
-            background: radial-gradient(ellipse at 50% 80%, #ffb347 0%, #ff7e05 40%, #d64b00 75%, #3a1c0d 100%);
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            overflow-x: hidden;
-        }
+    /* প্রধান কার্ড */
+    .ad-card {
+      max-width: 560px;
+      width: 100%;
+      background: rgba(15, 25, 45, 0.75);
+      backdrop-filter: blur(12px);
+      border-radius: 2.5rem;
+      padding: 2rem 1.8rem 2.2rem;
+      box-shadow: 0 25px 40px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.1);
+      text-align: center;
+      transition: transform 0.2s ease;
+      border: 1px solid rgba(255, 200, 100, 0.2);
+    }
 
-        body::before {
-            content: "";
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 20% 30%, rgba(255, 220, 150, 0.35) 0%, rgba(255, 140, 50, 0) 60%);
-            pointer-events: none;
-            z-index: 0;
-        }
+    /* লোগো / হেডার */
+    .brand-icon {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+      filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+    }
 
-        body::after {
-            content: "☀️";
-            position: absolute;
-            top: 12%;
-            right: 8%;
-            font-size: 110px;
-            opacity: 0.7;
-            filter: drop-shadow(0 0 20px rgba(255, 100, 0, 0.8));
-            pointer-events: none;
-            animation: softGlow 4s infinite alternate;
-            z-index: 0;
-        }
+    h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(125deg, #FFE6B0, #FFB347, #FF8C42);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.5px;
+    }
 
-        @keyframes softGlow {
-            0% { opacity: 0.6; transform: scale(1); text-shadow: 0 0 5px #ffaa44; }
-            100% { opacity: 1; transform: scale(1.05); text-shadow: 0 0 25px #ffcc66; }
-        }
+    .badge {
+      display: inline-block;
+      background: rgba(255, 140, 66, 0.2);
+      backdrop-filter: blur(4px);
+      padding: 0.25rem 1rem;
+      border-radius: 40px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: #FFCD94;
+      border: 1px solid rgba(255, 170, 80, 0.5);
+      margin-bottom: 1.2rem;
+    }
 
-        .cloud {
-            position: absolute;
-            background: rgba(255, 245, 220, 0.7);
-            border-radius: 80% 20% 70% 30% / 60% 50% 50% 40%;
-            filter: blur(18px);
-            pointer-events: none;
-            z-index: 0;
-        }
+    .desc {
+      background: rgba(0, 0, 0, 0.4);
+      padding: 1rem 1.2rem;
+      border-radius: 1.8rem;
+      margin: 1rem 0 1.5rem;
+      color: #d9e6ff;
+      font-weight: 500;
+      line-height: 1.45;
+      font-size: 0.98rem;
+      border-left: 3px solid #ffaa44;
+      text-align: left;
+    }
 
-        .game-container {
-            width: 100%;
-            max-width: 500px;
-            background: rgba(30, 18, 8, 0.65);
-            backdrop-filter: blur(14px);
-            border-radius: 48px;
-            box-shadow: 0 30px 40px rgba(0,0,0,0.4), 0 0 0 2px rgba(255, 180, 60, 0.6), inset 0 1px 3px rgba(255,215,140,0.6);
-            overflow: hidden;
-            border: 1px solid rgba(255, 180, 70, 0.7);
-            z-index: 10;
-            position: relative;
-        }
+    .reward-area {
+      background: #07111e;
+      border-radius: 2rem;
+      padding: 0.9rem;
+      margin: 1rem 0 1.2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 0.8rem;
+      border: 1px solid #2a3850;
+    }
 
-        .road-header {
-            background: linear-gradient(135deg, #da7b2cd9, #b44d12d9);
-            padding: 20px 12px;
-            text-align: center;
-            border-bottom: 3px solid #ffcd7e;
-            backdrop-filter: blur(4px);
-        }
+    .reward-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      color: #FFD966;
+      background: rgba(0,0,0,0.5);
+      padding: 5px 12px;
+      border-radius: 60px;
+    }
 
-        .title {
-            font-size: 32px;
-            font-weight: 900;
-            color: #fff2c9;
-            text-shadow: 3px 3px 0 #a13f0a;
-            letter-spacing: 2px;
-            background: rgba(0,0,0,0.3);
-            display: inline-block;
-            padding: 6px 28px;
-            border-radius: 60px;
-            backdrop-filter: blur(5px);
-        }
+    .reward-value {
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #FFC107;
+      letter-spacing: 1px;
+    }
 
-        .subtitle {
-            color: #ffeaac;
-            font-size: 13px;
-            margin-top: 8px;
-            font-weight: 700;
-            text-shadow: 0 1px 2px black;
-        }
+    .coin-icon {
+      font-size: 1.5rem;
+    }
 
-        .badge-pattern {
-            background: rgba(0, 0, 0, 0.55);
-            display: inline-block;
-            padding: 6px 14px;
-            border-radius: 50px;
-            font-size: 11px;
-            margin-top: 8px;
-            color: #ffdf9c;
-            font-weight: bold;
-            backdrop-filter: blur(4px);
-        }
+    /* START বাটন */
+    .start-btn {
+      background: radial-gradient(circle at 30% 20%, #FFB347, #F57C00);
+      border: none;
+      padding: 1rem 2rem;
+      width: 85%;
+      max-width: 280px;
+      font-size: 1.7rem;
+      font-weight: 800;
+      font-family: inherit;
+      color: #1f2a2e;
+      border-radius: 80px;
+      cursor: pointer;
+      transition: all 0.2s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      box-shadow: 0 12px 18px -6px rgba(0, 0, 0, 0.5), 0 0 0 2px #FFE6B3 inset, 0 0 0 3px rgba(0,0,0,0.2) inset;
+      margin: 0.5rem 0 1rem;
+      letter-spacing: 2px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
 
-        .road-levels {
-            max-height: 480px;
-            overflow-y: auto;
-            padding: 16px 14px;
-            scrollbar-width: thin;
-        }
+    .start-btn:active {
+      transform: scale(0.97);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+    }
 
-        .road-levels::-webkit-scrollbar {
-            width: 5px;
-        }
-        .road-levels::-webkit-scrollbar-track {
-            background: #ab5f2a;
-            border-radius: 10px;
-        }
-        .road-levels::-webkit-scrollbar-thumb {
-            background: #ffb347;
-            border-radius: 10px;
-        }
+    .start-btn:disabled {
+      opacity: 0.65;
+      transform: scale(0.98);
+      cursor: not-allowed;
+      filter: grayscale(0.1);
+    }
 
-        .level-card {
-            background: linear-gradient(105deg, #2f1c0fcc, #4a2a16cc);
-            backdrop-filter: blur(8px);
-            margin-bottom: 14px;
-            border-radius: 28px;
-            padding: 12px 18px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-left: 6px solid #fcaa3a;
-            border-right: 1px solid #ffbc6e;
-            cursor: pointer;
-            transition: transform 0.08s linear, box-shadow 0.2s;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.3);
-        }
-        .level-card:active { transform: scale(0.97); }
-        .level-card.locked {
-            opacity: 0.55;
-            border-left-color: #886644;
-            cursor: not-allowed;
-            pointer-events: none;
-            filter: grayscale(0.2);
-        }
-        .level-number {
-            font-size: 28px;
-            font-weight: 800;
-            background: linear-gradient(145deg, #ffbb66, #ff9a2e);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            width: 54px;
-            height: 54px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 20px;
-            background-color: rgba(0,0,0,0.4);
-        }
-        .level-info {
-            flex: 1;
-            padding-left: 14px;
-        }
-        .level-name {
-            font-size: 18px;
-            font-weight: 800;
-            color: #ffefc0;
-            letter-spacing: 0.5px;
-        }
-        .level-requirement {
-            font-size: 10px;
-            color: #ffd58c;
-            margin-top: 4px;
-            font-weight: 500;
-        }
-        .level-status { font-size: 20px; }
+    /* মেসেজ বক্স */
+    .status-msg {
+      background: #0b1422;
+      border-radius: 40px;
+      padding: 0.7rem 1rem;
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #b9ceff;
+      border-left: 4px solid #FFB347;
+      transition: 0.15s;
+      word-break: break-word;
+    }
 
-        .game-panel {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(10, 5, 2, 0.95);
-            backdrop-filter: blur(24px);
-            z-index: 10000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            animation: fadeInUp 0.25s ease;
-        }
-        .game-card {
-            background: linear-gradient(145deg, #f7c57b, #e09d48);
-            border-radius: 56px;
-            padding: 32px 20px;
-            width: 100%;
-            max-width: 380px;
-            text-align: center;
-            border: 2px solid #ffdc97;
-            box-shadow: 0 20px 35px rgba(0,0,0,0.5);
-        }
-        .game-level-title {
-            font-size: 32px;
-            font-weight: 900;
-            color: #3b1e08;
-            text-shadow: 1px 1px 0 #ffcd94;
-            margin-bottom: 12px;
-        }
-        .instruction-box {
-            background: #442a17cc;
-            border-radius: 32px;
-            padding: 12px;
-            margin: 8px 0 14px;
-            color: #ffeaac;
-            font-size: 15px;
-            font-weight: bold;
-            text-align: center;
-            border: 1px solid #ffb347;
-        }
-        .game-progress {
-            background: #2f1e0e;
-            border-radius: 40px;
-            padding: 10px;
-            margin: 12px 0;
-            color: #fff0c0;
-            font-weight: 700;
-            font-size: 16px;
-        }
-        .buttons-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 14px;
-            margin: 20px 0;
-        }
-        .action-btn {
-            background: radial-gradient(circle at 30% 20%, #ffcd7e, #e67e22);
-            border: none;
-            padding: 16px 0;
-            font-size: 18px;
-            font-weight: 800;
-            border-radius: 60px;
-            color: #2e1a08;
-            cursor: pointer;
-            transition: all 0.07s linear;
-            box-shadow: 0 5px 0 #9b4a0b;
-            text-align: center;
-        }
-        .action-btn:active {
-            transform: translateY(3px);
-            box-shadow: 0 2px 0 #9b4a0b;
-        }
-        .action-btn.disabled-btn {
-            opacity: 0.6;
-            transform: none;
-            pointer-events: none;
-            filter: grayscale(0.2);
-        }
-        .complete-status {
-            background: #2f6b2f;
-            padding: 10px;
-            border-radius: 40px;
-            color: #ffefb9;
-            font-weight: bold;
-            font-size: 13px;
-            margin-top: 12px;
-        }
-        .game-close-btn {
-            background: #3a2a1c;
-            color: #ffcf8a;
-            padding: 12px 22px;
-            border: none;
-            border-radius: 40px;
-            font-size: 15px;
-            font-weight: 700;
-            margin-top: 16px;
-            cursor: pointer;
-        }
+    .error-msg {
+      border-left-color: #ff6b6b;
+      color: #ffb4a2;
+      background: #2c1a1f;
+    }
 
-        .countdown-overlay, .levelcomplete-screen, .reward-screen, .ad-sequence-panel {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 11000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(18px);
-        }
-        .countdown-overlay { background: rgba(0,0,0,0.88); }
-        .countdown-number {
-            font-size: 100px;
-            background: linear-gradient(45deg, #ffd966, #ffaa33);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 900;
-            animation: pulsePop 0.4s ease-out;
-        }
-        @keyframes pulsePop {
-            0% { transform: scale(0.8); opacity: 0; }
-            80% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-        .levelcomplete-screen { background: linear-gradient(135deg, #e67e22cc, #cc6b2ccc); backdrop-filter: blur(24px); }
-        .complete-title { font-size: 48px; font-weight: 900; color: #fff0bb; text-shadow: 3px 3px 0 #b45116; }
-        .btn {
-            background: linear-gradient(45deg, #ffbb55, #ff9722);
-            border: none;
-            padding: 14px 30px;
-            font-size: 18px;
-            font-weight: 800;
-            border-radius: 60px;
-            margin: 10px;
-            cursor: pointer;
-            color: #351d07;
-        }
-        .btn-secondary { background: linear-gradient(45deg, #3e2c1c, #291a0c); color: #ffcf88; }
-        .reward-screen { background: radial-gradient(circle at 30% 20%, #f7b05e, #d45a1a); }
-        .reward-code {
-            background: #241a0dd9;
-            padding: 18px 28px;
-            border-radius: 48px;
-            font-size: 22px;
-            font-weight: bold;
-            letter-spacing: 2px;
-            color: #ffdb9f;
-            margin: 20px;
-            cursor: pointer;
-            border: 2px solid #ffcc77;
-        }
-        .ad-sequence-panel { background: rgba(0,0,0,0.96); backdrop-filter: blur(28px); }
-        .ad-sequence-card {
-            background: #2c1c10e6;
-            border-radius: 56px;
-            padding: 32px 24px;
-            max-width: 340px;
-            width: 90%;
-            border: 2px solid #ffb347;
-        }
-        .ad-step-message { font-size: 24px; font-weight: 800; color: #ffcf7a; margin: 12px 0; }
-        .next-step-btn {
-            background: radial-gradient(circle at 30% 20%, #ffcd7e, #e67e22);
-            border: none;
-            padding: 14px 32px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 60px;
-            color: #301c09;
-            cursor: pointer;
-            box-shadow: 0 5px 0 #994e0e;
-        }
-        .offline-toast {
-            position: fixed;
-            bottom: 30px;
-            left: 20px;
-            right: 20px;
-            background: #cc4411;
-            color: white;
-            text-align: center;
-            padding: 12px;
-            border-radius: 60px;
-            font-weight: bold;
-            z-index: 20000;
-            box-shadow: 0 5px 15px black;
-            animation: fadeInUp 0.2s;
-        }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        .footer-note { text-align: center; padding: 12px; background: rgba(0,0,0,0.45); color: #ffe0aa; font-weight: 600; font-size: 11px; }
-    </style>
+    .success-msg {
+      border-left-color: #4cda6c;
+      color: #c0ffb0;
+      background: #0e2a1a;
+    }
+
+    footer {
+      font-size: 0.7rem;
+      margin-top: 1.5rem;
+      color: #6c7e9e;
+      border-top: 1px dashed #2e3b4e;
+      padding-top: 1rem;
+    }
+
+    @media (max-width: 480px) {
+      .ad-card {
+        padding: 1.5rem;
+      }
+      .start-btn {
+        font-size: 1.4rem;
+        width: 100%;
+      }
+      .reward-value {
+        font-size: 1.3rem;
+      }
+    }
+  </style>
 </head>
 <body>
-<div class="game-container">
-    <div class="road-header">
-        <div class="title">🍽️ LUNCH THE BALL ⚽</div>
-        <div class="subtitle">🌅 Sunset Challenge · 3 Ads Per Level (Adsgram → Monetag → GigaPub)</div>
-        <div class="badge-pattern">🎬 5 clicks per level · Fixed: Giga Pub is now the third ad!</div>
-    </div>
-    <div class="road-levels" id="levelListContainer"></div>
-    <div class="footer-note">👇 Tap any unlocked level → watch 3 ads (Adsgram, Monetag, GIGA PUB) → click all 5 buttons</div>
-</div>
 
-<!-- Game Panel -->
-<div id="gamePanel" class="game-panel" style="display: none;">
-    <div class="game-card">
-        <div class="game-level-title" id="gameLevelTitle">LEVEL 1</div>
-        <div class="instruction-box">🍽️⚡ Tap all 5 buttons to complete this level (after 3-ads sequence)</div>
-        <div class="game-progress" id="gameProgressText">0 / 5 clicks done</div>
-        <div class="buttons-grid" id="buttonsGrid"></div>
-        <div class="complete-status" id="completeStatusMsg">Each button must be clicked once</div>
-        <button class="game-close-btn" id="exitGameBtn">🏞️ Back to Sunset Road</button>
-    </div>
-</div>
+<div class="ad-card">
+  <div class="brand-icon">
+    🎮🔥
+  </div>
+  <h1>GIGA PUB ADS</h1>
+  <div class="badge">⚡ Premium Ad Network ⚡</div>
+  
+  <div class="desc">
+    📢 <strong>বিজ্ঞাপন দেখুন ও রিওয়ার্ড নিন!</strong><br>
+    নিচের <span style="color:#FFB347;">START</span> বাটনে ক্লিক করলেই Giga Pub ইন্টারস্টিশিয়াল অ্যাড শো করবে। 
+    অ্যাড শেষ হলে আপনি বোনাস পয়েন্ট পাবেন! 🎁
+  </div>
 
-<!-- Countdown overlay -->
-<div id="countdownOverlay" class="countdown-overlay" style="display: none;">
-    <div><div class="countdown-number" id="countdownNum">3</div>
-    <div class="countdown-message" id="countdownMsg" style="color:#ffd27a; font-size:22px;">Next Level starts...</div></div>
-</div>
+  <!-- রিওয়ার্ড ডিসপ্লে -->
+  <div class="reward-area">
+    <span class="reward-label">
+      <span class="coin-icon">🪙</span> আপনার পুরস্কার:
+    </span>
+    <span class="reward-value" id="rewardPoints">0</span>
+    <span style="font-size:0.9rem;">✨ গিগা কয়েন</span>
+  </div>
 
-<!-- Level Complete Screen -->
-<div id="levelCompleteScreen" class="levelcomplete-screen" style="display: none;">
-    <div style="text-align:center; background: rgba(0,0,0,0.4); padding: 32px; border-radius: 64px;">
-        <div class="complete-title">🥳 LUNCH MASTER!</div>
-        <div style="color: #fff0c0; font-size: 20px; margin: 16px;" id="completeLevelMsg"></div>
-        <button class="btn" id="nextLevelBtnFromComplete">🍽️ Next Level</button>
-        <button class="btn btn-secondary" id="backToRoadCompleteBtn">🌅 Road Menu</button>
-    </div>
-</div>
+  <!-- START বাটন -->
+  <button class="start-btn" id="startAdBtn">
+    <span>▶</span> START <span>🎬</span>
+  </button>
 
-<!-- Reward Screen -->
-<div id="rewardScreen" class="reward-screen" style="display: none;">
-    <div style="background: #25190cee; padding: 28px; border-radius: 68px; text-align:center;">
-        <h2 style="color:#ffeaac; font-size: 34px;">🏆 ULTIMATE BALLER</h2>
-        <p style="color:#ffdfaa;">10 Levels cleared! Your lunch-ball reward:</p>
-        <div class="reward-code" id="rewardCodeDisplay" onclick="copyRewardCodeGlobal()">LUNCH-BALL-XXXX</div>
-        <button class="btn" id="resetAllBtn">🏅 Copy Code & Reset Game</button>
-    </div>
-</div>
-
-<!-- Ad Sequence Modal (3-step: Adsgram → Monetag → Giga Pub) -->
-<div id="adSequencePanel" class="ad-sequence-panel" style="display: none;">
-    <div class="ad-sequence-card">
-        <div class="ad-step-icon" id="adStepIcon" style="font-size:48px;">🎬</div>
-        <div class="ad-step-message" id="adStepMessage">Preparing ad...</div>
-        <div class="ad-description" id="adDescription" style="color:#ffbc6e; margin:12px 0;">Please complete ad to continue</div>
-        <button id="nextStepAdBtn" class="next-step-btn" style="display: none;">➡ Next Step</button>
-        <div id="adLoadingIndicator" class="ad-loading-text" style="color:#ffbc6e; margin-top:12px;">Processing...</div>
-    </div>
+  <!-- স্ট্যাটাস / মেসেজ দেখানোর জায়গা -->
+  <div id="statusMessage" class="status-msg">
+    💡 START বাটন টিপে একটি বিজ্ঞাপন দেখুন এবং কয়েন সংগ্রহ করুন।
+  </div>
+  <footer>
+    ⚡ বিজ্ঞাপন Giga Pub নেটওয়ার্ক দ্বারা সরবরাহিত | এক ক্লিকে অ্যাড লোড হবে
+  </footer>
 </div>
 
 <script>
-    // ---------- CONFIGURATION ----------
-    const MAX_LEVEL = 10;
-    let currentUnlockedLevel = 1;
-    let activeGameLevel = null;
-    let buttonClickState = [];
-    let gameCompletedFlag = false;
-    let isProcessing = false;
-    let adSequenceActive = false;
-    let pendingResolveNextStep = null;
-    let adsgramController = null;
-    let adsgramInitialized = false;
-    
-    const NEXT_LEVEL_REDIRECT_URL = "https://omg10.com/4/10883007";
-    let isNextLevelRedirecting = false;
+  (function() {
+    // DOM elements
+    const startBtn = document.getElementById('startAdBtn');
+    const rewardSpan = document.getElementById('rewardPoints');
+    const statusDiv = document.getElementById('statusMessage');
 
-    // Initialize Adsgram
-    function initAdsgram() {
-        try {
-            if (typeof window.Adsgram !== 'undefined') {
-                adsgramController = window.Adsgram.init({ blockId: "int-24138" });
-                adsgramInitialized = true;
-                console.log("Adsgram ready (blockId: int-24138)");
-            } else { console.warn("Adsgram SDK not loaded"); }
-        } catch(e) { console.error("Adsgram init error", e); }
+    // reward tracking
+    let totalReward = 0;
+    let isAdInProgress = false;   // prevent multiple clicks while ad is showing
+
+    // function to update reward UI
+    function updateRewardUI() {
+      rewardSpan.innerText = totalReward;
     }
 
-    function showAdsgramAd() {
-        return withNetworkGuard(async () => {
-            if (adsgramInitialized && adsgramController) {
-                await adsgramController.show();
-            } else {
-                console.warn("Adsgram controller missing, reinitializing...");
-                initAdsgram();
-                if (adsgramController) await adsgramController.show();
-                else throw new Error("Adsgram unavailable");
-            }
-        }, "Adsgram");
+    // show status message (normal, success, error)
+    function setStatusMessage(text, type = 'info') {
+      statusDiv.innerText = text;
+      statusDiv.classList.remove('success-msg', 'error-msg');
+      if (type === 'success') {
+        statusDiv.classList.add('success-msg');
+      } else if (type === 'error') {
+        statusDiv.classList.add('error-msg');
+      } else {
+        // neutral style
+        statusDiv.classList.remove('success-msg', 'error-msg');
+      }
     }
 
-    function showMonetagAd() {
-        return withNetworkGuard(async () => {
-            if (typeof window.show_10865808 === 'function') {
-                await window.show_10865808();
-            } else {
-                console.warn("Monetag (zone 10865808) not ready");
-                throw new Error("Monetag SDK missing");
-            }
-        }, "Monetag");
+    // Reward logic: ad successfully completed
+    function giveReward() {
+      // প্রতিবার অ্যাড দেখার জন্য ১০ গিগা কয়েন পুরস্কার (আপনি চাইলে পরিবর্তন করতে পারেন)
+      const rewardAmount = 10;
+      totalReward += rewardAmount;
+      updateRewardUI();
+      setStatusMessage(`✅ অভিনন্দন! বিজ্ঞাপন সম্পূর্ণ দেখেছেন! +${rewardAmount} গিগা কয়েন পেয়েছেন। মোট কয়েন: ${totalReward}`, 'success');
     }
 
-    // ---------- GIGA PUB FIX ----------
-    // Wait for Giga SDK to be fully loaded (showGiga function)
-    async function waitForGigaSDK(timeout = 8000) {
-        const start = Date.now();
-        while (Date.now() - start < timeout) {
-            if (typeof window.showGiga === 'function') {
-                console.log("✅ Giga Pub SDK ready");
-                return true;
+    // error handling for ad failure
+    function handleAdError(error) {
+      console.error('Giga Pub Ad Error:', error);
+      let errorMsg = '⚠️ বিজ্ঞাপন লোড করতে সমস্যা হয়েছে। পরে আবার চেষ্টা করুন।';
+      if (error && error.message) {
+        errorMsg = `❌ অ্যাড এরর: ${error.message}`;
+      } else if (typeof error === 'string') {
+        errorMsg = `❌ ${error}`;
+      }
+      setStatusMessage(errorMsg, 'error');
+    }
+
+    // main function to show Giga Pub ad
+    async function showGigaAd() {
+      // চেক করুন window.showGiga ফাংশন উপলব্ধ কিনা (স্ক্রিপ্ট লোড হয়েছে কিনা)
+      if (typeof window.showGiga !== 'function') {
+        setStatusMessage('⏳ Giga Pub স্ক্রিপ্ট এখনও পুরোপুরি লোড হয়নি। একটু পরে আবার START বাটনে ক্লিক করুন।', 'error');
+        return false;
+      }
+
+      // ad start - disable button during ad display
+      isAdInProgress = true;
+      startBtn.disabled = true;
+      setStatusMessage('🎬 বিজ্ঞাপন শুরু হচ্ছে... অনুগ্রহ করে অপেক্ষা করুন এবং বিজ্ঞাপনটি শেষ পর্যন্ত দেখুন।', 'info');
+
+      try {
+        // Giga Pub এর showGiga() কল করুন, এটি Promise রিটার্ন করে
+        // এড সম্পূর্ণ হলে .then() ব্লক এক্সিকিউট হবে
+        await window.showGiga();
+        // Ad সম্পূর্ণ হয়েছে -> রিওয়ার্ড দিন
+        giveReward();
+      } catch (adError) {
+        // Ad দেখাতে ব্যর্থ বা ইউজার স্কিপ করেছে? error handle
+        handleAdError(adError);
+      } finally {
+        // সবসময় বাটন সক্রিয় করুন, অ্যাড শেষ হোক বা এরর হোক
+        isAdInProgress = false;
+        startBtn.disabled = false;
+        // যদি বিজ্ঞাপন এরর হয়, তবুও বাটন আবার ক্লিকযোগ্য হবে
+        // তবে স্ট্যাটাস মেসেজ আগেই সেট করা আছে
+        if (typeof window.showGiga === 'function') {
+          // ছোট টিপস: আবার চেষ্টা করতে পারেন
+          if (!statusDiv.innerText.includes('অভিনন্দন') && !statusDiv.innerText.includes('সমস্যা')) {
+            // কিছু নেই, তবে যাতে ইউজার বুঝতে পারে
+            if (statusDiv.innerText === '🎬 বিজ্ঞাপন শুরু হচ্ছে... অনুগ্রহ করে অপেক্ষা করুন এবং বিজ্ঞাপনটি শেষ পর্যন্ত দেখুন।') {
+              setStatusMessage('🔄 আবার START চাপুন অ্যাড দেখার জন্য।', 'info');
             }
-            await new Promise(r => setTimeout(r, 150));
+          }
         }
-        throw new Error("Giga Pub SDK timeout - showGiga not available");
+      }
     }
 
-    function showGigaAd() {
-        return withNetworkGuard(async () => {
-            // Ensure SDK is ready before calling
-            await waitForGigaSDK(10000);
-            if (typeof window.showGiga === 'function') {
-                console.log("🎬 Calling Giga Pub showGiga()");
-                await window.showGiga();
-                console.log("✅ Giga Pub ad completed");
-            } else {
-                throw new Error("Giga Pub showGiga still undefined after waiting");
-            }
-        }, "Giga Pub");
-    }
-    // --------------------------------
+    // START বাটনে ক্লিক হ্যান্ডলার
+    function onStartClick() {
+      // আগে কোনো অ্যাড চলছে কিনা চেক করুন (সুরক্ষা)
+      if (isAdInProgress) {
+        setStatusMessage('⌛ একটি বিজ্ঞাপন ইতিমধ্যেই চলছে, শেষ হওয়া পর্যন্ত অপেক্ষা করুন।', 'error');
+        return;
+      }
 
-    function isNetworkOnline() { return navigator.onLine; }
+      // showGiga ফাংশন এখনো রেডি না থাকলে প্রম্পট দেখানোর সাথে সাথে রেট্রি মেকানিজম নাই, তবে আমরা চেক করছি
+      if (typeof window.showGiga !== 'function') {
+        setStatusMessage('⚠️ Giga Pub স্ক্রিপ্ট লোড হয়নি। পেজ রিফ্রেশ করে আবার চেষ্টা করুন অথবা নেটওয়ার্ক চেক করুন।', 'error');
+        return;
+      }
 
-    function showOfflineExitAndCloseGame(message = "🌐 No internet. Returning to sunset road.") {
-        const existingToast = document.querySelector('.offline-toast');
-        if (existingToast) existingToast.remove();
-        const toast = document.createElement('div');
-        toast.className = 'offline-toast';
-        toast.innerText = message;
-        document.body.appendChild(toast);
-        setTimeout(() => { if(toast.parentNode) toast.remove(); }, 3200);
-        forceExitAllGameScreens();
+      // সব ঠিক থাকলে অ্যাড শো করান
+      showGigaAd().catch(err => {
+        // ক্যাচ থাকলেও উপরের try/catch handle করে, তবে অতিরিক্ত নিরাপত্তা
+        console.error('Unexpected error in showGigaAd:', err);
+        handleAdError(err);
+        isAdInProgress = false;
+        startBtn.disabled = false;
+      });
     }
 
-    function forceExitAllGameScreens() {
-        document.getElementById('gamePanel').style.display = 'none';
-        document.getElementById('adSequencePanel').style.display = 'none';
-        document.getElementById('countdownOverlay').style.display = 'none';
-        document.getElementById('levelCompleteScreen').style.display = 'none';
-        document.getElementById('rewardScreen').style.display = 'none';
-        if (pendingResolveNextStep) { pendingResolveNextStep(); pendingResolveNextStep = null; }
-        adSequenceActive = false;
-        isProcessing = false;
-        activeGameLevel = null;
+    // স্ক্রিপ্ট লোড কিনা তা যাচাইয়ের জন্য একটি ছোট হেল্পার
+    // ইভেন্ট লিসেনার দিয়ে বাটনে ক্লিক অ্যাসাইন
+    startBtn.addEventListener('click', onStartClick);
+
+    // প্রাথমিক অবস্থায় window.showGiga এর উপস্থিতি নিশ্চিত করতে একটি চেক (স্ক্রিপ্ট ধীর গতির নেটওয়ার্কে)
+    // তবে স্ক্রিপ্টটি head এ দেয়া আছে, তবুও DOM এর আগে লোড হয়ে যাওয়ার কথা।
+    // তবুও ব্যবহারকারীকে জানানোর জন্য, যদি showGiga অনুপলব্ধ থাকে তাহলে স্ট্যাটাস বার্তা পরিবর্তন
+    function checkGigaAvailability() {
+      if (typeof window.showGiga !== 'function') {
+        setStatusMessage('⚠️ Giga Pub স্ক্রিপ্ট লোড হতে দেরি হচ্ছে। কিছুক্ষণ পর START বাটন ব্যবহার করুন।', 'error');
+      } else {
+        setStatusMessage('✅ Giga Pub প্রস্তুত! এখন START বাটনে ক্লিক করলে বিজ্ঞাপন দেখাবে এবং পুরস্কার দেবে।', 'success');
+      }
     }
 
-    function withNetworkGuard(fn, adName) {
-        return new Promise(async (resolve) => {
-            if (!isNetworkOnline()) { showOfflineExitAndCloseGame(`📡 No internet for ${adName}. Exiting.`); resolve(); return; }
-            const timeoutId = setTimeout(() => { console.warn(`${adName} timeout`); resolve(); }, 15000);
-            try { await fn(); clearTimeout(timeoutId); resolve(); } catch(e) {
-                clearTimeout(timeoutId);
-                console.error(`${adName} error:`, e);
-                if (!isNetworkOnline()) showOfflineExitAndCloseGame(`Network lost during ${adName}`);
-                else showOfflineExitAndCloseGame(`${adName} failed: ${e.message || 'unknown error'}`);
-                resolve();
-            }
-        });
-    }
+    // স্ক্রিপ্ট লোড হওয়ার জন্য short delay এবং চেক (সেকেন্ডের ভগ্নাংশ)
+    // কিছু ব্রাউজারে async সত্ত্বেও showGiga ডিফাইন হতে পারে, আমরা দুই সেকেন্ড পর পর চেক করতে পারি
+    setTimeout(() => {
+      if (typeof window.showGiga === 'function') {
+        setStatusMessage('✅ Giga Pub প্রস্তুত! এখন START বাটনে ক্লিক করলে বিজ্ঞাপন দেখাবে এবং পুরস্কার দেবে।', 'success');
+      } else {
+        // যদি এখনো কাজ না করে, আবার চেক করতে থাকবে না, বাটন ক্লিক করলেই আবার চেক করবে।
+        setStatusMessage('🔌 Giga Pub স্ক্রিপ্ট লোড হয়নি। রিফ্রেশ করে দেখুন অথবা অ্যাড ব্লকার বন্ধ করুন।', 'error');
+      }
+    }, 1200);
 
-    function loadProgress() {
-        try {
-            const saved = localStorage.getItem('lunchBallProgress_v2');
-            if (saved) {
-                const data = JSON.parse(saved);
-                currentUnlockedLevel = Math.min(MAX_LEVEL, data.unlockedLevel || 1);
-            } else { currentUnlockedLevel = 1; }
-        } catch(e) { currentUnlockedLevel = 1; }
-    }
-    function saveProgress() { localStorage.setItem('lunchBallProgress_v2', JSON.stringify({ unlockedLevel: currentUnlockedLevel })); }
+    // এছাড়াও window.showGiga যদি পরে ডিফাইন হয় (স্ক্রিপ্ট ডাইনামিকালি লোড হলেও), সেক্ষেত্রে কাস্টম চেক
+    // একাধিকবার চেক করার দরকার নেই, ব্যবহারকারী বাটন ক্লিক করলেই ফাংশন চেক করবে।
+    // তবে একটা ইভেন্ট লিসেনার দিয়ে স্ট্যাটাস আপডেট করা যায়: Giga লাইব্রেরি কিছু ইভেন্ট দিলে। 
+    // তবে এটা নির্ভর করে না, আমাদের হ্যান্ডলিং যথেষ্ট।
+    // শেষ কথা: বাটনে ক্লিক করার সময় showGiga কল করার আগেই validity check আছে।
 
-    // Ad sequence UI
-    const adSeqPanel = document.getElementById('adSequencePanel');
-    const adStepMsg = document.getElementById('adStepMessage');
-    const adDescription = document.getElementById('adDescription');
-    const nextStepBtn = document.getElementById('nextStepAdBtn');
-    const adLoadingIndicator = document.getElementById('adLoadingIndicator');
-
-    function showAdSequenceUI(stepName, description) {
-        adStepMsg.innerText = stepName;
-        adDescription.innerText = description;
-        nextStepBtn.style.display = 'none';
-        adLoadingIndicator.style.display = 'block';
-        adSeqPanel.style.display = 'flex';
-    }
-    function hideAdSequenceUI() { 
-        adSeqPanel.style.display = 'none'; 
-        if(pendingResolveNextStep) { pendingResolveNextStep(); pendingResolveNextStep = null; } 
-    }
-    function waitForNextStepButton() {
-        return new Promise((resolve) => {
-            if (!isNetworkOnline()) { showOfflineExitAndCloseGame("Network lost while waiting."); resolve(); return; }
-            pendingResolveNextStep = resolve;
-            nextStepBtn.style.display = 'block';
-            adLoadingIndicator.style.display = 'none';
-            const onClick = () => {
-                nextStepBtn.removeEventListener('click', onClick);
-                if(pendingResolveNextStep) pendingResolveNextStep();
-                pendingResolveNextStep = null;
-                resolve();
-            };
-            nextStepBtn.addEventListener('click', onClick, { once: true });
-            const interval = setInterval(() => {
-                if (!isNetworkOnline() && adSeqPanel.style.display === 'flex') {
-                    clearInterval(interval);
-                    showOfflineExitAndCloseGame("Connection lost during ad step.");
-                    if(pendingResolveNextStep) pendingResolveNextStep();
-                    pendingResolveNextStep = null;
-                    resolve();
-                }
-            }, 1000);
-        });
-    }
-
-    // CORRECTED SEQUENCE: Adsgram (1) -> Monetag (2) -> Giga Pub (3)
-    async function runFullAdSequence(level) {
-        if (!isNetworkOnline()) throw new Error("offline");
-        
-        // Step 1: Adsgram
-        showAdSequenceUI("🎬 Step 1/3: Adsgram", "Showing Adsgram interstitial ad...");
-        await showAdsgramAd();
-        if (!isNetworkOnline()) throw new Error("offline");
-        showAdSequenceUI("✅ Step 1 Complete", "Click next to continue to Monetag ad");
-        await waitForNextStepButton();
-        if (!isNetworkOnline()) throw new Error("offline");
-        
-        // Step 2: Monetag
-        showAdSequenceUI("💰 Step 2/3: Monetag", "Loading Monetag rewarded ad...");
-        await showMonetagAd();
-        if (!isNetworkOnline()) throw new Error("offline");
-        showAdSequenceUI("✅ Step 2 Complete", "Click next for final ad (Giga Pub)");
-        await waitForNextStepButton();
-        if (!isNetworkOnline()) throw new Error("offline");
-        
-        // Step 3: Giga Pub (FIXED: now properly calls Giga, not Monetag)
-        showAdSequenceUI("🚀 Step 3/3: Giga Pub", "Showing Giga Pub ad — this is the third required ad!");
-        await showGigaAd();
-        if (!isNetworkOnline()) throw new Error("offline");
-        
-        showAdSequenceUI("✅ Ad Sequence Done", "All 3 ads completed (Adsgram + Monetag + Giga Pub)! Launching game.");
-        await new Promise(r => setTimeout(r, 400));
-        hideAdSequenceUI();
-    }
-
-    async function startLevelEntrySequence(level) {
-        if (adSequenceActive || isProcessing) return false;
-        if (!isNetworkOnline()) { showOfflineExitAndCloseGame("Internet required to play."); return false; }
-        adSequenceActive = true;
-        isProcessing = true;
-        document.getElementById('gamePanel').style.display = 'none';
-        try {
-            await runFullAdSequence(level);
-            if (!isNetworkOnline()) throw new Error("offline");
-            activeGameLevel = level;
-            buttonClickState = [false, false, false, false, false];
-            gameCompletedFlag = false;
-            renderGamePanel(level);
-            document.getElementById('gamePanel').style.display = 'flex';
-            adSequenceActive = false;
-            isProcessing = false;
-            return true;
-        } catch(err) {
-            hideAdSequenceUI();
-            adSequenceActive = false;
-            isProcessing = false;
-            if (!isNetworkOnline()) showOfflineExitAndCloseGame("Network issue. Exiting.");
-            else showOfflineExitAndCloseGame("Ad sequence failed: " + (err.message || "unknown"));
-            return false;
-        }
-    }
-
-    function renderGamePanel(level) {
-        document.getElementById('gameLevelTitle').innerHTML = `🍽️⚽ LUNCH BALL - LEVEL ${level}`;
-        const clickedCount = buttonClickState.filter(v => v === true).length;
-        document.getElementById('gameProgressText').innerHTML = `✨ Clicks: ${clickedCount} / 5 ✨`;
-        const grid = document.getElementById('buttonsGrid');
-        grid.innerHTML = '';
-        for (let i = 0; i < 5; i++) {
-            const btn = document.createElement('button');
-            btn.className = 'action-btn';
-            if (buttonClickState[i]) {
-                btn.classList.add('disabled-btn');
-                btn.innerText = `✅ Click`;
-                btn.disabled = true;
-            } else {
-                btn.innerText = `🔘 Click`;
-            }
-            btn.onclick = () => {
-                if (gameCompletedFlag || buttonClickState[i]) return;
-                buttonClickState[i] = true;
-                renderGamePanel(level);
-                if (buttonClickState.every(v => v === true) && !gameCompletedFlag) {
-                    gameCompletedFlag = true;
-                    handleLevelComplete(activeGameLevel);
-                }
-            };
-            grid.appendChild(btn);
-        }
-        const remaining = 5 - clickedCount;
-        document.getElementById('completeStatusMsg').innerHTML = remaining === 0 ? "✅ All 5 clicks done! Level cleared!" : `🍽️ ${remaining} click${remaining !== 1 ? 's' : ''} remaining — tap all buttons!`;
-    }
-
-    async function handleLevelComplete(level) {
-        if (isProcessing) return;
-        isProcessing = true;
-        document.getElementById('gamePanel').style.display = 'none';
-        if (level === currentUnlockedLevel && level < MAX_LEVEL) {
-            currentUnlockedLevel = level + 1;
-            saveProgress();
-            buildLevelList();
-        } else if (level > currentUnlockedLevel && level <= MAX_LEVEL) {
-            currentUnlockedLevel = level;
-            saveProgress();
-            buildLevelList();
-        }
-        if (level === MAX_LEVEL) {
-            showRewardScreen();
-            isProcessing = false;
-        } else {
-            showLevelCompleteScreen(level);
-            isProcessing = false;
-        }
-    }
-
-    function showLevelCompleteScreen(level) {
-        const completeDiv = document.getElementById('levelCompleteScreen');
-        document.getElementById('completeLevelMsg').innerHTML = `🎉 Route ${level} cleared! Delicious victory! 🎉`;
-        completeDiv.dataset.currentLevel = level;
-        completeDiv.style.display = 'flex';
-    }
-
-    function showCountdown(seconds, msgPrefix) {
-        return new Promise((resolve) => {
-            const overlay = document.getElementById('countdownOverlay');
-            const countdownNum = document.getElementById('countdownNum');
-            const msgSpan = document.getElementById('countdownMsg');
-            msgSpan.innerHTML = msgPrefix || "Next level in...";
-            overlay.style.display = 'flex';
-            let remaining = seconds;
-            countdownNum.textContent = remaining;
-            const interval = setInterval(() => {
-                if (!isNetworkOnline()) { clearInterval(interval); overlay.style.display='none'; showOfflineExitAndCloseGame("Network lost during countdown."); resolve(); return; }
-                remaining--;
-                if (remaining >= 1) countdownNum.textContent = remaining;
-                else { clearInterval(interval); overlay.style.display='none'; resolve(); }
-            }, 1000);
-        });
-    }
-
-    async function handleNextLevelWithCountdown(currentCompletedLevel) {
-        if (isProcessing) return;
-        const nextLevel = currentCompletedLevel + 1;
-        if (nextLevel > MAX_LEVEL) { document.getElementById('levelCompleteScreen').style.display='none'; showRewardScreen(); return; }
-        
-        try {
-            const newWin = window.open(NEXT_LEVEL_REDIRECT_URL, '_blank');
-            if (!newWin || newWin.closed || typeof newWin.closed === 'undefined') {
-                const toastMsg = document.createElement('div');
-                toastMsg.className = 'offline-toast';
-                toastMsg.innerText = "⚠️ Popup blocked! Allow popups for next level rewards. Opening manually...";
-                document.body.appendChild(toastMsg);
-                setTimeout(() => toastMsg.remove(), 3000);
-            }
-        } catch(e) { console.warn("Failed to open external link", e); }
-        await new Promise(r => setTimeout(r, 300));
-        
-        document.getElementById('levelCompleteScreen').style.display = 'none';
-        isProcessing = true;
-        await showCountdown(3, `🌅 Next: Level ${nextLevel} starts in...`);
-        if (!isNetworkOnline()) { showOfflineExitAndCloseGame("Network lost before next level."); isProcessing=false; return; }
-        const success = await startLevelEntrySequence(nextLevel);
-        isProcessing = false;
-        if (!success) forceExitAllGameScreens();
-    }
-
-    function showRewardScreen() {
-        const code = `LUNCH-${Math.random().toString(36).substr(2, 8).toUpperCase()}`;
-        document.getElementById('rewardCodeDisplay').textContent = code;
-        document.getElementById('rewardScreen').style.display = 'flex';
-    }
-
-    function resetGameAndCopy() {
-        const code = document.getElementById('rewardCodeDisplay').textContent;
-        navigator.clipboard.writeText(code).catch(()=>{});
-        alert('🏆 Reward code copied! Progress reset to Level 1.');
-        currentUnlockedLevel = 1;
-        saveProgress();
-        buildLevelList();
-        forceExitAllGameScreens();
-    }
-    window.copyRewardCodeGlobal = function() { const code = document.getElementById('rewardCodeDisplay').textContent; navigator.clipboard.writeText(code); alert('Code copied: '+code); };
-
-    function buildLevelList() {
-        const container = document.getElementById('levelListContainer');
-        container.innerHTML = '';
-        for (let i = 1; i <= MAX_LEVEL; i++) {
-            const isUnlocked = (i <= currentUnlockedLevel);
-            const card = document.createElement('div');
-            card.className = 'level-card' + (isUnlocked ? '' : ' locked');
-            if (isUnlocked) card.onclick = () => { if (!adSequenceActive && !isProcessing) startLevelEntrySequence(i); };
-            let statusIcon = isUnlocked ? (i < currentUnlockedLevel ? '✔️' : '🔓') : '🔒';
-            card.innerHTML = `
-                <div class="level-number">${i}</div>
-                <div class="level-info">
-                    <div class="level-name">Lunch Ball ${i} <span style="font-size:9px;">(Adsgram → Monetag → GigaPub)</span></div>
-                    <div class="level-requirement">5 clicks · 3 ads (Giga Pub is third)</div>
-                </div>
-                <div class="level-status">${statusIcon}</div>
-            `;
-            container.appendChild(card);
-        }
-    }
-
-    function exitGameToRoad() {
-        if (adSequenceActive) { hideAdSequenceUI(); adSequenceActive=false; if(pendingResolveNextStep) pendingResolveNextStep(); pendingResolveNextStep=null; }
-        document.getElementById('gamePanel').style.display = 'none';
-        isProcessing = false;
-    }
-    function backToRoadFromComplete() { document.getElementById('levelCompleteScreen').style.display='none'; isProcessing=false; }
-
-    function bindEvents() {
-        const nextBtn = document.getElementById('nextLevelBtnFromComplete');
-        const newNextBtn = nextBtn.cloneNode(true);
-        nextBtn.parentNode.replaceChild(newNextBtn, nextBtn);
-        newNextBtn.id = 'nextLevelBtnFromComplete';
-        newNextBtn.onclick = async () => {
-            if (isNextLevelRedirecting) return;
-            const lvl = parseInt(document.getElementById('levelCompleteScreen').dataset.currentLevel);
-            if (isNaN(lvl) || lvl >= MAX_LEVEL) return;
-            isNextLevelRedirecting = true;
-            try {
-                await handleNextLevelWithCountdown(lvl);
-            } finally {
-                isNextLevelRedirecting = false;
-            }
-        };
-        
-        document.getElementById('backToRoadCompleteBtn').onclick = () => backToRoadFromComplete();
-        document.getElementById('resetAllBtn').onclick = () => resetGameAndCopy();
-        document.getElementById('exitGameBtn').onclick = () => exitGameToRoad();
-    }
-
-    function addClouds() {
-        for(let i=0;i<4;i++) {
-            const cloud = document.createElement('div');
-            cloud.className = 'cloud';
-            const w = 140 + Math.random() * 160;
-            cloud.style.width = w+'px';
-            cloud.style.height = (60+Math.random()*50)+'px';
-            cloud.style.left = Math.random() * 100 + '%';
-            cloud.style.top = Math.random() * 40 + '%';
-            cloud.style.opacity = 0.4 + Math.random()*0.3;
-            cloud.style.background = `rgba(255, 220, 160, 0.6)`;
-            document.body.appendChild(cloud);
-        }
-    }
-
-    window.addEventListener('load', () => {
-        loadProgress();
-        initAdsgram();
-        buildLevelList();
-        bindEvents();
-        addClouds();
-        // Pre-warm Giga SDK and log status
-        waitForGigaSDK().then(() => console.log("✅ Giga Pub SDK ready at startup")).catch(e => console.warn("Giga Pub not ready yet, will retry when needed", e));
-    });
-    window.addEventListener('beforeunload', () => saveProgress());
-    window.addEventListener('online', () => console.log("online"));
-    window.addEventListener('offline', () => { if (adSequenceActive) showOfflineExitAndCloseGame("Connection lost! Exiting."); });
+    // অতিরিক্ত: কনসোল এ Giga Pub এর কোন error report না থাকলে সেটাও ঠিক আছে।
+    // Demo স্বার্থে একটি ডামি প্রি-রিওয়ার্ড দেখানো।
+    updateRewardUI();
+  })();
 </script>
 </body>
 </html>
