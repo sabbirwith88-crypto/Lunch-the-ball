@@ -588,9 +588,6 @@
         let adSequenceActive = false;
         let pendingResolveNextStep = null;
         
-        let adController = null;
-        let adInitialized = false;
-        
         // External link requirement - AUTO START when returning
         const EXTERNAL_NEXT_LEVEL_URL = "https://www.profitablecpmratenetwork.com/xan60uuv?key=369dc68341066c06e3d471f3785f73fb";
         let externalLinkVisitedForCurrentLevel = false;
@@ -666,24 +663,62 @@
             localStorage.setItem('greenRoadProgress', JSON.stringify({ unlockedLevel: currentUnlockedLevel }));
         }
         
-        // ---------- ADS INIT ----------
+        // ---------- ADS INIT (fixed Adsgram) ----------
+        let adsgramReady = false;
+        let adsgramController = null;
+        
         function initAdsgram() {
-            try {
-                if(typeof window.Adsgram !== 'undefined') {
-                    adController = window.Adsgram.init({ blockId: "int-24179" });
-                    adInitialized = true;
-                } else { console.warn("Adsgram not loaded"); }
-            } catch(e) { console.error(e); }
+            return new Promise((resolve) => {
+                if(typeof window.Adsgram !== 'undefined' && window.Adsgram.init) {
+                    try {
+                        adsgramController = window.Adsgram.init({ blockId: "int-24179", debug: true });
+                        adsgramReady = true;
+                        console.log("Adsgram initialized successfully");
+                        resolve(true);
+                    } catch(e) {
+                        console.error("Adsgram init error:", e);
+                        adsgramReady = false;
+                        resolve(false);
+                    }
+                } else {
+                    // wait for SDK to load
+                    let attempts = 0;
+                    const checkInterval = setInterval(() => {
+                        if(typeof window.Adsgram !== 'undefined' && window.Adsgram.init) {
+                            clearInterval(checkInterval);
+                            try {
+                                adsgramController = window.Adsgram.init({ blockId: "int-24179", debug: true });
+                                adsgramReady = true;
+                                console.log("Adsgram initialized after wait");
+                                resolve(true);
+                            } catch(e) {
+                                console.error("Adsgram init error after wait:", e);
+                                adsgramReady = false;
+                                resolve(false);
+                            }
+                        } else if(attempts > 30) {
+                            clearInterval(checkInterval);
+                            console.warn("Adsgram SDK not loaded");
+                            adsgramReady = false;
+                            resolve(false);
+                        }
+                        attempts++;
+                    }, 200);
+                }
+            });
         }
         
         function withNetworkGuard(fn, adName) {
-            return new Promise(async (resolve) => {
+            return new Promise(async (resolve, reject) => {
                 if(!isNetworkOnline()) {
                     showOfflineExitAndCloseGame(`📡 No internet. Cannot load ${adName}. Exiting.`);
-                    resolve();
+                    reject(new Error("offline"));
                     return;
                 }
-                const timeoutId = setTimeout(() => { console.warn(`${adName} timeout`); resolve(); }, 15000);
+                const timeoutId = setTimeout(() => { 
+                    console.warn(`${adName} timeout`);
+                    reject(new Error(`${adName} timeout`));
+                }, 15000);
                 try {
                     await fn();
                     clearTimeout(timeoutId);
@@ -692,31 +727,36 @@
                     clearTimeout(timeoutId);
                     console.error(`${adName} error:`, e);
                     if(!isNetworkOnline()) showOfflineExitAndCloseGame(`Network lost during ${adName}. Exiting.`);
-                    resolve();
+                    reject(e);
                 }
             });
         }
         
         function showAdsgramAd() {
             return withNetworkGuard(async () => {
-                if(!adInitialized || !adController) throw new Error("Adsgram not ready");
-                await adController.show();
+                if(!adsgramReady || !adsgramController) {
+                    // retry init once
+                    await initAdsgram();
+                    if(!adsgramReady || !adsgramController) throw new Error("Adsgram not available");
+                }
+                // show ad with proper promise handling
+                await adsgramController.show();
             }, "Adsgram");
         }
         
         function showMonetagAd() {
             return withNetworkGuard(async () => {
-                if(typeof window.show_10541383 === 'function') await window.show_10541383();
-                else throw new Error("Monetag not ready");
+                if(typeof window.show_10541383 === 'function') {
+                    await window.show_10541383();
+                } else {
+                    throw new Error("Monetag not ready");
+                }
             }, "Monetag");
         }
         
-        // GigaPub Ad - one time per level, using window.showGiga()
         function showGigaAd() {
             return withNetworkGuard(async () => {
-                // Ensure Giga SDK is loaded and function exists
                 if(typeof window.showGiga !== 'function') {
-                    // wait up to 3 seconds for giga to become available
                     let waited = 0;
                     while(typeof window.showGiga !== 'function' && waited < 3000) {
                         await new Promise(r => setTimeout(r, 100));
@@ -784,7 +824,7 @@
             });
         }
         
-        // ---------- NEW SEQUENCE: Adsgram (1x) -> Monetag (1x) -> GigaPub (1x) ----------
+        // ---------- SEQUENCE: Adsgram (1x) -> Monetag (1x) -> GigaPub (1x) ----------
         async function runFullAdSequence() {
             if(!isNetworkOnline()) throw new Error("offline");
             
@@ -804,7 +844,7 @@
             await waitForNextStepButton();
             if(!isNetworkOnline()) throw new Error("offline");
             
-            // Step 3: GigaPub (new)
+            // Step 3: GigaPub
             showAdSequenceUI("🎬 Step 3/3", "Final ad: GigaPub");
             await showGigaAd();
             if(!isNetworkOnline()) throw new Error("offline");
@@ -1110,9 +1150,9 @@
             document.getElementById('exitGameBtn').onclick = () => exitGameToRoad();
         }
         
-        window.addEventListener('load', () => {
+        window.addEventListener('load', async () => {
             loadProgress();
-            initAdsgram();
+            await initAdsgram(); // pre-init adsgram
             buildLevelList();
             bindEvents();
         });
