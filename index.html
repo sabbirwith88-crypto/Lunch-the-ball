@@ -1,99 +1,266 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="bn">
 <head>
   <meta charset="UTF-8">
-  <title>Watch Ads & Earn</title>
-
-  <!-- Gigapub Ad Script -->
-  <script src="https://ad.gigapub.tech/script?id=6331"></script>
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Start Button → Ads দেখাবে + Reward | Gigapub SDK</title>
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+    }
+
     body {
-      font-family: Arial, sans-serif;
+      background: linear-gradient(145deg, #0b1a2e, #122334);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+    }
+
+    .card {
+      max-width: 750px;
+      width: 100%;
+      background: rgba(255, 255, 255, 0.96);
+      border-radius: 2rem;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+      overflow: hidden;
+      backdrop-filter: blur(2px);
+      transition: 0.2s;
+    }
+
+    .header {
+      background: #0f212e;
+      padding: 1.8rem;
       text-align: center;
-      background: #0f172a;
       color: white;
-      margin-top: 100px;
     }
 
-    h1 {
-      font-size: 32px;
+    .header h1 {
+      font-size: 1.9rem;
+      margin-bottom: 0.3rem;
     }
 
-    #balance {
-      font-size: 22px;
-      margin: 20px;
-      color: #22c55e;
+    .header p {
+      opacity: 0.85;
+      font-size: 0.95rem;
     }
 
-    button {
-      padding: 15px 40px;
-      font-size: 20px;
-      background: #22c55e;
+    .content {
+      padding: 2rem;
+    }
+
+    .btn-area {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    #startButton {
+      background: #3b82f6;
       border: none;
-      border-radius: 10px;
       color: white;
+      font-weight: bold;
+      font-size: 1.5rem;
+      padding: 12px 32px;
+      border-radius: 60px;
       cursor: pointer;
+      box-shadow: 0 8px 18px rgba(59, 130, 246, 0.4);
+      transition: 0.15s;
     }
 
-    button:disabled {
-      background: gray;
-      cursor: not-allowed;
+    #startButton:hover {
+      background: #2563eb;
+      transform: scale(1.02);
     }
 
-    #status {
-      margin-top: 20px;
-      font-size: 18px;
-      color: #facc15;
+    #startButton:active {
+      transform: scale(0.98);
+    }
+
+    .info-panel {
+      background: #f1f5f9;
+      border-radius: 1.5rem;
+      padding: 1.2rem;
+      margin-top: 1rem;
+      text-align: center;
+      border-left: 5px solid #3b82f6;
+    }
+
+    .reward-message {
+      font-weight: bold;
+      margin-top: 0.8rem;
+      color: #166534;
+      background: #dcfce7;
+      padding: 0.6rem;
+      border-radius: 2rem;
+      display: inline-block;
+      width: auto;
+    }
+
+    .error-message {
+      color: #b91c1c;
+      background: #fee2e2;
+      padding: 0.5rem;
+      border-radius: 1rem;
+      margin-top: 0.8rem;
+    }
+
+    .status {
+      font-size: 0.85rem;
+      color: #334155;
+      margin-top: 0.5rem;
+    }
+
+    footer {
+      background: #e2e8f0;
+      text-align: center;
+      padding: 0.8rem;
+      font-size: 0.7rem;
+      color: #1e293b;
     }
   </style>
 </head>
 <body>
 
-  <h1>Watch Ads & Earn</h1>
+<div class="card">
+  <div class="header">
+    <h1>🎯 গিগাপাব অ্যাড ডেমো</h1>
+    <p>"Start" বাটনে ক্লিক করলেই Ads দেখাবে + রিওয়ার্ড পাবেন</p>
+  </div>
 
-  <div id="balance">Balance: 0 Coins</div>
+  <div class="content">
+    <div class="btn-area">
+      <button id="startButton">🚀 START</button>
+    </div>
 
-  <button id="startBtn" onclick="showAd()">Start</button>
+    <div class="info-panel" id="statusPanel">
+      <div id="statusMessage">✅ রেডি। "Start" চাপুন → Ads লোড হবে ও দেখাবে।</div>
+      <div id="rewardDisplay" class="reward-message" style="display: none;">🏆 রিওয়ার্ড মিলেছে!</div>
+      <div id="errorDisplay" class="error-message" style="display: none;"></div>
+    </div>
+  </div>
+  <footer>
+    ⚡ Powered by Gigapub SDK (script?id=6331) | showGiga() কল করলে Ads রেন্ডার হয়
+  </footer>
+</div>
 
-  <div id="status">Ready</div>
+<!-- ========== মূল ad script (SDK) ========== -->
+<script src="https://ad.gigapub.tech/script?id=6331"></script>
 
-  <script>
-    // Load balance from localStorage
-    let coins = localStorage.getItem("coins") || 0;
-    document.getElementById("balance").innerText = "Balance: " + coins + " Coins";
+<script>
+  (function() {
+    const startBtn = document.getElementById('startButton');
+    const statusDiv = document.getElementById('statusMessage');
+    const rewardDiv = document.getElementById('rewardDisplay');
+    const errorDiv = document.getElementById('errorDisplay');
 
-    function showAd() {
-      let btn = document.getElementById("startBtn");
-      let status = document.getElementById("status");
+    // hide reward & error initially
+    rewardDiv.style.display = 'none';
+    errorDiv.style.display = 'none';
 
-      // Check script loaded
-      if (typeof window.showGiga !== "function") {
-        status.innerText = "Ad not loaded ❌";
+    // Helper: update status text (not error style)
+    function setStatus(msg, isError = false) {
+      statusDiv.innerText = msg;
+      if (isError) {
+        statusDiv.style.color = '#b91c1c';
+      } else {
+        statusDiv.style.color = '#166534';
+      }
+    }
+
+    // Helper: show reward message temporarily
+    function showReward() {
+      rewardDiv.style.display = 'inline-block';
+      rewardDiv.innerText = '🎉 রিওয়ার্ড সফল! 🎉 (কয়েন / পয়েন্ট / লাইফ)';
+      setTimeout(() => {
+        rewardDiv.style.opacity = '0.8';
+      }, 100);
+      // 3 সেকেন্ড পরে fade করবে না কিন্তু দেখাবে; optionally auto hide after 5 sec?
+      setTimeout(() => {
+        if (rewardDiv.style.display !== 'none') {
+          // you can keep it visible or fade out; we keep visible but dim
+          rewardDiv.style.opacity = '0.7';
+        }
+      }, 4000);
+    }
+
+    function showError(errMsg) {
+      errorDiv.style.display = 'block';
+      errorDiv.innerText = '❌ ত্রুটি: ' + errMsg;
+      setStatus('Ads দেখাতে সমস্যা হয়েছে', true);
+      setTimeout(() => {
+        errorDiv.style.opacity = '0.6';
+      }, 200);
+    }
+
+    function resetMessages() {
+      errorDiv.style.display = 'none';
+      rewardDiv.style.display = 'none';
+      errorDiv.innerText = '';
+    }
+
+    // চেক করা window.showGiga আসলেই আছে কিনা (SDK লোড হওয়ার পর)
+    function isGigaReady() {
+      return typeof window.showGiga === 'function';
+    }
+
+    // Start বাটনে ক্লিক করলে
+    async function onStartClick() {
+      resetMessages();
+      setStatus('⏳ Ads লোড হচ্ছে, দয়া করে অপেক্ষা করুন...');
+
+      // প্রথমে চেক করুন SDK রেডি কিনা
+      if (!isGigaReady()) {
+        setStatus('⚠️ SDK এখনও রেডি না। 1-2 সেকেন্ড পর আবার চেষ্টা করুন।', true);
+        showError('window.showGiga ফাংশন পাওয়া যায়নি। স্ক্রিপ্ট লোড হতে পারেনি।');
         return;
       }
 
-      btn.disabled = true;
-      status.innerText = "Loading Ad...";
-
-      window.showGiga()
-        .then(() => {
-          // Reward
-          coins = parseInt(coins) + 10;
-          localStorage.setItem("coins", coins);
-
-          document.getElementById("balance").innerText = "Balance: " + coins + " Coins";
-          status.innerText = "Ad watched! +10 Coins ✅";
-        })
-        .catch((e) => {
-          console.log(e);
-          status.innerText = "Ads failed ❌ Try again";
-        })
-        .finally(() => {
-          btn.disabled = false;
-        });
+      try {
+        // showGiga() কল করবো – এটি একটি Promise রিটার্ন করে
+        const result = await window.showGiga();
+        // সফল হলে এখানে আসবে
+        setStatus('✅ Ads সফলভাবে দেখানো হয়েছে! রিওয়ার্ড দেওয়া হয়েছে।');
+        showReward();
+        // আপনার রিওয়ার্ড লজিক এখানে লিখুন
+        console.log('Reward granted! Result from showGiga:', result);
+        // যেমন: localStorage.setItem('coins', +localStorage.getItem('coins')+10);
+      } catch (error) {
+        // error ধরলে
+        console.error('showGiga error:', error);
+        let errMsg = error?.message || 'Ads দেখাতে ব্যর্থ হয়েছে বা ইউজার ক্লোজ করেছে।';
+        setStatus('❌ Ads শো হয়নি বা বাতিল হয়েছে', true);
+        showError(errMsg);
+        // এখানে error handling লজিক
+      }
     }
-  </script>
 
+    startBtn.addEventListener('click', onStartClick);
+
+    // অতিরিক্ত: SDK লোড হওয়া নিশ্চিত করতে ডিলে করে চেক (যদি ইতিমধ্যে লোড হয়ে থাকে)
+    if (isGigaReady()) {
+      setStatus('✅ SDK প্রস্তুত। "Start" চাপুন।');
+    } else {
+      setStatus('⏳ SDK লোড হচ্ছে... একটু অপেক্ষা করুন, তারপর Start চাপুন।');
+      // কিছুটা সময় পরে চেক করুন
+      let checkInterval = setInterval(() => {
+        if (isGigaReady()) {
+          setStatus('✅ SDK প্রস্তুত! এখন Start চাপতে পারেন।');
+          clearInterval(checkInterval);
+        }
+      }, 300);
+      // 10 সেকেন্ড পর interval ক্লিয়ার
+      setTimeout(() => {
+        clearInterval(checkInterval);
+        if (!isGigaReady()) {
+          setStatus('⚠️ SDK লোড হয়নি। নেটওয়ার্ক চেক করুন অথবা রিফ্রেশ করুন।', true);
+        }
+      }, 10000);
+    }
+  })();
+</script>
 </body>
 </html>
