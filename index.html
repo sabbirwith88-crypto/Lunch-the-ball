@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>🍽️ Lunch the Ball — Sunset Challenge | Adsgram + Monetag + Giga Pub (fallback ready)</title>
-    
-    <!-- Ad Networks: Adsgram + Monetag + Giga Pub -->
+    <title>Lunch the Ball — Chef's Arcade | Tasty Auto Next Level</title>
+    <!-- Adsgram SDK with updated block ID: int-24138 -->
     <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-    <script src='//libtl.com/sdk.js' data-zone='10865808' data-sdk='show_10865808'></script>
-    <script src="https://partner.giga.pub/sdk.js"></script>
-
+    <!-- Monetag SDK with updated zone ID: 10865808 -->
+    <script src="//libtl.com/sdk.js" data-zone="10865808" data-sdk="show_10865808"></script>
+    <!-- GigaPub SDK with updated ID: 6332 -->
+    <script src="https://ad.gigapub.tech/script?id=6332"></script>
     <style>
         * {
             margin: 0;
@@ -17,169 +17,162 @@
             box-sizing: border-box;
             user-select: none;
             -webkit-tap-highlight-color: transparent;
-            font-family: 'Segoe UI', 'Poppins', system-ui, -apple-system, 'Roboto', sans-serif;
         }
 
         body {
             min-height: 100vh;
-            background: radial-gradient(ellipse at 50% 80%, #ffb347 0%, #ff7e05 40%, #d64b00 75%, #3a1c0d 100%);
-            position: relative;
+            background: radial-gradient(circle at 30% 20%, #ffb347, #ff7e05);
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 20px;
+            font-family: 'Segoe UI', 'Poppins', 'Fredoka One', system-ui, -apple-system, 'Comic Neue', sans-serif;
+            position: relative;
             overflow-x: hidden;
         }
 
+        /* sizzling steam effect background */
         body::before {
-            content: "";
-            position: absolute;
+            content: '';
+            position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at 20% 30%, rgba(255, 220, 150, 0.35) 0%, rgba(255, 140, 50, 0) 60%);
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        body::after {
-            content: "☀️";
-            position: absolute;
-            top: 12%;
-            right: 8%;
-            font-size: 110px;
-            opacity: 0.7;
-            filter: drop-shadow(0 0 20px rgba(255, 100, 0, 0.8));
-            pointer-events: none;
-            animation: softGlow 4s infinite alternate;
-            z-index: 0;
-        }
-
-        @keyframes softGlow {
-            0% { opacity: 0.6; transform: scale(1); text-shadow: 0 0 5px #ffaa44; }
-            100% { opacity: 1; transform: scale(1.05); text-shadow: 0 0 25px #ffcc66; }
-        }
-
-        .cloud {
-            position: absolute;
-            background: rgba(255, 245, 220, 0.7);
-            border-radius: 80% 20% 70% 30% / 60% 50% 50% 40%;
-            filter: blur(18px);
+            background: repeating-radial-gradient(circle at 20% 40%, rgba(255,215,150,0.15) 0px, rgba(255,200,100,0.1) 50px, transparent 80px);
             pointer-events: none;
             z-index: 0;
         }
 
         .game-container {
             width: 100%;
-            max-width: 500px;
-            background: rgba(30, 18, 8, 0.65);
+            max-width: 540px;
+            background: rgba(255, 220, 160, 0.85);
             backdrop-filter: blur(14px);
-            border-radius: 48px;
-            box-shadow: 0 30px 40px rgba(0,0,0,0.4), 0 0 0 2px rgba(255, 180, 60, 0.6), inset 0 1px 3px rgba(255,215,140,0.6);
+            border-radius: 72px;
+            box-shadow: 0 30px 40px rgba(0,0,0,0.4), inset 0 1px 4px rgba(255,245,200,0.8);
             overflow: hidden;
-            border: 1px solid rgba(255, 180, 70, 0.7);
-            z-index: 10;
-            position: relative;
+            border: 2px solid #ffcc66;
+            transition: transform 0.2s ease;
+            z-index: 2;
         }
 
-        .road-header {
-            background: linear-gradient(135deg, #da7b2cd9, #b44d12d9);
-            padding: 20px 12px;
+        .lunch-header {
+            background: linear-gradient(135deg, #ff9944, #d96c00);
+            padding: 22px 16px;
             text-align: center;
-            border-bottom: 3px solid #ffcd7e;
-            backdrop-filter: blur(4px);
+            border-bottom: 3px solid #fff0b5;
+            position: relative;
+            overflow: hidden;
+        }
+        .lunch-header::after {
+            content: "🍽️⚽";
+            position: absolute;
+            bottom: -10px;
+            right: 10px;
+            font-size: 58px;
+            opacity: 0.2;
+            transform: rotate(5deg);
         }
 
         .title {
-            font-size: 32px;
-            font-weight: 900;
-            color: #fff2c9;
-            text-shadow: 3px 3px 0 #a13f0a;
-            letter-spacing: 2px;
-            background: rgba(0,0,0,0.3);
-            display: inline-block;
-            padding: 6px 28px;
-            border-radius: 60px;
-            backdrop-filter: blur(5px);
-        }
-
-        .subtitle {
-            color: #ffeaac;
-            font-size: 13px;
-            margin-top: 8px;
-            font-weight: 700;
-            text-shadow: 0 1px 2px black;
-        }
-
-        .badge-pattern {
-            background: rgba(0, 0, 0, 0.55);
-            display: inline-block;
-            padding: 6px 14px;
-            border-radius: 50px;
-            font-size: 11px;
-            margin-top: 8px;
-            color: #ffdf9c;
-            font-weight: bold;
-            backdrop-filter: blur(4px);
-        }
-
-        .road-levels {
-            max-height: 480px;
-            overflow-y: auto;
-            padding: 16px 14px;
-            scrollbar-width: thin;
-        }
-
-        .road-levels::-webkit-scrollbar {
-            width: 5px;
-        }
-        .road-levels::-webkit-scrollbar-track {
-            background: #ab5f2a;
-            border-radius: 10px;
-        }
-        .road-levels::-webkit-scrollbar-thumb {
-            background: #ffb347;
-            border-radius: 10px;
-        }
-
-        .level-card {
-            background: linear-gradient(105deg, #2f1c0fcc, #4a2a16cc);
-            backdrop-filter: blur(8px);
-            margin-bottom: 14px;
-            border-radius: 28px;
-            padding: 12px 18px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-left: 6px solid #fcaa3a;
-            border-right: 1px solid #ffbc6e;
-            cursor: pointer;
-            transition: transform 0.08s linear, box-shadow 0.2s;
-            box-shadow: 0 8px 15px rgba(0,0,0,0.3);
-        }
-        .level-card:active { transform: scale(0.97); }
-        .level-card.locked {
-            opacity: 0.55;
-            border-left-color: #886644;
-            cursor: not-allowed;
-            pointer-events: none;
-            filter: grayscale(0.2);
-        }
-        .level-number {
-            font-size: 28px;
+            font-size: 38px;
             font-weight: 800;
-            background: linear-gradient(145deg, #ffbb66, #ff9a2e);
+            background: linear-gradient(135deg, #FFF6CF, #FFBC3C);
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            width: 54px;
-            height: 54px;
+            text-shadow: 0 3px 8px rgba(0,0,0,0.2);
+            letter-spacing: 2px;
+            display: inline-block;
+            font-family: 'Fredoka One', cursive;
+        }
+
+        .subtitle {
+            color: #fff2b5;
+            font-size: 13px;
+            margin-top: 8px;
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: rgba(0,0,0,0.35);
+            display: inline-block;
+            padding: 5px 18px;
+            border-radius: 60px;
+            backdrop-filter: blur(6px);
+        }
+
+        .badge-pattern {
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(8px);
+            display: inline-block;
+            padding: 6px 18px;
+            border-radius: 60px;
+            font-size: 12px;
+            margin-top: 12px;
+            color: #FFE484;
+            font-weight: bold;
+            border: 1px solid #ffbc3c;
+        }
+
+        .meal-levels {
+            max-height: 460px;
+            overflow-y: auto;
+            padding: 20px 16px;
+            scrollbar-width: thin;
+            scrollbar-color: #ff9f2e #ffd9a5;
+        }
+        .meal-levels::-webkit-scrollbar {
+            width: 5px;
+        }
+        .meal-levels::-webkit-scrollbar-track {
+            background: #ffd9a5;
+            border-radius: 10px;
+        }
+        .meal-levels::-webkit-scrollbar-thumb {
+            background: #ff9f2e;
+            border-radius: 10px;
+        }
+
+        .recipe-card {
+            background: linear-gradient(115deg, rgba(255,215,150,0.95) 0%, rgba(255,200,120,0.95) 100%);
+            backdrop-filter: blur(4px);
+            margin-bottom: 14px;
+            border-radius: 32px;
+            padding: 12px 20px;
             display: flex;
             align-items: center;
-            justify-content: center;
-            border-radius: 20px;
-            background-color: rgba(0,0,0,0.4);
+            justify-content: space-between;
+            border-left: 7px solid #ffaa33;
+            border-right: 1px solid rgba(255,170,50,0.5);
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+            box-shadow: 0 8px 18px rgba(0,0,0,0.25);
+        }
+        .recipe-card:hover {
+            transform: translateY(-3px) scale(1.01);
+            border-left-width: 9px;
+            background: #fff0cf;
+        }
+        .recipe-card:active {
+            transform: scale(0.98);
+        }
+        .recipe-card.locked {
+            opacity: 0.6;
+            border-left-color: #aa8b5a;
+            filter: grayscale(0.2);
+            pointer-events: none;
+            transform: none;
+        }
+        .level-number {
+            font-size: 36px;
+            font-weight: 800;
+            background: linear-gradient(145deg, #f5a623, #cc7b00);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            width: 65px;
+            text-align: center;
+            font-family: 'Fredoka One', monospace;
         }
         .level-info {
             flex: 1;
@@ -188,295 +181,366 @@
         .level-name {
             font-size: 18px;
             font-weight: 800;
-            color: #ffefc0;
+            color: #552d00;
             letter-spacing: 0.5px;
         }
         .level-requirement {
             font-size: 10px;
-            color: #ffd58c;
+            color: #b45f1b;
             margin-top: 4px;
-            font-weight: 500;
+            display: flex;
+            gap: 8px;
+            font-weight: 600;
         }
-        .level-status { font-size: 20px; }
+        .level-status {
+            background: rgba(0,0,0,0.5);
+            border-radius: 40px;
+            padding: 6px 14px;
+            font-size: 13px;
+            font-weight: bold;
+            color: #ffecb3;
+        }
 
+        /* Game Panel - Lunch style */
         .game-panel {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(10, 5, 2, 0.95);
-            backdrop-filter: blur(24px);
+            background: rgba(210, 110, 20, 0.96);
+            backdrop-filter: blur(20px);
             z-index: 10000;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 20px;
-            animation: fadeInUp 0.25s ease;
+            animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .game-card {
-            background: linear-gradient(145deg, #f7c57b, #e09d48);
-            border-radius: 56px;
-            padding: 32px 20px;
+            background: linear-gradient(145deg, #ffda99, #ffb347);
+            border-radius: 64px;
+            padding: 28px 20px;
             width: 100%;
             max-width: 380px;
             text-align: center;
-            border: 2px solid #ffdc97;
-            box-shadow: 0 20px 35px rgba(0,0,0,0.5);
+            border: 2px solid #ffe4a3;
+            box-shadow: 0 30px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,200,0.8);
         }
         .game-level-title {
             font-size: 32px;
-            font-weight: 900;
-            color: #3b1e08;
-            text-shadow: 1px 1px 0 #ffcd94;
+            font-weight: 800;
+            font-family: 'Fredoka One', monospace;
+            background: linear-gradient(135deg, #fff0c0, #f5a623);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
             margin-bottom: 12px;
         }
         .instruction-box {
-            background: #442a17cc;
-            border-radius: 32px;
+            background: rgba(0,0,0,0.4);
+            border-radius: 50px;
             padding: 12px;
-            margin: 8px 0 14px;
-            color: #ffeaac;
-            font-size: 15px;
-            font-weight: bold;
-            text-align: center;
-            border: 1px solid #ffb347;
+            margin: 12px 0;
+            color: #fff2cf;
+            font-size: 14px;
+            font-weight: 700;
+            border: 1px dashed #ffd966;
         }
         .game-progress {
-            background: #2f1e0e;
-            border-radius: 40px;
-            padding: 10px;
-            margin: 12px 0;
-            color: #fff0c0;
-            font-weight: 700;
-            font-size: 16px;
+            background: #d98e2b;
+            border-radius: 60px;
+            padding: 12px;
+            margin: 16px 0;
+            color: #fff8e7;
+            font-weight: 800;
+            font-size: 18px;
+            box-shadow: inset 0 1px 4px #00000044, 0 2px 4px rgba(0,0,0,0.3);
         }
         .buttons-grid {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
-            gap: 14px;
-            margin: 20px 0;
+            gap: 16px;
+            margin: 24px 0;
         }
         .action-btn {
-            background: radial-gradient(circle at 30% 20%, #ffcd7e, #e67e22);
+            background: linear-gradient(125deg, #ffcf6e, #ffaa33);
             border: none;
             padding: 16px 0;
-            font-size: 18px;
+            font-size: 15px;
             font-weight: 800;
             border-radius: 60px;
-            color: #2e1a08;
+            color: #4a2c00;
             cursor: pointer;
-            transition: all 0.07s linear;
-            box-shadow: 0 5px 0 #9b4a0b;
+            transition: all 0.1s linear;
+            box-shadow: 0 6px 0 #b16200;
             text-align: center;
+            font-family: inherit;
         }
         .action-btn:active {
             transform: translateY(3px);
-            box-shadow: 0 2px 0 #9b4a0b;
+            box-shadow: 0 2px 0 #b16200;
         }
         .action-btn.disabled-btn {
-            opacity: 0.6;
+            opacity: 0.7;
+            filter: grayscale(0.2);
             transform: none;
             pointer-events: none;
-            filter: grayscale(0.2);
-        }
-        .complete-status {
-            background: #2f6b2f;
-            padding: 10px;
-            border-radius: 40px;
-            color: #ffefb9;
-            font-weight: bold;
-            font-size: 13px;
-            margin-top: 12px;
         }
         .game-close-btn {
-            background: #3a2a1c;
-            color: #ffcf8a;
-            padding: 12px 22px;
-            border: none;
+            background: rgba(50,30,10,0.9);
+            color: #ffda88;
+            padding: 12px 24px;
+            border: 1px solid #ffbb44;
             border-radius: 40px;
-            font-size: 15px;
-            font-weight: 700;
-            margin-top: 16px;
+            font-weight: 600;
             cursor: pointer;
+            transition: 0.2s;
         }
-
-        .countdown-overlay, .levelcomplete-screen, .reward-screen, .ad-sequence-panel {
+        .countdown-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
+            background: rgba(0,0,0,0.92);
+            backdrop-filter: blur(16px);
             z-index: 11000;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            backdrop-filter: blur(18px);
         }
-        .countdown-overlay { background: rgba(0,0,0,0.88); }
         .countdown-number {
-            font-size: 100px;
-            background: linear-gradient(45deg, #ffd966, #ffaa33);
+            font-size: 110px;
+            background: linear-gradient(45deg, #FFDD88, #FFA822);
             -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            color: transparent;
+            animation: pulseGlow 0.6s ease infinite;
             font-weight: 900;
-            animation: pulsePop 0.4s ease-out;
         }
-        @keyframes pulsePop {
-            0% { transform: scale(0.8); opacity: 0; }
-            80% { transform: scale(1.2); }
-            100% { transform: scale(1); }
+        @keyframes pulseGlow {
+            0% { text-shadow: 0 0 0px #ffaa33; opacity: 1; }
+            100% { text-shadow: 0 0 20px #ffaa33; opacity: 0.9; }
         }
-        .levelcomplete-screen { background: linear-gradient(135deg, #e67e22cc, #cc6b2ccc); backdrop-filter: blur(24px); }
-        .complete-title { font-size: 48px; font-weight: 900; color: #fff0bb; text-shadow: 3px 3px 0 #b45116; }
-        .btn {
-            background: linear-gradient(45deg, #ffbb55, #ff9722);
-            border: none;
-            padding: 14px 30px;
-            font-size: 18px;
-            font-weight: 800;
-            border-radius: 60px;
-            margin: 10px;
-            cursor: pointer;
-            color: #351d07;
-        }
-        .btn-secondary { background: linear-gradient(45deg, #3e2c1c, #291a0c); color: #ffcf88; }
-        .reward-screen { background: radial-gradient(circle at 30% 20%, #f7b05e, #d45a1a); }
-        .reward-code {
-            background: #241a0dd9;
-            padding: 18px 28px;
-            border-radius: 48px;
-            font-size: 22px;
-            font-weight: bold;
-            letter-spacing: 2px;
-            color: #ffdb9f;
-            margin: 20px;
-            cursor: pointer;
-            border: 2px solid #ffcc77;
-        }
-        .ad-sequence-panel { background: rgba(0,0,0,0.96); backdrop-filter: blur(28px); }
-        .ad-sequence-card {
-            background: #2c1c10e6;
-            border-radius: 56px;
-            padding: 32px 24px;
-            max-width: 340px;
-            width: 90%;
-            border: 2px solid #ffb347;
+        .levelcomplete-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, #ffcd7e, #d97a00);
+            z-index: 9000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
             text-align: center;
+            padding: 24px;
         }
-        .ad-step-message { font-size: 24px; font-weight: 800; color: #ffcf7a; margin: 12px 0; }
-        .next-step-btn {
-            background: radial-gradient(circle at 30% 20%, #ffcd7e, #e67e22);
+        .complete-title {
+            font-size: 48px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #FFF4CF, #FFBC44);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 20px;
+        }
+        .btn {
+            background: linear-gradient(45deg, #ffbc44, #ff961f);
             border: none;
             padding: 14px 32px;
             font-size: 18px;
             font-weight: bold;
             border-radius: 60px;
-            color: #301c09;
+            margin: 8px;
             cursor: pointer;
-            box-shadow: 0 5px 0 #994e0e;
+            transition: 0.1s linear;
+            box-shadow: 0 5px 12px rgba(0,0,0,0.3);
+            color: #3b2400;
+        }
+        .btn-secondary {
+            background: linear-gradient(45deg, #5e3a1a, #3b2400);
+            color: #ffdd99;
+        }
+        .ad-sequence-panel {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.97);
+            backdrop-filter: blur(28px);
+            z-index: 12000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .ad-sequence-card {
+            background: rgba(245, 170, 60, 0.95);
+            border-radius: 64px;
+            padding: 36px 24px;
+            width: 320px;
+            text-align: center;
+            border: 2px solid #ffeaa7;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.6);
+            color: #2d1f00;
+        }
+        .ad-step-icon {
+            font-size: 58px;
+            margin-bottom: 12px;
+            filter: drop-shadow(0 4px 8px #ffcd7e);
+        }
+        .ad-step-message {
+            font-size: 24px;
+            font-weight: 800;
+            color: #3b2c14;
+        }
+        .popup-warning, .waiting-message {
+            background: #2c2c2c;
+            border-radius: 40px;
+            padding: 10px;
+            font-size: 12px;
+            color: #FFD966;
+            margin-top: 12px;
         }
         .offline-toast {
             position: fixed;
             bottom: 30px;
             left: 20px;
             right: 20px;
-            background: #cc4411;
+            background: #dc2626;
             color: white;
             text-align: center;
-            padding: 12px;
-            border-radius: 60px;
+            padding: 14px;
+            border-radius: 80px;
             font-weight: bold;
             z-index: 20000;
-            box-shadow: 0 5px 15px black;
-            animation: fadeInUp 0.2s;
+            animation: fadeUp 0.2s;
         }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        .footer-note { text-align: center; padding: 12px; background: rgba(0,0,0,0.45); color: #ffe0aa; font-weight: 600; font-size: 11px; }
-        .fallback-badge {
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px);}
+            to { opacity: 1; transform: translateY(0);}
+        }
+        .footer-note {
+            text-align: center;
+            padding: 14px;
+            background: rgba(0,0,0,0.4);
+            color: #ffefb9;
             font-size: 11px;
-            background: #f0a34b;
-            display: inline-block;
-            border-radius: 40px;
-            padding: 2px 8px;
-            margin-top: 6px;
-            color: #2c1704;
+            font-weight: 600;
         }
-        .manual-ad-btn {
-            background:#ffaa44; border:none; padding:10px 20px; border-radius:40px; margin-top:15px; font-weight:bold; cursor:pointer;
+        .next-step-btn {
+            background: #ffaa33;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 60px;
+            font-weight: bold;
+            margin-top: 16px;
+            cursor: pointer;
+            color: #2d1b00;
         }
-        .manual-fallback-btn {
-            background:#44aa66; border:none; padding:10px 20px; border-radius:40px; margin-top:15px; font-weight:bold; cursor:pointer;
+        .reward-screen {
+            background: radial-gradient(circle, #FFD966, #e59400);
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 13000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 20px;
+        }
+        .reward-code {
+            background: #2d1f00;
+            color: #ffdb8e;
+            padding: 14px 24px;
+            border-radius: 60px;
+            font-size: 20px;
+            font-weight: bold;
+            cursor: pointer;
         }
     </style>
 </head>
 <body>
 <div class="game-container">
-    <div class="road-header">
-        <div class="title">🍽️ LUNCH THE BALL ⚽</div>
-        <div class="subtitle">🌅 Sunset Challenge · 3 Ads Before Each Level</div>
-        <div class="badge-pattern">🎯 Adsgram + Monetag + Giga Pub (fallback link + manual override)</div>
+    <div class="lunch-header">
+        <div class="title">⚽ LUNCH THE BALL 🍽️</div>
+        <div class="subtitle">🔥 CHEF'S GRAND PRIX 🔥</div>
+        <div class="badge-pattern">🥘 3 Ads (Adsgram + Monetag + GigaPub) • Smart Fallback • Auto Next Level</div>
     </div>
-    <div class="road-levels" id="levelListContainer"></div>
-    <div class="footer-note">👇 Tap unlocked level → watch 3 ads (or fallback link) → then click all 5 buttons</div>
+    <div class="meal-levels" id="levelListContainer"></div>
+    <div class="footer-note">🍳 Tap a recipe → watch ad sequence → complete 5 lunch tasks → advance</div>
 </div>
 
-<!-- Game Panel -->
+<!-- game panel (lunch tasks) -->
 <div id="gamePanel" class="game-panel" style="display: none;">
     <div class="game-card">
-        <div class="game-level-title" id="gameLevelTitle">LEVEL 1</div>
-        <div class="instruction-box">🍽️⚡ Tap all 5 buttons to complete this level</div>
-        <div class="game-progress" id="gameProgressText">0 / 5 clicks done</div>
+        <div class="game-level-title" id="gameLevelTitle">MENU 1</div>
+        <div class="instruction-box">🍽️ Click each cooking step to prepare the perfect Lunch Ball 🍽️</div>
+        <div class="game-progress" id="gameProgressText">0 / 5 steps done</div>
         <div class="buttons-grid" id="buttonsGrid"></div>
-        <div class="complete-status" id="completeStatusMsg">Each button must be clicked once</div>
-        <button class="game-close-btn" id="exitGameBtn">🏞️ Back to Sunset Road</button>
+        <div class="complete-status" id="completeStatusMsg">Finish all steps</div>
+        <button class="game-close-btn" id="exitGameBtn">← BACK TO KITCHEN</button>
     </div>
 </div>
 
-<!-- Countdown overlay -->
+<!-- countdown -->
 <div id="countdownOverlay" class="countdown-overlay" style="display: none;">
-    <div><div class="countdown-number" id="countdownNum">3</div>
-    <div class="countdown-message" id="countdownMsg" style="color:#ffd27a; font-size:22px;">Next Level starts...</div></div>
+    <div class="countdown-number" id="countdownNum">3</div>
+    <div class="countdown-message" id="countdownMsg">Next lunch course incoming...</div>
 </div>
 
-<!-- Level Complete Screen -->
+<!-- level complete screen -->
 <div id="levelCompleteScreen" class="levelcomplete-screen" style="display: none;">
-    <div style="text-align:center; background: rgba(0,0,0,0.4); padding: 32px; border-radius: 64px;">
-        <div class="complete-title">🥳 LUNCH MASTER!</div>
-        <div style="color: #fff0c0; font-size: 20px; margin: 16px;" id="completeLevelMsg"></div>
-        <button class="btn" id="nextLevelBtnFromComplete">🍽️ Next Level</button>
-        <button class="btn btn-secondary" id="backToRoadCompleteBtn">🌅 Road Menu</button>
+    <div class="complete-title">🍲 BALL LUNCH READY! 🍲</div>
+    <div style="color: #2d1c00; font-size: 18px; margin-bottom: 20px; font-weight: bold;" id="completeLevelMsg"></div>
+    <div id="waitingForLinkArea">
+        <div id="externalLinkWaitingMsg" class="waiting-message" style="display: none;">
+            🔗 <strong>Open special recipe link to unlock next level</strong><br>
+            After returning, next course auto-starts!<br><br>
+            <a href="#" id="dynamicExternalLink" target="_blank" style="background:#ffaa33; color:#3b2400; padding:10px 20px; border-radius:40px; text-decoration:none; display:inline-block; font-weight:bold;">👉 CLAIM COOKIE PASS 👈</a>
+        </div>
+        <button id="manualResumeAfterLinkBtn" class="btn manual-continue-btn" style="display: none;">✅ I'm back, continue lunch</button>
     </div>
+    <button class="btn" id="nextLevelBtnFromComplete">NEXT COURSE →</button>
+    <button class="btn btn-secondary" id="backToRoadCompleteBtn">MENU BOARD</button>
 </div>
 
-<!-- Reward Screen -->
+<!-- final reward -->
 <div id="rewardScreen" class="reward-screen" style="display: none;">
-    <div style="background: #25190cee; padding: 28px; border-radius: 68px; text-align:center;">
-        <h2 style="color:#ffeaac; font-size: 34px;">🏆 ULTIMATE BALLER</h2>
-        <p style="color:#ffdfaa;">10 Levels cleared! Your lunch-ball reward:</p>
-        <div class="reward-code" id="rewardCodeDisplay" onclick="copyRewardCodeGlobal()">LUNCH-BALL-XXXX</div>
-        <button class="btn" id="resetAllBtn">🏅 Copy Code & Reset Game</button>
-    </div>
+    <h2 style="color: #2c1b00; font-size: 38px; font-weight: 900;">🏆 MASTER CHEF 🏆</h2>
+    <p style="color: #fff1c1; font-size: 20px;">All 10 LunchBall levels conquered!</p>
+    <p style="color: #fff1c1;">Your golden recipe code:</p>
+    <div class="reward-code" id="rewardCodeDisplay" style="background: #2b1d06; color: #ffd966;">LUNCH-XXXXXX</div>
+    <p style="color: white; font-size: 11px;">tap to copy</p>
+    <button class="btn" id="resetAllBtn" style="background: #4a2a0a; color: #ffd966;">Copy & Reset Feast</button>
 </div>
 
-<!-- Ad Sequence Modal (3-step with fallback & manual override) -->
+<!-- ad sequence panel -->
 <div id="adSequencePanel" class="ad-sequence-panel" style="display: none;">
     <div class="ad-sequence-card">
-        <div class="ad-step-icon" style="font-size:48px;">🎬</div>
-        <div class="ad-step-message" id="adStepMessage">Preparing ad...</div>
-        <div class="ad-description" id="adDescription" style="color:#ffbc6e; margin:12px 0;">Please complete ad to continue</div>
-        <div id="fallbackHint" style="color:#ffaa55; font-size:12px; margin-bottom:10px;"></div>
-        <button id="nextStepAdBtn" class="next-step-btn" style="display: none;">➡ Next Step</button>
-        <div id="adLoadingIndicator" class="ad-loading-text" style="color:#ffbc6e; margin-top:12px;">Processing...</div>
+        <div class="ad-step-icon" id="adStepIcon">🍿</div>
+        <div class="ad-step-message" id="adStepMessage">Loading commercial...</div>
+        <div class="ad-description" id="adDescription" style="color:#2f1e00; margin:12px 0;">Please complete ad to continue cooking</div>
+        <div id="adLoadingIndicator" style="font-size:14px; color:#ffcc55;">Preparing ingredients...</div>
+        <div id="popupBlockWarning" class="popup-warning" style="display: none;">⚠️ Popup blocked? Click below after visiting link</div>
+        <button id="manualFallbackContinueBtn" class="next-step-btn" style="display: none;">✅ I returned, continue</button>
     </div>
 </div>
 
 <script>
-    // ========== FALLBACK CONFIGURATION ==========
-    const AD_FALLBACK_URL = "https://install-the-app-form-this-link.vercel.app";
-    // ============================================
-
+    // LUNCH THE BALL - COOKING EDITION with updated IDs
     const MAX_LEVEL = 10;
     let currentUnlockedLevel = 1;
     let activeGameLevel = null;
@@ -484,524 +548,322 @@
     let gameCompletedFlag = false;
     let isProcessing = false;
     let adSequenceActive = false;
-    let pendingResolveNextStep = null;
-    let adsgramController = null;
-    let adsgramInitialized = false;
-    
-    const NEXT_LEVEL_REDIRECT_URL = "https://omg10.com/4/10883007";
-    let isNextLevelRedirecting = false;
+    const CUSTOM_LINK = "https://www.profitablecpmratenetwork.com/gewesnb5e?key=d5843587772f12547c46a6d88d3f7d7d";
+    const FALLBACK_AD_LINK = CUSTOM_LINK;
+    const EXTERNAL_NEXT_LEVEL_URL = CUSTOM_LINK;
+    let externalLinkVisitedForCurrentLevel = false;
+    let currentCompleteLevel = null;
+    let visibilityListenerAttached = false;
+    let autoStartScheduled = false;
+    let activeFallbackResolver = null;
+    let fallbackTimeoutId = null;
+    let adController = null, adInitialized = false;
 
-    // Helper: show toast
-    function showToast(msg, isError = false) {
-        const existing = document.querySelector('.offline-toast');
-        if (existing) existing.remove();
+    // Lunch tasks (ball recipe)
+    const TASKS = ['🍳 MIX THE DOUGH', '⚽ SHAPE THE BALL', '🧂 ADD SECRET SPICES', '🔥 FRY TO GOLDEN', '🍽️ SERVE LUNCH BALL'];
+
+    function showOfflineExitAndCloseGame(msg) {
         const toast = document.createElement('div');
         toast.className = 'offline-toast';
-        toast.style.background = isError ? '#aa2e1e' : '#2c6b2f';
-        toast.innerText = msg;
+        toast.innerText = msg || "⚠️ No connection. Returning to menu.";
         document.body.appendChild(toast);
-        setTimeout(() => { if(toast.parentNode) toast.remove(); }, 3500);
+        setTimeout(() => toast.remove(), 2800);
+        forceExitAllGameScreens();
     }
-
-    // ---------- Ads Initialization ----------
-    function initAdsgram() {
-        try {
-            if (typeof window.Adsgram !== 'undefined') {
-                adsgramController = window.Adsgram.init({ blockId: "int-24138" });
-                adsgramInitialized = true;
-                console.log("Adsgram ready");
-            } else { console.warn("Adsgram SDK not loaded"); }
-        } catch(e) { console.error("Adsgram init error", e); }
-    }
-
-    // ---------- FIX: Reliable ad wrapper with manual override ----------
-    async function executeAdWithFallback(adFunction, adName, timeoutMs = 15000) {
-        if (!navigator.onLine) throw new Error("offline");
-        const hintDiv = document.getElementById('fallbackHint');
-        if (hintDiv) hintDiv.innerHTML = "";
-
-        // Create manual override button inside the ad panel if not exists
-        let manualBtn = document.getElementById('manualAdOverrideBtn');
-        if (!manualBtn) {
-            manualBtn = document.createElement('button');
-            manualBtn.id = 'manualAdOverrideBtn';
-            manualBtn.textContent = '⏩ I watched the ad / Continue anyway';
-            manualBtn.className = 'manual-ad-btn';
-            const container = document.querySelector('#adSequencePanel .ad-sequence-card');
-            if (container) container.appendChild(manualBtn);
-        }
-        manualBtn.style.display = 'none';
-        
-        let manualResolve = null;
-        const manualPromise = new Promise((resolve) => { manualResolve = resolve; });
-        manualBtn.onclick = () => {
-            if (manualResolve) {
-                manualResolve();
-                manualResolve = null;
-            }
-            manualBtn.style.display = 'none';
-        };
-
-        // Show manual button after 8 seconds if ad didn't complete
-        let manualTimeout = setTimeout(() => {
-            if (manualBtn) {
-                manualBtn.style.display = 'block';
-                const msgDiv = document.getElementById('adStepMessage');
-                if (msgDiv) msgDiv.innerHTML = `⚠️ ${adName} didn't respond. Click below to continue.`;
-            }
-        }, 8000);
-
-        let adPromise;
-        let adTimeout;
-        try {
-            adPromise = adFunction();
-            const result = await Promise.race([
-                adPromise,
-                new Promise((_, reject) => { adTimeout = setTimeout(() => reject(new Error(`Timeout after ${timeoutMs}ms`)), timeoutMs); }),
-                manualPromise
-            ]);
-            clearTimeout(adTimeout);
-            clearTimeout(manualTimeout);
-            manualBtn.style.display = 'none';
-            console.log(`${adName} succeeded or manually continued`);
-            return result;
-        } catch (err) {
-            clearTimeout(adTimeout);
-            clearTimeout(manualTimeout);
-            console.warn(`${adName} failed:`, err);
-            showToast(`📢 ${adName} ad failed. Opening fallback link...`, false);
-            const msgDiv = document.getElementById('adStepMessage');
-            if (msgDiv && document.getElementById('adSequencePanel').style.display === 'flex') {
-                msgDiv.innerHTML = `⚠️ ${adName} failed → opening fallback link...`;
-            }
-            await triggerFallbackAndWait(adName);
-            manualBtn.style.display = 'none';
-            return;
-        }
-    }
-
-    async function showAdsgramAd() {
-        return executeAdWithFallback(async () => {
-            if (adsgramInitialized && adsgramController) {
-                await adsgramController.show();
-            } else {
-                initAdsgram();
-                if (adsgramController) await adsgramController.show();
-                else throw new Error("Adsgram unavailable");
-            }
-        }, "Adsgram");
-    }
-
-    async function showMonetagAd() {
-        return executeAdWithFallback(async () => {
-            if (typeof window.show_10865808 === 'function') {
-                window.show_10865808();
-                await new Promise(r => setTimeout(r, 3000));
-            } else {
-                throw new Error("Monetag not ready");
-            }
-        }, "Monetag");
-    }
-
-    async function showGigaPubAd() {
-        return executeAdWithFallback(async () => {
-            if (typeof window.showGiga === 'function') {
-                window.showGiga("main");
-                await new Promise(r => setTimeout(r, 3000));
-            } else {
-                throw new Error("Giga Pub not loaded");
-            }
-        }, "Giga Pub");
-    }
-
-    // Fallback with manual return button
-    function triggerFallbackAndWait(stepName) {
-        return new Promise((resolve) => {
-            let fallbackWindow = null;
-            try {
-                fallbackWindow = window.open(AD_FALLBACK_URL, '_blank');
-                if (!fallbackWindow || fallbackWindow.closed) {
-                    showToast(`⚠️ Popup blocked! Allow popups or manually visit: ${AD_FALLBACK_URL}`, true);
-                }
-            } catch(e) { console.warn("popup error", e); }
-            
-            const hintDiv = document.getElementById('fallbackHint');
-            if (hintDiv) hintDiv.innerHTML = `🔁 Fallback link opened. Return to this tab to continue "${stepName}".`;
-            
-            let manualFallbackBtn = document.getElementById('manualFallbackContinueBtn');
-            if (!manualFallbackBtn) {
-                manualFallbackBtn = document.createElement('button');
-                manualFallbackBtn.id = 'manualFallbackContinueBtn';
-                manualFallbackBtn.textContent = '✅ I have returned from the fallback link';
-                manualFallbackBtn.className = 'manual-fallback-btn';
-                const container = document.querySelector('#adSequencePanel .ad-sequence-card');
-                if (container) container.appendChild(manualFallbackBtn);
-            }
-            manualFallbackBtn.style.display = 'block';
-            manualFallbackBtn.onclick = () => {
-                manualFallbackBtn.style.display = 'none';
-                if (hintDiv) hintDiv.innerHTML = "";
-                resolve();
-            };
-            
-            let visibilityHandler = null;
-            const cleanup = () => {
-                if (visibilityHandler) document.removeEventListener('visibilitychange', visibilityHandler);
-                if (manualFallbackBtn) manualFallbackBtn.style.display = 'none';
-                resolve();
-            };
-            visibilityHandler = () => {
-                if (document.visibilityState === 'visible') {
-                    showToast(`✅ Returned from fallback! "${stepName}" step completed.`, false);
-                    cleanup();
-                }
-            };
-            document.addEventListener('visibilitychange', visibilityHandler);
-            setTimeout(() => {
-                if (document.visibilityState !== 'visible') {
-                    showToast(`⚠️ Fallback step timeout, continuing anyway.`, true);
-                    cleanup();
-                } else {
-                    cleanup();
-                }
-            }, 60000);
-        });
-    }
-
-    function isNetworkOnline() { return navigator.onLine; }
 
     function forceExitAllGameScreens() {
+        clearWaitingForLink();
         document.getElementById('gamePanel').style.display = 'none';
         document.getElementById('adSequencePanel').style.display = 'none';
         document.getElementById('countdownOverlay').style.display = 'none';
         document.getElementById('levelCompleteScreen').style.display = 'none';
         document.getElementById('rewardScreen').style.display = 'none';
-        if (pendingResolveNextStep) { pendingResolveNextStep(); pendingResolveNextStep = null; }
-        adSequenceActive = false;
-        isProcessing = false;
-        activeGameLevel = null;
-        const hintDiv = document.getElementById('fallbackHint');
-        if (hintDiv) hintDiv.innerHTML = "";
-        // Hide manual buttons
-        const btn1 = document.getElementById('manualAdOverrideBtn');
-        const btn2 = document.getElementById('manualFallbackContinueBtn');
-        if (btn1) btn1.style.display = 'none';
-        if (btn2) btn2.style.display = 'none';
+        if(activeFallbackResolver) { activeFallbackResolver(); activeFallbackResolver = null; }
+        if(fallbackTimeoutId) clearTimeout(fallbackTimeoutId);
+        adSequenceActive = false; isProcessing = false; activeGameLevel = null;
+        externalLinkVisitedForCurrentLevel = false; currentCompleteLevel = null; autoStartScheduled = false;
     }
 
-    function showOfflineExitAndCloseGame(message = "🌐 No internet. Returning to sunset road.") {
-        showToast(message, true);
-        forceExitAllGameScreens();
+    function clearWaitingForLink() {
+        const w = document.getElementById('externalLinkWaitingMsg');
+        const m = document.getElementById('manualResumeAfterLinkBtn');
+        if(w) w.style.display = 'none';
+        if(m) m.style.display = 'none';
+        if(visibilityListenerAttached) {
+            document.removeEventListener('visibilitychange', onVisibilityChange);
+            visibilityListenerAttached = false;
+        }
     }
+
+    function isNetworkOnline() { return navigator.onLine; }
+    window.addEventListener('offline', () => showOfflineExitAndCloseGame("📡 Disconnected. Exiting kitchen."));
 
     function loadProgress() {
         try {
-            const saved = localStorage.getItem('lunchBallProgress_v2');
-            if (saved) {
-                const data = JSON.parse(saved);
-                currentUnlockedLevel = Math.min(MAX_LEVEL, data.unlockedLevel || 1);
-            } else { currentUnlockedLevel = 1; }
+            const saved = localStorage.getItem('lunchBallProgress');
+            if(saved) currentUnlockedLevel = Math.min(MAX_LEVEL, JSON.parse(saved).unlockedLevel || 1);
+            else currentUnlockedLevel = 1;
         } catch(e) { currentUnlockedLevel = 1; }
     }
-    function saveProgress() { localStorage.setItem('lunchBallProgress_v2', JSON.stringify({ unlockedLevel: currentUnlockedLevel })); }
+    function saveProgress() { localStorage.setItem('lunchBallProgress', JSON.stringify({ unlockedLevel: currentUnlockedLevel })); }
 
-    // Ad sequence UI handlers
-    const adSeqPanel = document.getElementById('adSequencePanel');
-    const adStepMsg = document.getElementById('adStepMessage');
-    const adDescription = document.getElementById('adDescription');
-    const nextStepBtn = document.getElementById('nextStepAdBtn');
-    const adLoadingIndicator = document.getElementById('adLoadingIndicator');
-
-    function showAdSequenceUI(stepName, description) {
-        adStepMsg.innerText = stepName;
-        adDescription.innerText = description;
-        nextStepBtn.style.display = 'none';
-        adLoadingIndicator.style.display = 'block';
-        adSeqPanel.style.display = 'flex';
-        const hintDiv = document.getElementById('fallbackHint');
-        if (hintDiv) hintDiv.innerHTML = "";
-        const manualBtn = document.getElementById('manualAdOverrideBtn');
-        if (manualBtn) manualBtn.style.display = 'none';
-        const fallbackBtn = document.getElementById('manualFallbackContinueBtn');
-        if (fallbackBtn) fallbackBtn.style.display = 'none';
+    function initAdsgram() {
+        try { 
+            if(typeof window.Adsgram !== 'undefined') { 
+                // Updated block ID: int-24138
+                adController = window.Adsgram.init({ blockId: "int-24138" }); 
+                adInitialized = true; 
+            } 
+        } catch(e) { console.warn(e); }
     }
-
-    function hideAdSequenceUI() { 
-        adSeqPanel.style.display = 'none'; 
-        if(pendingResolveNextStep) { pendingResolveNextStep(); pendingResolveNextStep = null; } 
-        const hintDiv = document.getElementById('fallbackHint');
-        if (hintDiv) hintDiv.innerHTML = "";
-        const btn1 = document.getElementById('manualAdOverrideBtn');
-        const btn2 = document.getElementById('manualFallbackContinueBtn');
-        if (btn1) btn1.style.display = 'none';
-        if (btn2) btn2.style.display = 'none';
+    function callAdWithTimeout(factory, timeoutMs=15000) {
+        return new Promise((resolve,reject)=>{
+            const tid = setTimeout(()=>reject(new Error("timeout")), timeoutMs);
+            factory().then(()=>{ clearTimeout(tid); resolve(); }).catch(e=>{ clearTimeout(tid); reject(e); });
+        });
     }
+    function attemptAdsgram() { if(!adInitialized||!adController) return Promise.reject(); return adController.show(); }
+    // Updated Monetag zone: 10865808 => function name remains as per SDK naming
+    function attemptMonetag() { if(typeof window.show_10865808 !== 'function') return Promise.reject(); return window.show_10865808(); }
+    function attemptGigaPub() { if(typeof window.showGiga !== 'function') return Promise.reject(); return window.showGiga(); }
 
-    function waitForNextStepButton() {
+    function waitForReturnFromFallback() {
         return new Promise((resolve) => {
-            if (!isNetworkOnline()) { showOfflineExitAndCloseGame("Network lost while waiting."); resolve(); return; }
-            pendingResolveNextStep = resolve;
-            nextStepBtn.style.display = 'block';
-            adLoadingIndicator.style.display = 'none';
-            const onClick = () => {
-                nextStepBtn.removeEventListener('click', onClick);
-                if(pendingResolveNextStep) pendingResolveNextStep();
-                pendingResolveNextStep = null;
-                resolve();
+            const manualBtn = document.getElementById('manualFallbackContinueBtn');
+            const popupWarn = document.getElementById('popupBlockWarning');
+            manualBtn.style.display = 'block';
+            popupWarn.style.display = 'block';
+            const handler = () => { if(document.visibilityState === 'visible') { cleanup(); resolve(); } };
+            const cleanup = () => {
+                document.removeEventListener('visibilitychange', handler);
+                if(fallbackTimeoutId) clearTimeout(fallbackTimeoutId);
+                manualBtn.style.display = 'none';
+                popupWarn.style.display = 'none';
+                if(activeFallbackResolver === handler) activeFallbackResolver = null;
             };
-            nextStepBtn.addEventListener('click', onClick, { once: true });
-            const interval = setInterval(() => {
-                if (!isNetworkOnline() && adSeqPanel.style.display === 'flex') {
-                    clearInterval(interval);
-                    showOfflineExitAndCloseGame("Connection lost during ad step.");
-                    if(pendingResolveNextStep) pendingResolveNextStep();
-                    pendingResolveNextStep = null;
-                    resolve();
-                }
-            }, 1000);
+            const onManual = () => { cleanup(); resolve(); };
+            manualBtn.onclick = onManual;
+            document.addEventListener('visibilitychange', handler);
+            activeFallbackResolver = handler;
+            fallbackTimeoutId = setTimeout(() => { if(activeFallbackResolver === handler) { cleanup(); resolve(); } }, 180000);
         });
     }
 
-    // Main ad sequence: Adsgram → Monetag → Giga Pub (with fallback integrated)
-    async function runFullAdSequence(level) {
-        if (!isNetworkOnline()) throw new Error("offline");
-        // Step 1: Adsgram
-        showAdSequenceUI("🎬 Step 1/3", "Showing Adsgram interstitial ad... (fallback on failure)");
-        await showAdsgramAd();
-        if (!isNetworkOnline()) throw new Error("offline");
-        showAdSequenceUI("✅ Step 1 Complete", "Click next to continue to Monetag ad");
-        await waitForNextStepButton();
-        if (!isNetworkOnline()) throw new Error("offline");
-        
-        // Step 2: Monetag
-        showAdSequenceUI("💰 Step 2/3", "Loading Monetag ad... (fallback ready)");
-        await showMonetagAd();
-        if (!isNetworkOnline()) throw new Error("offline");
-        showAdSequenceUI("✅ Step 2 Complete", "Click next for final ad (Giga Pub)");
-        await waitForNextStepButton();
-        if (!isNetworkOnline()) throw new Error("offline");
-        
-        // Step 3: Giga Pub
-        showAdSequenceUI("🌟 Step 3/3: Giga Pub", "Final ad from Giga Pub – fallback if needed");
-        await showGigaPubAd();
-        if (!isNetworkOnline()) throw new Error("offline");
-        showAdSequenceUI("✅ Ad Sequence Done", "Launching Lunch Game now!");
-        await new Promise(r => setTimeout(r, 400));
-        hideAdSequenceUI();
+    async function runAdStepWithFallback(stepName, adFn, isLastStep=false) {
+        const panel = document.getElementById('adSequencePanel');
+        const stepMsg = document.getElementById('adStepMessage');
+        const desc = document.getElementById('adDescription');
+        const loading = document.getElementById('adLoadingIndicator');
+        const icon = document.getElementById('adStepIcon');
+        panel.style.display = 'flex';
+        icon.innerText = stepName.includes('Adsgram') ? '📺' : (stepName.includes('Monetag') ? '💰' : '🍿');
+        stepMsg.innerText = `🍽️ ${stepName}`;
+        desc.innerText = `Loading ${stepName} ad ...`;
+        loading.style.display = 'block';
+        let completed = false;
+        try {
+            await callAdWithTimeout(adFn, 15000);
+            completed = true;
+            stepMsg.innerText = `✅ ${stepName} Complete!`;
+            desc.innerText = isLastStep ? "All ads done! Start cooking..." : "Ad completed, moving on...";
+            loading.style.display = 'none';
+            await new Promise(r => setTimeout(r, 1000));
+        } catch(err) {
+            stepMsg.innerText = `⚠️ ${stepName} failed`;
+            desc.innerText = `Opening recipe link. Return to auto-continue.`;
+            loading.style.display = 'none';
+            window.open(FALLBACK_AD_LINK, '_blank');
+            await waitForReturnFromFallback();
+            completed = true;
+            stepMsg.innerText = `✅ ${stepName} Fallback done`;
+            desc.innerText = isLastStep ? "All steps finished!" : "Continuing...";
+            await new Promise(r => setTimeout(r, 800));
+        }
+        if(!completed) throw new Error("fail");
+        if(isLastStep) panel.style.display = 'none';
+        else { panel.style.display = 'none'; await new Promise(r => setTimeout(r, 300)); }
+    }
+
+    async function runFullAdSequence() {
+        if(!isNetworkOnline()) throw new Error("offline");
+        await runAdStepWithFallback("Adsgram Ad", ()=>attemptAdsgram(), false);
+        if(!isNetworkOnline()) throw new Error("offline");
+        await runAdStepWithFallback("Monetag Ad", ()=>attemptMonetag(), false);
+        if(!isNetworkOnline()) throw new Error("offline");
+        await runAdStepWithFallback("GigaPub Ad", ()=>attemptGigaPub(), true);
     }
 
     async function startLevelEntrySequence(level) {
-        if (adSequenceActive || isProcessing) return false;
-        if (!isNetworkOnline()) { showOfflineExitAndCloseGame("Internet required to play."); return false; }
-        adSequenceActive = true;
-        isProcessing = true;
+        if(adSequenceActive || isProcessing) return false;
+        if(!isNetworkOnline()) { showOfflineExitAndCloseGame("Internet required"); return false; }
+        adSequenceActive = true; isProcessing = true;
         document.getElementById('gamePanel').style.display = 'none';
         try {
-            await runFullAdSequence(level);
-            if (!isNetworkOnline()) throw new Error("offline");
+            await runFullAdSequence();
+            if(!isNetworkOnline()) throw new Error("offline");
             activeGameLevel = level;
-            buttonClickState = [false, false, false, false, false];
+            buttonClickState = [false,false,false,false,false];
             gameCompletedFlag = false;
             renderGamePanel(level);
             document.getElementById('gamePanel').style.display = 'flex';
-            adSequenceActive = false;
-            isProcessing = false;
+            adSequenceActive = false; isProcessing = false;
             return true;
-        } catch(err) {
-            hideAdSequenceUI();
-            adSequenceActive = false;
-            isProcessing = false;
-            if (!isNetworkOnline()) showOfflineExitAndCloseGame("Network issue. Exiting.");
-            else showOfflineExitAndCloseGame("Ad sequence failed.");
+        } catch(e) {
+            document.getElementById('adSequencePanel').style.display = 'none';
+            adSequenceActive = false; isProcessing = false;
+            showOfflineExitAndCloseGame("Ad sequence failed. Try later.");
             return false;
         }
     }
 
     function renderGamePanel(level) {
-        document.getElementById('gameLevelTitle').innerHTML = `🍽️⚽ LUNCH BALL - LEVEL ${level}`;
-        const clickedCount = buttonClickState.filter(v => v === true).length;
-        document.getElementById('gameProgressText').innerHTML = `✨ Clicks: ${clickedCount} / 5 ✨`;
+        document.getElementById('gameLevelTitle').innerHTML = `🍛 LUNCH BALL ${level} 🍛`;
+        const cnt = buttonClickState.filter(v=>v).length;
+        document.getElementById('gameProgressText').innerHTML = `🥄 Progress: ${cnt} / 5 tasks completed`;
         const grid = document.getElementById('buttonsGrid');
         grid.innerHTML = '';
-        for (let i = 0; i < 5; i++) {
+        for(let i=0;i<5;i++) {
             const btn = document.createElement('button');
-            btn.className = 'action-btn';
-            if (buttonClickState[i]) {
-                btn.classList.add('disabled-btn');
-                btn.innerText = `✅ Click`;
-                btn.disabled = true;
-            } else {
-                btn.innerText = `🔘 Click`;
-            }
-            btn.onclick = () => {
-                if (gameCompletedFlag || buttonClickState[i]) return;
-                buttonClickState[i] = true;
-                renderGamePanel(level);
-                if (buttonClickState.every(v => v === true) && !gameCompletedFlag) {
-                    gameCompletedFlag = true;
-                    handleLevelComplete(activeGameLevel);
-                }
-            };
+            btn.className = 'action-btn' + (buttonClickState[i] ? ' disabled-btn' : '');
+            btn.innerText = buttonClickState[i] ? `${TASKS[i]} ✓` : `${TASKS[i]}`;
+            if(!buttonClickState[i]) {
+                btn.onclick = () => {
+                    if(gameCompletedFlag || buttonClickState[i]) return;
+                    buttonClickState[i]=true;
+                    renderGamePanel(level);
+                    if(buttonClickState.every(v=>v===true) && !gameCompletedFlag) {
+                        gameCompletedFlag=true;
+                        handleLevelComplete(activeGameLevel);
+                    }
+                };
+            } else btn.disabled=true;
             grid.appendChild(btn);
         }
-        const remaining = 5 - clickedCount;
-        document.getElementById('completeStatusMsg').innerHTML = remaining === 0 ? "✅ All 5 clicks done! Level cleared!" : `🍽️ ${remaining} click${remaining !== 1 ? 's' : ''} remaining — tap all buttons!`;
+        const remain = 5-cnt;
+        document.getElementById('completeStatusMsg').innerHTML = remain===0 ? "✨ BALL LUNCH READY! ✨" : `${remain} step${remain!==1?'s':''} remaining`;
     }
 
     async function handleLevelComplete(level) {
-        if (isProcessing) return;
+        if(isProcessing) return;
         isProcessing = true;
         document.getElementById('gamePanel').style.display = 'none';
-        if (level === currentUnlockedLevel && level < MAX_LEVEL) {
-            currentUnlockedLevel = level + 1;
-            saveProgress();
-            buildLevelList();
-        } else if (level > currentUnlockedLevel && level <= MAX_LEVEL) {
-            currentUnlockedLevel = level;
-            saveProgress();
-            buildLevelList();
-        }
-        if (level === MAX_LEVEL) {
-            showRewardScreen();
-            isProcessing = false;
-        } else {
-            showLevelCompleteScreen(level);
-            isProcessing = false;
-        }
+        if(level === currentUnlockedLevel && level < MAX_LEVEL) { currentUnlockedLevel = level+1; saveProgress(); buildLevelList(); }
+        else if(level > currentUnlockedLevel && level <= MAX_LEVEL) { currentUnlockedLevel = level; saveProgress(); buildLevelList(); }
+        if(level === MAX_LEVEL) { showRewardScreen(); isProcessing=false; }
+        else { showLevelCompleteScreen(level); isProcessing=false; }
     }
 
     function showLevelCompleteScreen(level) {
-        const completeDiv = document.getElementById('levelCompleteScreen');
-        document.getElementById('completeLevelMsg').innerHTML = `🎉 Route ${level} cleared! Delicious victory! 🎉`;
-        completeDiv.dataset.currentLevel = level;
-        completeDiv.style.display = 'flex';
+        const div = document.getElementById('levelCompleteScreen');
+        document.getElementById('completeLevelMsg').innerHTML = `Course ${level} devoured! 🎉<br><span style="font-size:14px;">🔗 Open link → return → next lunch auto-starts</span>`;
+        currentCompleteLevel = level;
+        externalLinkVisitedForCurrentLevel = false; autoStartScheduled = false;
+        clearWaitingForLink();
+        const waitingDiv = document.getElementById('externalLinkWaitingMsg');
+        const manualBtn = document.getElementById('manualResumeAfterLinkBtn');
+        waitingDiv.style.display = 'block';
+        manualBtn.style.display = 'none';
+        const linkA = document.getElementById('dynamicExternalLink');
+        linkA.onclick = (e) => { e.preventDefault(); window.open(EXTERNAL_NEXT_LEVEL_URL, '_blank'); };
+        manualBtn.onclick = () => { if(!externalLinkVisitedForCurrentLevel) markLinkVisitedAndAutoStart(); };
+        if(!visibilityListenerAttached) { document.addEventListener('visibilitychange', onVisibilityChange); visibilityListenerAttached = true; }
+        div.style.display = 'flex';
     }
 
-    function showCountdown(seconds, msgPrefix) {
-        return new Promise((resolve) => {
-            const overlay = document.getElementById('countdownOverlay');
-            const countdownNum = document.getElementById('countdownNum');
-            const msgSpan = document.getElementById('countdownMsg');
-            msgSpan.innerHTML = msgPrefix || "Next level in...";
-            overlay.style.display = 'flex';
-            let remaining = seconds;
-            countdownNum.textContent = remaining;
-            const interval = setInterval(() => {
-                if (!isNetworkOnline()) { clearInterval(interval); overlay.style.display='none'; showOfflineExitAndCloseGame("Network lost during countdown."); resolve(); return; }
-                remaining--;
-                if (remaining >= 1) countdownNum.textContent = remaining;
-                else { clearInterval(interval); overlay.style.display='none'; resolve(); }
-            }, 1000);
+    function markLinkVisitedAndAutoStart() {
+        if(externalLinkVisitedForCurrentLevel || autoStartScheduled) return;
+        externalLinkVisitedForCurrentLevel = true; autoStartScheduled = true;
+        document.getElementById('externalLinkWaitingMsg').style.display = 'none';
+        document.getElementById('manualResumeAfterLinkBtn').style.display = 'none';
+        const toast = document.createElement('div'); toast.className = 'offline-toast'; toast.style.background='#d48f2b'; toast.innerText='✅ Link visited! Next lunch starting...'; document.body.appendChild(toast); setTimeout(()=>toast.remove(),1800);
+        setTimeout(()=>{ if(currentCompleteLevel && currentCompleteLevel < MAX_LEVEL) proceedToActualNextLevel(currentCompleteLevel); }, 800);
+    }
+
+    function onVisibilityChange() {
+        if(document.visibilityState === 'visible' && !externalLinkVisitedForCurrentLevel && currentCompleteLevel && document.getElementById('levelCompleteScreen').style.display === 'flex' && !autoStartScheduled) markLinkVisitedAndAutoStart();
+    }
+
+    async function proceedToActualNextLevel(curLevel) {
+        const next = curLevel+1;
+        if(next > MAX_LEVEL) { document.getElementById('levelCompleteScreen').style.display = 'none'; showRewardScreen(); return; }
+        document.getElementById('levelCompleteScreen').style.display = 'none';
+        isProcessing = true;
+        await showCountdown(3, `🍲 LUNCH BALL ${next} incoming ...`);
+        if(!isNetworkOnline()) { showOfflineExitAndCloseGame("Network lost"); isProcessing=false; return; }
+        const success = await startLevelEntrySequence(next);
+        isProcessing=false;
+        if(!success) forceExitAllGameScreens();
+        externalLinkVisitedForCurrentLevel=false; currentCompleteLevel=null; autoStartScheduled=false;
+    }
+
+    function handleNextLevelClick() {
+        if(!currentCompleteLevel) return;
+        if(currentCompleteLevel >= MAX_LEVEL) { document.getElementById('levelCompleteScreen').style.display='none'; showRewardScreen(); return; }
+        if(!externalLinkVisitedForCurrentLevel) {
+            document.getElementById('externalLinkWaitingMsg').style.display='block';
+            document.getElementById('manualResumeAfterLinkBtn').style.display='inline-block';
+            window.open(EXTERNAL_NEXT_LEVEL_URL, '_blank');
+        } else proceedToActualNextLevel(currentCompleteLevel);
+    }
+
+    function showCountdown(secs, msg) {
+        return new Promise((resolve)=>{
+            const ov = document.getElementById('countdownOverlay');
+            const num = document.getElementById('countdownNum');
+            const txt = document.getElementById('countdownMsg');
+            txt.innerHTML = msg || "Next level starting...";
+            ov.style.display='flex';
+            let rem = secs;
+            num.textContent = rem;
+            const interval = setInterval(()=>{
+                if(!isNetworkOnline()) { clearInterval(interval); ov.style.display='none'; showOfflineExitAndCloseGame("Network lost"); resolve(); return; }
+                rem--;
+                if(rem>=1) num.textContent = rem;
+                else { clearInterval(interval); ov.style.display='none'; resolve(); }
+            },1000);
         });
     }
 
-    async function handleNextLevelWithCountdown(currentCompletedLevel) {
-        if (isProcessing) return;
-        const nextLevel = currentCompletedLevel + 1;
-        if (nextLevel > MAX_LEVEL) { document.getElementById('levelCompleteScreen').style.display='none'; showRewardScreen(); return; }
-        try {
-            const newWin = window.open(NEXT_LEVEL_REDIRECT_URL, '_blank');
-            if (!newWin || newWin.closed || typeof newWin.closed === 'undefined') showToast("⚠️ Popup blocked! Allow popups for rewards.", true);
-        } catch(e) { console.warn(e); }
-        await new Promise(r => setTimeout(r, 300));
-        document.getElementById('levelCompleteScreen').style.display = 'none';
-        isProcessing = true;
-        await showCountdown(3, `🌅 Next: Level ${nextLevel} starts in...`);
-        if (!isNetworkOnline()) { showOfflineExitAndCloseGame("Network lost before next level."); isProcessing=false; return; }
-        const success = await startLevelEntrySequence(nextLevel);
-        isProcessing = false;
-        if (!success) forceExitAllGameScreens();
-    }
-
     function showRewardScreen() {
-        const code = `LUNCH-${Math.random().toString(36).substr(2, 8).toUpperCase()}`;
+        const code = `LUNCH-${Math.random().toString(36).substr(2,8).toUpperCase()}`;
         document.getElementById('rewardCodeDisplay').textContent = code;
         document.getElementById('rewardScreen').style.display = 'flex';
     }
-
     function resetGameAndCopy() {
         const code = document.getElementById('rewardCodeDisplay').textContent;
-        navigator.clipboard.writeText(code).catch(()=>{});
-        alert('🏆 Reward code copied! Progress reset to Level 1.');
-        currentUnlockedLevel = 1;
-        saveProgress();
-        buildLevelList();
-        forceExitAllGameScreens();
+        navigator.clipboard.writeText(code);
+        alert('🍳 Code copied! Game reset to Menu 1.');
+        currentUnlockedLevel = 1; saveProgress(); buildLevelList(); forceExitAllGameScreens();
     }
-    window.copyRewardCodeGlobal = function() { const code = document.getElementById('rewardCodeDisplay').textContent; navigator.clipboard.writeText(code); alert('Code copied: '+code); };
-
     function buildLevelList() {
         const container = document.getElementById('levelListContainer');
         container.innerHTML = '';
-        for (let i = 1; i <= MAX_LEVEL; i++) {
-            const isUnlocked = (i <= currentUnlockedLevel);
+        for(let i=1;i<=MAX_LEVEL;i++) {
+            const unlocked = i <= currentUnlockedLevel;
             const card = document.createElement('div');
-            card.className = 'level-card' + (isUnlocked ? '' : ' locked');
-            if (isUnlocked) card.onclick = () => { if (!adSequenceActive && !isProcessing) startLevelEntrySequence(i); };
-            let statusIcon = isUnlocked ? (i < currentUnlockedLevel ? '✔️' : '🔓') : '🔒';
-            card.innerHTML = `
-                <div class="level-number">${i}</div>
-                <div class="level-info">
-                    <div class="level-name">Lunch Ball ${i} <span style="font-size:9px;">(fallback on fail)</span></div>
-                    <div class="level-requirement">5 clicks required</div>
-                </div>
-                <div class="level-status">${statusIcon}</div>
-            `;
+            card.className = `recipe-card ${unlocked ? '' : 'locked'}`;
+            if(unlocked) card.onclick = () => { if(!adSequenceActive && !isProcessing) startLevelEntrySequence(i); };
+            card.innerHTML = `<div class="level-number">${i}</div><div class="level-info"><div class="level-name">🍽️ LUNCH BALL ${i}</div><div class="level-requirement">🍳 5 cooking steps • 3 ads+fallback</div></div><div class="level-status">${unlocked ? (i<currentUnlockedLevel ? '✓ EATEN' : '🔓 READY') : '🔒 LOCKED'}</div>`;
             container.appendChild(card);
         }
     }
-
     function exitGameToRoad() {
-        if (adSequenceActive) { hideAdSequenceUI(); adSequenceActive=false; if(pendingResolveNextStep) pendingResolveNextStep(); pendingResolveNextStep=null; }
-        document.getElementById('gamePanel').style.display = 'none';
-        isProcessing = false;
+        if(adSequenceActive) { document.getElementById('adSequencePanel').style.display='none'; adSequenceActive=false; if(activeFallbackResolver) activeFallbackResolver(); activeFallbackResolver=null; }
+        clearWaitingForLink(); document.getElementById('gamePanel').style.display='none'; isProcessing=false; externalLinkVisitedForCurrentLevel=false; currentCompleteLevel=null; autoStartScheduled=false;
     }
-    function backToRoadFromComplete() { document.getElementById('levelCompleteScreen').style.display='none'; isProcessing=false; }
+    function backToRoadFromComplete() { clearWaitingForLink(); document.getElementById('levelCompleteScreen').style.display='none'; isProcessing=false; externalLinkVisitedForCurrentLevel=false; currentCompleteLevel=null; autoStartScheduled=false; }
 
-    function bindEvents() {
-        const nextBtn = document.getElementById('nextLevelBtnFromComplete');
-        const newNextBtn = nextBtn.cloneNode(true);
-        nextBtn.parentNode.replaceChild(newNextBtn, nextBtn);
-        newNextBtn.id = 'nextLevelBtnFromComplete';
-        newNextBtn.onclick = async () => {
-            if (isNextLevelRedirecting) return;
-            const lvl = parseInt(document.getElementById('levelCompleteScreen').dataset.currentLevel);
-            if (isNaN(lvl) || lvl >= MAX_LEVEL) return;
-            isNextLevelRedirecting = true;
-            try { await handleNextLevelWithCountdown(lvl); } finally { isNextLevelRedirecting = false; }
-        };
-        document.getElementById('backToRoadCompleteBtn').onclick = () => backToRoadFromComplete();
-        document.getElementById('resetAllBtn').onclick = () => resetGameAndCopy();
-        document.getElementById('exitGameBtn').onclick = () => exitGameToRoad();
-    }
-
-    function addClouds() {
-        for(let i=0;i<4;i++) {
-            const cloud = document.createElement('div');
-            cloud.className = 'cloud';
-            const w = 140 + Math.random() * 160;
-            cloud.style.width = w+'px';
-            cloud.style.height = (60+Math.random()*50)+'px';
-            cloud.style.left = Math.random() * 100 + '%';
-            cloud.style.top = Math.random() * 40 + '%';
-            cloud.style.opacity = 0.4 + Math.random()*0.3;
-            cloud.style.background = `rgba(255, 220, 160, 0.6)`;
-            document.body.appendChild(cloud);
-        }
-    }
-
-    window.addEventListener('load', () => {
-        loadProgress();
-        initAdsgram();
-        buildLevelList();
-        bindEvents();
-        addClouds();
-        if (typeof window.showGiga === 'function') console.log("✅ Giga Pub SDK ready");
-        else console.warn("❌ Giga Pub showGiga missing but fallback will handle.");
+    document.getElementById('nextLevelBtnFromComplete').onclick = handleNextLevelClick;
+    document.getElementById('backToRoadCompleteBtn').onclick = backToRoadFromComplete;
+    document.getElementById('resetAllBtn').onclick = resetGameAndCopy;
+    document.getElementById('exitGameBtn').onclick = exitGameToRoad;
+    document.getElementById('rewardCodeDisplay')?.addEventListener('click', () => {
+        const code = document.getElementById('rewardCodeDisplay').textContent;
+        navigator.clipboard.writeText(code); alert('Copied: '+code);
     });
+
+    window.addEventListener('load', () => { loadProgress(); initAdsgram(); buildLevelList(); });
     window.addEventListener('beforeunload', () => saveProgress());
-    window.addEventListener('online', () => console.log("online"));
-    window.addEventListener('offline', () => { if (adSequenceActive) showOfflineExitAndCloseGame("Connection lost! Exiting."); });
 </script>
 </body>
 </html>
