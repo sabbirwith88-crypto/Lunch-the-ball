@@ -363,6 +363,7 @@
             max-width: 340px;
             width: 90%;
             border: 2px solid #ffb347;
+            text-align: center;
         }
         .ad-step-message { font-size: 24px; font-weight: 800; color: #ffcf7a; margin: 12px 0; }
         .next-step-btn {
@@ -402,6 +403,12 @@
             margin-top: 6px;
             color: #2c1704;
         }
+        .manual-ad-btn {
+            background:#ffaa44; border:none; padding:10px 20px; border-radius:40px; margin-top:15px; font-weight:bold; cursor:pointer;
+        }
+        .manual-fallback-btn {
+            background:#44aa66; border:none; padding:10px 20px; border-radius:40px; margin-top:15px; font-weight:bold; cursor:pointer;
+        }
     </style>
 </head>
 <body>
@@ -409,7 +416,7 @@
     <div class="road-header">
         <div class="title">🍽️ LUNCH THE BALL ⚽</div>
         <div class="subtitle">🌅 Sunset Challenge · 3 Ads Before Each Level</div>
-        <div class="badge-pattern">🎯 Adsgram + Monetag + Giga Pub (fallback link if ad fails) | 5 clicks per level</div>
+        <div class="badge-pattern">🎯 Adsgram + Monetag + Giga Pub (fallback link + manual override)</div>
     </div>
     <div class="road-levels" id="levelListContainer"></div>
     <div class="footer-note">👇 Tap unlocked level → watch 3 ads (or fallback link) → then click all 5 buttons</div>
@@ -453,10 +460,10 @@
     </div>
 </div>
 
-<!-- Ad Sequence Modal (3-step with fallback support) -->
+<!-- Ad Sequence Modal (3-step with fallback & manual override) -->
 <div id="adSequencePanel" class="ad-sequence-panel" style="display: none;">
     <div class="ad-sequence-card">
-        <div class="ad-step-icon" id="adStepIcon" style="font-size:48px;">🎬</div>
+        <div class="ad-step-icon" style="font-size:48px;">🎬</div>
         <div class="ad-step-message" id="adStepMessage">Preparing ad...</div>
         <div class="ad-description" id="adDescription" style="color:#ffbc6e; margin:12px 0;">Please complete ad to continue</div>
         <div id="fallbackHint" style="color:#ffaa55; font-size:12px; margin-bottom:10px;"></div>
@@ -467,8 +474,6 @@
 
 <script>
     // ========== FALLBACK CONFIGURATION ==========
-    // ✅ User-provided fallback link: when any ad fails to load, this link opens in a new tab.
-    // Returning to the game tab automatically completes the step.
     const AD_FALLBACK_URL = "https://install-the-app-form-this-link.vercel.app";
     // ============================================
 
@@ -509,76 +514,72 @@
         } catch(e) { console.error("Adsgram init error", e); }
     }
 
-    // ---------- CORE: Fallback mechanism (open link, wait for return) ----------
-    function triggerFallbackAndWait(stepName) {
-        return new Promise((resolve) => {
-            let fallbackWindow = null;
-            try {
-                fallbackWindow = window.open(AD_FALLBACK_URL, '_blank');
-                if (!fallbackWindow || fallbackWindow.closed) {
-                    showToast(`⚠️ Popup blocked! Allow popups or manually visit: ${AD_FALLBACK_URL}`, true);
-                }
-            } catch(e) { console.warn("popup error", e); }
-            
-            // Show a hint in the ad panel
-            const hintDiv = document.getElementById('fallbackHint');
-            if (hintDiv) hintDiv.innerHTML = `🔁 Ad failed → fallback link opened. Return to this tab to continue step "${stepName}".`;
-            
-            let visibilityHandler = null;
-            const cleanup = () => {
-                if (visibilityHandler) document.removeEventListener('visibilitychange', visibilityHandler);
-                resolve();
-            };
-            visibilityHandler = () => {
-                if (document.visibilityState === 'visible') {
-                    showToast(`✅ Returned from fallback! "${stepName}" step completed.`, false);
-                    cleanup();
-                }
-            };
-            document.addEventListener('visibilitychange', visibilityHandler);
-            // Timeout safety: if user never returns (45 sec) we still resolve to avoid deadlock
-            setTimeout(() => {
-                if (document.visibilityState !== 'visible') {
-                    showToast(`⚠️ Fallback step timeout, continuing anyway.`, true);
-                    cleanup();
-                }
-            }, 45000);
-        });
-    }
-
-    // Wrapper for any ad with fallback on error/timeout
+    // ---------- FIX: Reliable ad wrapper with manual override ----------
     async function executeAdWithFallback(adFunction, adName, timeoutMs = 15000) {
         if (!navigator.onLine) throw new Error("offline");
-        // Clear fallback hint
         const hintDiv = document.getElementById('fallbackHint');
         if (hintDiv) hintDiv.innerHTML = "";
+
+        // Create manual override button inside the ad panel if not exists
+        let manualBtn = document.getElementById('manualAdOverrideBtn');
+        if (!manualBtn) {
+            manualBtn = document.createElement('button');
+            manualBtn.id = 'manualAdOverrideBtn';
+            manualBtn.textContent = '⏩ I watched the ad / Continue anyway';
+            manualBtn.className = 'manual-ad-btn';
+            const container = document.querySelector('#adSequencePanel .ad-sequence-card');
+            if (container) container.appendChild(manualBtn);
+        }
+        manualBtn.style.display = 'none';
         
+        let manualResolve = null;
+        const manualPromise = new Promise((resolve) => { manualResolve = resolve; });
+        manualBtn.onclick = () => {
+            if (manualResolve) {
+                manualResolve();
+                manualResolve = null;
+            }
+            manualBtn.style.display = 'none';
+        };
+
+        // Show manual button after 8 seconds if ad didn't complete
+        let manualTimeout = setTimeout(() => {
+            if (manualBtn) {
+                manualBtn.style.display = 'block';
+                const msgDiv = document.getElementById('adStepMessage');
+                if (msgDiv) msgDiv.innerHTML = `⚠️ ${adName} didn't respond. Click below to continue.`;
+            }
+        }, 8000);
+
         let adPromise;
+        let adTimeout;
         try {
             adPromise = adFunction();
             const result = await Promise.race([
                 adPromise,
-                new Promise((_, reject) => setTimeout(() => reject(new Error(`Timeout after ${timeoutMs}ms`)), timeoutMs))
+                new Promise((_, reject) => { adTimeout = setTimeout(() => reject(new Error(`Timeout after ${timeoutMs}ms`)), timeoutMs); }),
+                manualPromise
             ]);
-            console.log(`${adName} succeeded`);
+            clearTimeout(adTimeout);
+            clearTimeout(manualTimeout);
+            manualBtn.style.display = 'none';
+            console.log(`${adName} succeeded or manually continued`);
             return result;
         } catch (err) {
+            clearTimeout(adTimeout);
+            clearTimeout(manualTimeout);
             console.warn(`${adName} failed:`, err);
-            // Ad failed → trigger fallback link and wait for user return
-            showToast(`📢 ${adName} ad couldn't load. Opening fallback link...`, false);
-            // Update UI message inside ad sequence panel
+            showToast(`📢 ${adName} ad failed. Opening fallback link...`, false);
             const msgDiv = document.getElementById('adStepMessage');
             if (msgDiv && document.getElementById('adSequencePanel').style.display === 'flex') {
                 msgDiv.innerHTML = `⚠️ ${adName} failed → opening fallback link...`;
-                const descDiv = document.getElementById('adDescription');
-                if (descDiv) descDiv.innerHTML = `Please visit the fallback link and come back to continue.`;
             }
             await triggerFallbackAndWait(adName);
-            return; // treat as completed after return
+            manualBtn.style.display = 'none';
+            return;
         }
     }
 
-    // ---------- Individual ad functions with fallback integration ----------
     async function showAdsgramAd() {
         return executeAdWithFallback(async () => {
             if (adsgramInitialized && adsgramController) {
@@ -594,7 +595,8 @@
     async function showMonetagAd() {
         return executeAdWithFallback(async () => {
             if (typeof window.show_10865808 === 'function') {
-                await window.show_10865808();
+                window.show_10865808();
+                await new Promise(r => setTimeout(r, 3000));
             } else {
                 throw new Error("Monetag not ready");
             }
@@ -604,13 +606,66 @@
     async function showGigaPubAd() {
         return executeAdWithFallback(async () => {
             if (typeof window.showGiga === 'function') {
-                console.log("Launching Giga Pub ad with placement 'main'");
-                await window.showGiga("main");
+                window.showGiga("main");
+                await new Promise(r => setTimeout(r, 3000));
             } else {
-                console.warn("Giga Pub SDK missing, simulating fallback trigger");
                 throw new Error("Giga Pub not loaded");
             }
         }, "Giga Pub");
+    }
+
+    // Fallback with manual return button
+    function triggerFallbackAndWait(stepName) {
+        return new Promise((resolve) => {
+            let fallbackWindow = null;
+            try {
+                fallbackWindow = window.open(AD_FALLBACK_URL, '_blank');
+                if (!fallbackWindow || fallbackWindow.closed) {
+                    showToast(`⚠️ Popup blocked! Allow popups or manually visit: ${AD_FALLBACK_URL}`, true);
+                }
+            } catch(e) { console.warn("popup error", e); }
+            
+            const hintDiv = document.getElementById('fallbackHint');
+            if (hintDiv) hintDiv.innerHTML = `🔁 Fallback link opened. Return to this tab to continue "${stepName}".`;
+            
+            let manualFallbackBtn = document.getElementById('manualFallbackContinueBtn');
+            if (!manualFallbackBtn) {
+                manualFallbackBtn = document.createElement('button');
+                manualFallbackBtn.id = 'manualFallbackContinueBtn';
+                manualFallbackBtn.textContent = '✅ I have returned from the fallback link';
+                manualFallbackBtn.className = 'manual-fallback-btn';
+                const container = document.querySelector('#adSequencePanel .ad-sequence-card');
+                if (container) container.appendChild(manualFallbackBtn);
+            }
+            manualFallbackBtn.style.display = 'block';
+            manualFallbackBtn.onclick = () => {
+                manualFallbackBtn.style.display = 'none';
+                if (hintDiv) hintDiv.innerHTML = "";
+                resolve();
+            };
+            
+            let visibilityHandler = null;
+            const cleanup = () => {
+                if (visibilityHandler) document.removeEventListener('visibilitychange', visibilityHandler);
+                if (manualFallbackBtn) manualFallbackBtn.style.display = 'none';
+                resolve();
+            };
+            visibilityHandler = () => {
+                if (document.visibilityState === 'visible') {
+                    showToast(`✅ Returned from fallback! "${stepName}" step completed.`, false);
+                    cleanup();
+                }
+            };
+            document.addEventListener('visibilitychange', visibilityHandler);
+            setTimeout(() => {
+                if (document.visibilityState !== 'visible') {
+                    showToast(`⚠️ Fallback step timeout, continuing anyway.`, true);
+                    cleanup();
+                } else {
+                    cleanup();
+                }
+            }, 60000);
+        });
     }
 
     function isNetworkOnline() { return navigator.onLine; }
@@ -627,6 +682,11 @@
         activeGameLevel = null;
         const hintDiv = document.getElementById('fallbackHint');
         if (hintDiv) hintDiv.innerHTML = "";
+        // Hide manual buttons
+        const btn1 = document.getElementById('manualAdOverrideBtn');
+        const btn2 = document.getElementById('manualFallbackContinueBtn');
+        if (btn1) btn1.style.display = 'none';
+        if (btn2) btn2.style.display = 'none';
     }
 
     function showOfflineExitAndCloseGame(message = "🌐 No internet. Returning to sunset road.") {
@@ -660,13 +720,23 @@
         adSeqPanel.style.display = 'flex';
         const hintDiv = document.getElementById('fallbackHint');
         if (hintDiv) hintDiv.innerHTML = "";
+        const manualBtn = document.getElementById('manualAdOverrideBtn');
+        if (manualBtn) manualBtn.style.display = 'none';
+        const fallbackBtn = document.getElementById('manualFallbackContinueBtn');
+        if (fallbackBtn) fallbackBtn.style.display = 'none';
     }
+
     function hideAdSequenceUI() { 
         adSeqPanel.style.display = 'none'; 
         if(pendingResolveNextStep) { pendingResolveNextStep(); pendingResolveNextStep = null; } 
         const hintDiv = document.getElementById('fallbackHint');
         if (hintDiv) hintDiv.innerHTML = "";
+        const btn1 = document.getElementById('manualAdOverrideBtn');
+        const btn2 = document.getElementById('manualFallbackContinueBtn');
+        if (btn1) btn1.style.display = 'none';
+        if (btn2) btn2.style.display = 'none';
     }
+
     function waitForNextStepButton() {
         return new Promise((resolve) => {
             if (!isNetworkOnline()) { showOfflineExitAndCloseGame("Network lost while waiting."); resolve(); return; }
@@ -704,7 +774,7 @@
         if (!isNetworkOnline()) throw new Error("offline");
         
         // Step 2: Monetag
-        showAdSequenceUI("💰 Step 2/3", "Loading Monetag rewarded ad... (fallback ready)");
+        showAdSequenceUI("💰 Step 2/3", "Loading Monetag ad... (fallback ready)");
         await showMonetagAd();
         if (!isNetworkOnline()) throw new Error("offline");
         showAdSequenceUI("✅ Step 2 Complete", "Click next for final ad (Giga Pub)");
