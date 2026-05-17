@@ -1,869 +1,783 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Lunch the Ball — Chef's Arcade | Tasty Auto Next Level</title>
-    <!-- Adsgram SDK with updated block ID: int-24138 -->
-    <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-    <!-- Monetag SDK with updated zone ID: 10865808 -->
-    <script src="//libtl.com/sdk.js" data-zone="10865808" data-sdk="show_10865808"></script>
-    <!-- GigaPub SDK with updated ID: 6332 -->
-    <script src="https://ad.gigapub.tech/script?id=6332"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>Nexus DecaRun | 10x6 Links → Final Reward</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-        body {
-            min-height: 100vh;
-            background: radial-gradient(circle at 30% 20%, #ffb347, #ff7e05);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-            font-family: 'Segoe UI', 'Poppins', 'Fredoka One', system-ui, -apple-system, 'Comic Neue', sans-serif;
-            position: relative;
-            overflow-x: hidden;
-        }
+    body {
+      background: radial-gradient(circle at 80% 20%, #0a0f1a, #02040c);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 1.5rem;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+    }
 
-        /* sizzling steam effect background */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: repeating-radial-gradient(circle at 20% 40%, rgba(255,215,150,0.15) 0px, rgba(255,200,100,0.1) 50px, transparent 80px);
-            pointer-events: none;
-            z-index: 0;
-        }
+    .nexus-card {
+      max-width: 780px;
+      width: 100%;
+      background: rgba(8, 14, 26, 0.65);
+      backdrop-filter: blur(10px);
+      border-radius: 3rem;
+      box-shadow: 0 30px 50px -20px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(139, 92, 246, 0.25);
+      overflow: hidden;
+    }
 
-        .game-container {
-            width: 100%;
-            max-width: 540px;
-            background: rgba(255, 220, 160, 0.85);
-            backdrop-filter: blur(14px);
-            border-radius: 72px;
-            box-shadow: 0 30px 40px rgba(0,0,0,0.4), inset 0 1px 4px rgba(255,245,200,0.8);
-            overflow: hidden;
-            border: 2px solid #ffcc66;
-            transition: transform 0.2s ease;
-            z-index: 2;
-        }
-
-        .lunch-header {
-            background: linear-gradient(135deg, #ff9944, #d96c00);
-            padding: 22px 16px;
-            text-align: center;
-            border-bottom: 3px solid #fff0b5;
-            position: relative;
-            overflow: hidden;
-        }
-        .lunch-header::after {
-            content: "🍽️⚽";
-            position: absolute;
-            bottom: -10px;
-            right: 10px;
-            font-size: 58px;
-            opacity: 0.2;
-            transform: rotate(5deg);
-        }
-
-        .title {
-            font-size: 38px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #FFF6CF, #FFBC3C);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            text-shadow: 0 3px 8px rgba(0,0,0,0.2);
-            letter-spacing: 2px;
-            display: inline-block;
-            font-family: 'Fredoka One', cursive;
-        }
-
-        .subtitle {
-            color: #fff2b5;
-            font-size: 13px;
-            margin-top: 8px;
-            font-weight: 700;
-            letter-spacing: 1px;
-            background: rgba(0,0,0,0.35);
-            display: inline-block;
-            padding: 5px 18px;
-            border-radius: 60px;
-            backdrop-filter: blur(6px);
-        }
-
-        .badge-pattern {
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(8px);
-            display: inline-block;
-            padding: 6px 18px;
-            border-radius: 60px;
-            font-size: 12px;
-            margin-top: 12px;
-            color: #FFE484;
-            font-weight: bold;
-            border: 1px solid #ffbc3c;
-        }
-
-        .meal-levels {
-            max-height: 460px;
-            overflow-y: auto;
-            padding: 20px 16px;
-            scrollbar-width: thin;
-            scrollbar-color: #ff9f2e #ffd9a5;
-        }
-        .meal-levels::-webkit-scrollbar {
-            width: 5px;
-        }
-        .meal-levels::-webkit-scrollbar-track {
-            background: #ffd9a5;
-            border-radius: 10px;
-        }
-        .meal-levels::-webkit-scrollbar-thumb {
-            background: #ff9f2e;
-            border-radius: 10px;
-        }
-
-        .recipe-card {
-            background: linear-gradient(115deg, rgba(255,215,150,0.95) 0%, rgba(255,200,120,0.95) 100%);
-            backdrop-filter: blur(4px);
-            margin-bottom: 14px;
-            border-radius: 32px;
-            padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-left: 7px solid #ffaa33;
-            border-right: 1px solid rgba(255,170,50,0.5);
-            cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-            box-shadow: 0 8px 18px rgba(0,0,0,0.25);
-        }
-        .recipe-card:hover {
-            transform: translateY(-3px) scale(1.01);
-            border-left-width: 9px;
-            background: #fff0cf;
-        }
-        .recipe-card:active {
-            transform: scale(0.98);
-        }
-        .recipe-card.locked {
-            opacity: 0.6;
-            border-left-color: #aa8b5a;
-            filter: grayscale(0.2);
-            pointer-events: none;
-            transform: none;
-        }
-        .level-number {
-            font-size: 36px;
-            font-weight: 800;
-            background: linear-gradient(145deg, #f5a623, #cc7b00);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            width: 65px;
-            text-align: center;
-            font-family: 'Fredoka One', monospace;
-        }
-        .level-info {
-            flex: 1;
-            padding-left: 14px;
-        }
-        .level-name {
-            font-size: 18px;
-            font-weight: 800;
-            color: #552d00;
-            letter-spacing: 0.5px;
-        }
-        .level-requirement {
-            font-size: 10px;
-            color: #b45f1b;
-            margin-top: 4px;
-            display: flex;
-            gap: 8px;
-            font-weight: 600;
-        }
-        .level-status {
-            background: rgba(0,0,0,0.5);
-            border-radius: 40px;
-            padding: 6px 14px;
-            font-size: 13px;
-            font-weight: bold;
-            color: #ffecb3;
-        }
-
-        /* Game Panel - Lunch style */
-        .game-panel {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(210, 110, 20, 0.96);
-            backdrop-filter: blur(20px);
-            z-index: 10000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            animation: slideUp 0.3s ease-out;
-        }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        .game-card {
-            background: linear-gradient(145deg, #ffda99, #ffb347);
-            border-radius: 64px;
-            padding: 28px 20px;
-            width: 100%;
-            max-width: 380px;
-            text-align: center;
-            border: 2px solid #ffe4a3;
-            box-shadow: 0 30px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,200,0.8);
-        }
-        .game-level-title {
-            font-size: 32px;
-            font-weight: 800;
-            font-family: 'Fredoka One', monospace;
-            background: linear-gradient(135deg, #fff0c0, #f5a623);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin-bottom: 12px;
-        }
-        .instruction-box {
-            background: rgba(0,0,0,0.4);
-            border-radius: 50px;
-            padding: 12px;
-            margin: 12px 0;
-            color: #fff2cf;
-            font-size: 14px;
-            font-weight: 700;
-            border: 1px dashed #ffd966;
-        }
-        .game-progress {
-            background: #d98e2b;
-            border-radius: 60px;
-            padding: 12px;
-            margin: 16px 0;
-            color: #fff8e7;
-            font-weight: 800;
-            font-size: 18px;
-            box-shadow: inset 0 1px 4px #00000044, 0 2px 4px rgba(0,0,0,0.3);
-        }
-        .buttons-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 16px;
-            margin: 24px 0;
-        }
-        .action-btn {
-            background: linear-gradient(125deg, #ffcf6e, #ffaa33);
-            border: none;
-            padding: 16px 0;
-            font-size: 15px;
-            font-weight: 800;
-            border-radius: 60px;
-            color: #4a2c00;
-            cursor: pointer;
-            transition: all 0.1s linear;
-            box-shadow: 0 6px 0 #b16200;
-            text-align: center;
-            font-family: inherit;
-        }
-        .action-btn:active {
-            transform: translateY(3px);
-            box-shadow: 0 2px 0 #b16200;
-        }
-        .action-btn.disabled-btn {
-            opacity: 0.7;
-            filter: grayscale(0.2);
-            transform: none;
-            pointer-events: none;
-        }
-        .game-close-btn {
-            background: rgba(50,30,10,0.9);
-            color: #ffda88;
-            padding: 12px 24px;
-            border: 1px solid #ffbb44;
-            border-radius: 40px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-        .countdown-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.92);
-            backdrop-filter: blur(16px);
-            z-index: 11000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        .countdown-number {
-            font-size: 110px;
-            background: linear-gradient(45deg, #FFDD88, #FFA822);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            animation: pulseGlow 0.6s ease infinite;
-            font-weight: 900;
-        }
-        @keyframes pulseGlow {
-            0% { text-shadow: 0 0 0px #ffaa33; opacity: 1; }
-            100% { text-shadow: 0 0 20px #ffaa33; opacity: 0.9; }
-        }
-        .levelcomplete-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at center, #ffcd7e, #d97a00);
-            z-index: 9000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 24px;
-        }
-        .complete-title {
-            font-size: 48px;
-            font-weight: 900;
-            background: linear-gradient(135deg, #FFF4CF, #FFBC44);
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            margin-bottom: 20px;
-        }
-        .btn {
-            background: linear-gradient(45deg, #ffbc44, #ff961f);
-            border: none;
-            padding: 14px 32px;
-            font-size: 18px;
-            font-weight: bold;
-            border-radius: 60px;
-            margin: 8px;
-            cursor: pointer;
-            transition: 0.1s linear;
-            box-shadow: 0 5px 12px rgba(0,0,0,0.3);
-            color: #3b2400;
-        }
-        .btn-secondary {
-            background: linear-gradient(45deg, #5e3a1a, #3b2400);
-            color: #ffdd99;
-        }
-        .ad-sequence-panel {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.97);
-            backdrop-filter: blur(28px);
-            z-index: 12000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .ad-sequence-card {
-            background: rgba(245, 170, 60, 0.95);
-            border-radius: 64px;
-            padding: 36px 24px;
-            width: 320px;
-            text-align: center;
-            border: 2px solid #ffeaa7;
-            box-shadow: 0 20px 35px rgba(0,0,0,0.6);
-            color: #2d1f00;
-        }
-        .ad-step-icon {
-            font-size: 58px;
-            margin-bottom: 12px;
-            filter: drop-shadow(0 4px 8px #ffcd7e);
-        }
-        .ad-step-message {
-            font-size: 24px;
-            font-weight: 800;
-            color: #3b2c14;
-        }
-        .popup-warning, .waiting-message {
-            background: #2c2c2c;
-            border-radius: 40px;
-            padding: 10px;
-            font-size: 12px;
-            color: #FFD966;
-            margin-top: 12px;
-        }
-        .offline-toast {
-            position: fixed;
-            bottom: 30px;
-            left: 20px;
-            right: 20px;
-            background: #dc2626;
-            color: white;
-            text-align: center;
-            padding: 14px;
-            border-radius: 80px;
-            font-weight: bold;
-            z-index: 20000;
-            animation: fadeUp 0.2s;
-        }
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(20px);}
-            to { opacity: 1; transform: translateY(0);}
-        }
-        .footer-note {
-            text-align: center;
-            padding: 14px;
-            background: rgba(0,0,0,0.4);
-            color: #ffefb9;
-            font-size: 11px;
-            font-weight: 600;
-        }
-        .next-step-btn {
-            background: #ffaa33;
-            border: none;
-            padding: 12px 28px;
-            border-radius: 60px;
-            font-weight: bold;
-            margin-top: 16px;
-            cursor: pointer;
-            color: #2d1b00;
-        }
-        .reward-screen {
-            background: radial-gradient(circle, #FFD966, #e59400);
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 13000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            gap: 20px;
-        }
-        .reward-code {
-            background: #2d1f00;
-            color: #ffdb8e;
-            padding: 14px 24px;
-            border-radius: 60px;
-            font-size: 20px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-    </style>
+    .hero-glow {
+      background: linear-gradient(125deg, #0b1121, #111827, #0a0f1f);
+      padding: 1.8rem 2rem 1.3rem;
+      text-align: center;
+      border-bottom: 1px solid rgba(139, 92, 246, 0.5);
+    }
+    .date-chip {
+      font-size: 1.2rem;
+      font-weight: 500;
+      background: rgba(139, 92, 246, 0.2);
+      backdrop-filter: blur(4px);
+      display: inline-block;
+      padding: 0.2rem 1rem;
+      border-radius: 60px;
+      color: #d9c6ff;
+    }
+    .time-digit {
+      font-size: 2.4rem;
+      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      color: #f0f3ff;
+      text-shadow: 0 0 6px #8b5cf6;
+      margin-top: 0.2rem;
+    }
+    .run-pill {
+      margin-top: 0.8rem;
+      background: linear-gradient(95deg, #2b3b4e, #1e2a3a);
+      display: inline-block;
+      padding: 0.4rem 1.2rem;
+      border-radius: 60px;
+      font-weight: bold;
+      font-size: 1rem;
+      color: #ffd966;
+      border: 1px solid #ffb347;
+    }
+    .status-pill {
+      margin-top: 0.6rem;
+      background: rgba(0, 0, 0, 0.4);
+      backdrop-filter: blur(8px);
+      border-radius: 80px;
+      padding: 0.5rem 1.5rem;
+      font-weight: 600;
+      font-size: 0.95rem;
+      display: inline-block;
+    }
+    .status-active {
+      background: linear-gradient(95deg, #4c2a4a, #5e3a5e);
+      box-shadow: 0 0 8px #c084fc;
+      color: #f3e8ff;
+    }
+    .status-complete {
+      background: linear-gradient(95deg, #0f4c3a, #1b5e48);
+      box-shadow: 0 0 14px #2dd4bf;
+      color: #ccfbf1;
+    }
+    .quest-area {
+      padding: 1.8rem 1.8rem 1.5rem;
+      background: rgba(2, 6, 18, 0.5);
+    }
+    .quest-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      flex-wrap: wrap;
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid rgba(139, 92, 246, 0.4);
+    }
+    .quest-header h2 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      background: linear-gradient(120deg, #e0d5ff, #a78bfa);
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+    .progress-ring {
+      background: rgba(0, 0, 0, 0.6);
+      padding: 0.2rem 0.9rem;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.85rem;
+      color: #c4b5fd;
+      border: 1px solid #6d28d9;
+    }
+    .step-grid {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+      margin-bottom: 1.5rem;
+    }
+    .step-tile {
+      background: rgba(16, 22, 38, 0.8);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      border-radius: 2rem;
+      padding: 0.8rem 1.2rem;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      transition: all 0.2s;
+    }
+    .step-icon {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 700;
+      background: #11172b;
+      padding: 0.2rem 0.5rem;
+      border-radius: 1rem;
+      font-size: 0.75rem;
+      min-width: 68px;
+      text-align: center;
+      color: #cdd9ff;
+    }
+    .step-name {
+      flex: 1;
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: #f0f4ff;
+    }
+    .step-tile.completed {
+      background: linear-gradient(115deg, #0a2f24, #0e3a2c);
+      border-left: 5px solid #2dd4bf;
+      border-color: #2dd4bf #2c5270 #2c5270 #2dd4bf;
+    }
+    .step-tile.completed .step-name {
+      text-decoration: line-through;
+      text-decoration-color: #5ee0d0;
+      color: #9bc6c0;
+    }
+    .step-tile.active-step {
+      border: 2px solid #c084fc;
+      box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+      background: rgba(31, 41, 85, 0.9);
+    }
+    .verification-panel {
+      background: rgba(2, 8, 20, 0.95);
+      border-radius: 2rem;
+      margin-top: 0.5rem;
+      padding: 1.2rem;
+      border: 1px solid #8b5cf6;
+      backdrop-filter: blur(12px);
+    }
+    .panel-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #d9c6ff;
+      margin-bottom: 0.6rem;
+    }
+    .countdown-big {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 2.8rem;
+      font-weight: 800;
+      color: #facc15;
+      text-align: center;
+      margin: 0.4rem 0;
+    }
+    .link-btn, .confirm-btn {
+      border: none;
+      padding: 0.7rem;
+      border-radius: 3rem;
+      font-weight: 700;
+      color: white;
+      cursor: pointer;
+      width: 100%;
+      margin-bottom: 0.8rem;
+      font-size: 0.95rem;
+    }
+    .link-btn {
+      background: linear-gradient(95deg, #2b6e62, #1f574b);
+    }
+    .confirm-btn {
+      background: linear-gradient(95deg, #7c3aed, #6d28d9);
+    }
+    .confirm-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    .warning-text {
+      color: #facc15;
+      font-size: 0.75rem;
+      margin-top: 0.4rem;
+      text-align: center;
+    }
+    .reset-all-btn {
+      background: rgba(100, 70, 120, 0.4);
+      border: 1px solid #dc2626;
+      color: #fca5a5;
+      padding: 0.5rem 1rem;
+      border-radius: 2rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: 0.2s;
+      margin-top: 1rem;
+      width: 100%;
+    }
+    .reward-vault {
+      margin: 1rem 0 0;
+      background: linear-gradient(125deg, #0a2f24, #022118);
+      border-radius: 2rem;
+      padding: 1.2rem;
+      text-align: center;
+      border: 2px solid #ffd966;
+      animation: pulseGlow 0.8s ease;
+    }
+    @keyframes pulseGlow {
+      0% { box-shadow: 0 0 0 0 #ffd96680; }
+      70% { box-shadow: 0 0 0 12px #ffd96600; }
+      100% { box-shadow: 0 0 0 0 transparent; }
+    }
+    .vault-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.3rem;
+      font-weight: bold;
+      background: #07161c;
+      color: #facc15;
+      display: inline-block;
+      padding: 0.3rem 1rem;
+      border-radius: 2rem;
+      margin: 0.5rem 0;
+      border: 1px solid #ffd966;
+    }
+    .copy-action {
+      background: linear-gradient(95deg, #2c7a5a, #1e563e);
+      border: none;
+      padding: 0.5rem 1.2rem;
+      border-radius: 3rem;
+      font-weight: 700;
+      color: white;
+      cursor: pointer;
+    }
+    .info-footer {
+      margin-top: 1rem;
+      text-align: center;
+      font-size: 0.7rem;
+      color: #8aa0bc;
+      background: #0a0f1a;
+      padding: 0.5rem;
+      border-radius: 2rem;
+    }
+    .toast-msg {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e5a4ccc;
+      backdrop-filter: blur(12px);
+      color: white;
+      padding: 0.5rem 1.2rem;
+      border-radius: 3rem;
+      font-weight: 600;
+      z-index: 2100;
+      animation: fadeSlide 1.6s ease forwards;
+    }
+    @keyframes fadeSlide {
+      0% { opacity: 1; transform: translateX(-50%) translateY(0);}
+      80% { opacity: 1; }
+      100% { opacity: 0; visibility: hidden; transform: translateX(-50%) translateY(-12px);}
+    }
+    @media (max-width: 550px) {
+      .time-digit { font-size: 1.8rem; }
+      .countdown-big { font-size: 2rem; }
+      .step-name { font-size: 0.8rem; }
+    }
+  </style>
 </head>
 <body>
-<div class="game-container">
-    <div class="lunch-header">
-        <div class="title">⚽ LUNCH THE BALL 🍽️</div>
-        <div class="subtitle">🔥 CHEF'S GRAND PRIX 🔥</div>
-        <div class="badge-pattern">🥘 3 Ads (Adsgram + Monetag + GigaPub) • Smart Fallback • Auto Next Level</div>
+<div class="nexus-card">
+  <div class="hero-glow">
+    <div>
+      <div class="date-chip" id="currentDate"></div>
+      <div class="time-digit" id="currentTime"></div>
     </div>
-    <div class="meal-levels" id="levelListContainer"></div>
-    <div class="footer-note">🍳 Tap a recipe → watch ad sequence → complete 5 lunch tasks → advance</div>
-</div>
-
-<!-- game panel (lunch tasks) -->
-<div id="gamePanel" class="game-panel" style="display: none;">
-    <div class="game-card">
-        <div class="game-level-title" id="gameLevelTitle">MENU 1</div>
-        <div class="instruction-box">🍽️ Click each cooking step to prepare the perfect Lunch Ball 🍽️</div>
-        <div class="game-progress" id="gameProgressText">0 / 5 steps done</div>
-        <div class="buttons-grid" id="buttonsGrid"></div>
-        <div class="complete-status" id="completeStatusMsg">Finish all steps</div>
-        <button class="game-close-btn" id="exitGameBtn">← BACK TO KITCHEN</button>
+    <div class="run-pill" id="runCounterDisplay">🏆 RUN 0 / 10</div>
+    <div class="status-pill" id="globalStatusBadge">
+      <span id="statusLabel">🔁 10 runs · complete 6 links each</span>
     </div>
-</div>
+  </div>
 
-<!-- countdown -->
-<div id="countdownOverlay" class="countdown-overlay" style="display: none;">
-    <div class="countdown-number" id="countdownNum">3</div>
-    <div class="countdown-message" id="countdownMsg">Next lunch course incoming...</div>
-</div>
-
-<!-- level complete screen -->
-<div id="levelCompleteScreen" class="levelcomplete-screen" style="display: none;">
-    <div class="complete-title">🍲 BALL LUNCH READY! 🍲</div>
-    <div style="color: #2d1c00; font-size: 18px; margin-bottom: 20px; font-weight: bold;" id="completeLevelMsg"></div>
-    <div id="waitingForLinkArea">
-        <div id="externalLinkWaitingMsg" class="waiting-message" style="display: none;">
-            🔗 <strong>Open special recipe link to unlock next level</strong><br>
-            After returning, next course auto-starts!<br><br>
-            <a href="#" id="dynamicExternalLink" target="_blank" style="background:#ffaa33; color:#3b2400; padding:10px 20px; border-radius:40px; text-decoration:none; display:inline-block; font-weight:bold;">👉 CLAIM COOKIE PASS 👈</a>
-        </div>
-        <button id="manualResumeAfterLinkBtn" class="btn manual-continue-btn" style="display: none;">✅ I'm back, continue lunch</button>
+  <div class="quest-area">
+    <div class="quest-header">
+      <h2>✦ DECA‑RUN TRIAL ✦</h2>
+      <div class="progress-ring" id="progressCounter">0 / 6</div>
     </div>
-    <button class="btn" id="nextLevelBtnFromComplete">NEXT COURSE →</button>
-    <button class="btn btn-secondary" id="backToRoadCompleteBtn">MENU BOARD</button>
-</div>
 
-<!-- final reward -->
-<div id="rewardScreen" class="reward-screen" style="display: none;">
-    <h2 style="color: #2c1b00; font-size: 38px; font-weight: 900;">🏆 MASTER CHEF 🏆</h2>
-    <p style="color: #fff1c1; font-size: 20px;">All 10 LunchBall levels conquered!</p>
-    <p style="color: #fff1c1;">Your golden recipe code:</p>
-    <div class="reward-code" id="rewardCodeDisplay" style="background: #2b1d06; color: #ffd966;">LUNCH-XXXXXX</div>
-    <p style="color: white; font-size: 11px;">tap to copy</p>
-    <button class="btn" id="resetAllBtn" style="background: #4a2a0a; color: #ffd966;">Copy & Reset Feast</button>
-</div>
+    <ul class="step-grid" id="stepList"></ul>
 
-<!-- ad sequence panel -->
-<div id="adSequencePanel" class="ad-sequence-panel" style="display: none;">
-    <div class="ad-sequence-card">
-        <div class="ad-step-icon" id="adStepIcon">🍿</div>
-        <div class="ad-step-message" id="adStepMessage">Loading commercial...</div>
-        <div class="ad-description" id="adDescription" style="color:#2f1e00; margin:12px 0;">Please complete ad to continue cooking</div>
-        <div id="adLoadingIndicator" style="font-size:14px; color:#ffcc55;">Preparing ingredients...</div>
-        <div id="popupBlockWarning" class="popup-warning" style="display: none;">⚠️ Popup blocked? Click below after visiting link</div>
-        <button id="manualFallbackContinueBtn" class="next-step-btn" style="display: none;">✅ I returned, continue</button>
+    <div id="verifyPanel" class="verification-panel" style="display: none;">
+      <div class="panel-title">⚡ STEP <span id="activeStepNum">1</span></div>
+      <button id="openLinkBtn" class="link-btn">🌐 OPEN & VERIFY</button>
+      <div id="countdownArea">
+        <div class="countdown-big" id="timerDigits">--</div>
+        <div style="font-size: 0.75rem; color:#cbd5e6;">stay on external page for 10 seconds</div>
+      </div>
+      <button id="confirmCompleteBtn" class="confirm-btn" disabled>✅ CONFIRM & COMPLETE</button>
+      <div id="panelWarning" class="warning-text"></div>
     </div>
+
+    <div id="finalRewardBlock" style="display: none;">
+      <div class="reward-vault">
+        <h3 style="color:#ffd966;">🏆 ULTIMATE REWARD 🏆</h3>
+        <p style="color:#bbf0e0;">10 runs mastered! Your time‑locked code:</p>
+        <div class="vault-code" id="rewardCodeText">----</div>
+        <button id="copyRewardResetBtn" class="copy-action">📋 COPY & RESTART GLOBAL</button>
+        <div style="margin-top: 8px; font-size: 0.7rem;">(resets runs + steps)</div>
+      </div>
+    </div>
+
+    <div class="info-footer">
+      ⟡ 10 RUNS CHALLENGE: complete all 6 hidden links → run increases ⟡<br>
+      ⟡ After 6/6 steps, if runs < 10 → steps reset, runs +1, continue.<br>
+      ⟡ On 10th completion → FINAL reward code appears (date+time).<br>
+      ⟡ Copy code → full reset (runs=0, steps fresh). No URL visible.
+    </div>
+  </div>
 </div>
 
 <script>
-    // LUNCH THE BALL - COOKING EDITION with updated IDs
-    const MAX_LEVEL = 10;
-    let currentUnlockedLevel = 1;
-    let activeGameLevel = null;
-    let buttonClickState = [];
-    let gameCompletedFlag = false;
-    let isProcessing = false;
-    let adSequenceActive = false;
-    const CUSTOM_LINK = "https://www.profitablecpmratenetwork.com/gewesnb5e?key=d5843587772f12547c46a6d88d3f7d7d";
-    const FALLBACK_AD_LINK = CUSTOM_LINK;
-    const EXTERNAL_NEXT_LEVEL_URL = CUSTOM_LINK;
-    let externalLinkVisitedForCurrentLevel = false;
-    let currentCompleteLevel = null;
-    let visibilityListenerAttached = false;
-    let autoStartScheduled = false;
-    let activeFallbackResolver = null;
-    let fallbackTimeoutId = null;
-    let adController = null, adInitialized = false;
+  (function(){
+    // ---------- 6 links (hidden, no text shown) ----------
+    const STEP_URLS = [
+      "https://www.effectivecpmnetwork.com/mtt2h1nk0z?key=5a3fc2236e46b0346afe33e605fe42e7",
+      "https://omg10.com/4/11017295",
+      "https://link.gigapub.tech/l/9jfxp27o6m",
+      "https://reatasesetitoefa.com?29qfP=1255203",
+      "https://earnforearnlinksads2.vercel.app/",
+      "https://earnforearnlinksads.vercel.app/"
+    ];
+    const TOTAL_STEPS = 6;
+    const REQUIRED_RUNS = 10;
+    const STORAGE_KEY = "nexus_deca_run_v3";
 
-    // Lunch tasks (ball recipe)
-    const TASKS = ['🍳 MIX THE DOUGH', '⚽ SHAPE THE BALL', '🧂 ADD SECRET SPICES', '🔥 FRY TO GOLDEN', '🍽️ SERVE LUNCH BALL'];
+    // core state
+    let completedSteps = new Array(TOTAL_STEPS).fill(false);
+    let currentStepIndex = 0;           // first incomplete step (0-5)
+    let currentRun = 0;                 // 0..10 (10 = ready for final reward)
+    let finalRewardUnlocked = false;    // true after 10 runs and reward code generated
 
-    function showOfflineExitAndCloseGame(msg) {
-        const toast = document.createElement('div');
-        toast.className = 'offline-toast';
-        toast.innerText = msg || "⚠️ No connection. Returning to menu.";
-        document.body.appendChild(toast);
-        setTimeout(() => toast.remove(), 2800);
-        forceExitAllGameScreens();
+    // verification flags
+    let activeTimer = null;
+    let timerSecondsLeft = 0;
+    let verificationActive = false;
+    let timerFinished = false;
+    let currentStepUnderVerify = -1;
+    let visibilityListenerActive = false;
+
+    // DOM elements
+    const stepListEl = document.getElementById('stepList');
+    const progressSpan = document.getElementById('progressCounter');
+    const statusBadge = document.getElementById('globalStatusBadge');
+    const statusLabel = document.getElementById('statusLabel');
+    const runDisplaySpan = document.getElementById('runCounterDisplay');
+    const verifyPanel = document.getElementById('verifyPanel');
+    const openLinkBtn = document.getElementById('openLinkBtn');
+    const confirmBtn = document.getElementById('confirmCompleteBtn');
+    const timerDigits = document.getElementById('timerDigits');
+    const activeStepNumSpan = document.getElementById('activeStepNum');
+    const panelWarning = document.getElementById('panelWarning');
+    const finalRewardBlock = document.getElementById('finalRewardBlock');
+    const rewardCodeSpan = document.getElementById('rewardCodeText');
+    const copyResetBtn = document.getElementById('copyRewardResetBtn');
+
+    // ---------- helpers ----------
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({
+        completed: completedSteps,
+        currentStep: currentStepIndex,
+        currentRun: currentRun,
+        finalRewardUnlocked: finalRewardUnlocked
+      }));
     }
 
-    function forceExitAllGameScreens() {
-        clearWaitingForLink();
-        document.getElementById('gamePanel').style.display = 'none';
-        document.getElementById('adSequencePanel').style.display = 'none';
-        document.getElementById('countdownOverlay').style.display = 'none';
-        document.getElementById('levelCompleteScreen').style.display = 'none';
-        document.getElementById('rewardScreen').style.display = 'none';
-        if(activeFallbackResolver) { activeFallbackResolver(); activeFallbackResolver = null; }
-        if(fallbackTimeoutId) clearTimeout(fallbackTimeoutId);
-        adSequenceActive = false; isProcessing = false; activeGameLevel = null;
-        externalLinkVisitedForCurrentLevel = false; currentCompleteLevel = null; autoStartScheduled = false;
-    }
-
-    function clearWaitingForLink() {
-        const w = document.getElementById('externalLinkWaitingMsg');
-        const m = document.getElementById('manualResumeAfterLinkBtn');
-        if(w) w.style.display = 'none';
-        if(m) m.style.display = 'none';
-        if(visibilityListenerAttached) {
-            document.removeEventListener('visibilitychange', onVisibilityChange);
-            visibilityListenerAttached = false;
+    function loadState() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return;
+      try {
+        const data = JSON.parse(raw);
+        if (data.completed && data.completed.length === TOTAL_STEPS) {
+          completedSteps = data.completed.map(v => !!v);
         }
+        if (typeof data.currentStep === 'number' && data.currentStep >= 0 && data.currentStep <= TOTAL_STEPS) {
+          currentStepIndex = data.currentStep;
+        }
+        if (typeof data.currentRun === 'number' && data.currentRun >= 0 && data.currentRun <= REQUIRED_RUNS) {
+          currentRun = data.currentRun;
+        }
+        finalRewardUnlocked = !!data.finalRewardUnlocked;
+      } catch(e) {}
     }
 
-    function isNetworkOnline() { return navigator.onLine; }
-    window.addEventListener('offline', () => showOfflineExitAndCloseGame("📡 Disconnected. Exiting kitchen."));
-
-    function loadProgress() {
-        try {
-            const saved = localStorage.getItem('lunchBallProgress');
-            if(saved) currentUnlockedLevel = Math.min(MAX_LEVEL, JSON.parse(saved).unlockedLevel || 1);
-            else currentUnlockedLevel = 1;
-        } catch(e) { currentUnlockedLevel = 1; }
+    function abortVerificationCleanup() {
+      if (activeTimer) {
+        clearInterval(activeTimer);
+        activeTimer = null;
+      }
+      if (visibilityListenerActive) {
+        document.removeEventListener('visibilitychange', handleVisibilityChange);
+        visibilityListenerActive = false;
+      }
+      verificationActive = false;
+      timerFinished = false;
+      currentStepUnderVerify = -1;
+      timerSecondsLeft = 0;
+      if (confirmBtn) confirmBtn.disabled = true;
+      if (timerDigits) timerDigits.innerText = '--';
     }
-    function saveProgress() { localStorage.setItem('lunchBallProgress', JSON.stringify({ unlockedLevel: currentUnlockedLevel })); }
 
-    function initAdsgram() {
-        try { 
-            if(typeof window.Adsgram !== 'undefined') { 
-                // Updated block ID: int-24138
-                adController = window.Adsgram.init({ blockId: "int-24138" }); 
-                adInitialized = true; 
-            } 
-        } catch(e) { console.warn(e); }
+    function handleVisibilityChange() {
+      if (!verificationActive) return;
+      if (timerFinished) return;
+      if (!document.hidden) {
+        abortVerificationCleanup();
+        showToast("❌ Early return! Full progress reset.", "#f97316");
+        fullReset(true, "⚠️ You returned before 10 seconds. All runs & steps reset.");
+      }
     }
-    function callAdWithTimeout(factory, timeoutMs=15000) {
-        return new Promise((resolve,reject)=>{
-            const tid = setTimeout(()=>reject(new Error("timeout")), timeoutMs);
-            factory().then(()=>{ clearTimeout(tid); resolve(); }).catch(e=>{ clearTimeout(tid); reject(e); });
+
+    // full global reset (runs = 0, steps fresh, reward hidden)
+    function fullReset(showMsg = true, customMsg = "") {
+      abortVerificationCleanup();
+      completedSteps = new Array(TOTAL_STEPS).fill(false);
+      currentStepIndex = 0;
+      currentRun = 0;
+      finalRewardUnlocked = false;
+      saveState();
+      finalRewardBlock.style.display = 'none';
+      renderStepsUI();
+      updateRunAndProgressUI();
+      attemptShowVerificationPanel();
+      if (showMsg) {
+        showToast(customMsg || "🔄 Entire progress reset: runs=0, steps fresh. Start from run 1.", "#ffb347");
+      }
+    }
+
+    // called when all 6 steps are completed in current run
+    function completeRunAndAdvance() {
+      // mark all steps as completed? they already are, but we check
+      const allDone = completedSteps.every(v => v === true);
+      if (!allDone) return;
+      
+      // increment run counter
+      let newRun = currentRun + 1;
+      if (newRun === REQUIRED_RUNS) {
+        // 10th run completed → unlock ultimate reward
+        currentRun = newRun;
+        finalRewardUnlocked = true;
+        saveState();
+        renderStepsUI();
+        updateRunAndProgressUI();
+        verifyPanel.style.display = 'none';
+        // generate reward code based on current datetime
+        const rewardCode = generateRewardCode();
+        rewardCodeSpan.innerText = rewardCode;
+        finalRewardBlock.style.display = 'block';
+        abortVerificationCleanup();
+        showToast("🏆 10 RUNS COMPLETE! Final reward code generated.", "#2dd4bf");
+      } 
+      else if (newRun < REQUIRED_RUNS) {
+        // reset steps but keep new run count
+        currentRun = newRun;
+        completedSteps = new Array(TOTAL_STEPS).fill(false);
+        currentStepIndex = 0;
+        saveState();
+        renderStepsUI();
+        updateRunAndProgressUI();
+        abortVerificationCleanup();
+        attemptShowVerificationPanel();
+        showToast(`✨ RUN ${currentRun}/${REQUIRED_RUNS} COMPLETE! Steps reset, continue to next run. ✨`, "#a78bfa");
+      } 
+      else {
+        // shouldn't happen
+        fullReset(true);
+      }
+    }
+
+    // complete current step (called after timerFinished)
+    function completeCurrentStep() {
+      if (finalRewardUnlocked) {
+        showToast("Game already finished! Copy reward to reset.", "#facc15");
+        return;
+      }
+      if (currentStepIndex >= TOTAL_STEPS) return;
+      if (completedSteps[currentStepIndex]) {
+        showToast("Step already completed!", "#cbd5e6");
+        return;
+      }
+      
+      if (!timerFinished && (verificationActive || (!verificationActive && !timerFinished))) {
+        abortVerificationCleanup();
+        showToast("❌ CONFIRM clicked before 10 seconds! Full reset.", "#f97316");
+        fullReset(true);
+        return;
+      }
+      
+      if (!timerFinished) {
+        showToast("Wait for the 10-second timer to finish.", "#f97316");
+        return;
+      }
+      
+      // mark step completed
+      completedSteps[currentStepIndex] = true;
+      
+      // find next incomplete step
+      let nextIdx = currentStepIndex + 1;
+      while (nextIdx < TOTAL_STEPS && completedSteps[nextIdx]) nextIdx++;
+      
+      if (nextIdx >= TOTAL_STEPS) {
+        // all steps completed in this run
+        saveState();
+        renderStepsUI();
+        updateRunAndProgressUI();
+        abortVerificationCleanup();       // close any leftover timer UI
+        verifyPanel.style.display = 'none';
+        completeRunAndAdvance();          // handles run increment & reward logic
+      } else {
+        currentStepIndex = nextIdx;
+        saveState();
+        renderStepsUI();
+        updateRunAndProgressUI();
+        abortVerificationCleanup();
+        attemptShowVerificationPanel();
+        showToast(`✅ Step ${currentStepIndex+1} unlocked. Proceed to next link.`, "#2dd4bf");
+      }
+    }
+
+    function startCountdown(stepIdx) {
+      if (activeTimer) abortVerificationCleanup();
+      if (stepIdx !== currentStepIndex) return;
+      
+      verificationActive = true;
+      timerFinished = false;
+      currentStepUnderVerify = stepIdx;
+      timerSecondsLeft = 10;
+      timerDigits.innerText = `${timerSecondsLeft}`;
+      confirmBtn.disabled = true;
+      panelWarning.innerText = "⏳ Wait 10 seconds on external page. Don't return early!";
+      
+      if (!visibilityListenerActive) {
+        document.addEventListener('visibilitychange', handleVisibilityChange);
+        visibilityListenerActive = true;
+      }
+      
+      activeTimer = setInterval(() => {
+        if (!verificationActive) {
+          if (activeTimer) clearInterval(activeTimer);
+          activeTimer = null;
+          return;
+        }
+        timerSecondsLeft--;
+        timerDigits.innerText = `${timerSecondsLeft >= 0 ? timerSecondsLeft : 0}`;
+        
+        if (timerSecondsLeft <= 0) {
+          clearInterval(activeTimer);
+          activeTimer = null;
+          timerFinished = true;
+          verificationActive = false;
+          confirmBtn.disabled = false;
+          panelWarning.innerText = "✅ 10 seconds done! Click CONFIRM to finish step.";
+          if (visibilityListenerActive) {
+            document.removeEventListener('visibilitychange', handleVisibilityChange);
+            visibilityListenerActive = false;
+          }
+        }
+      }, 1000);
+    }
+    
+    function openCurrentLink() {
+      if (finalRewardUnlocked) {
+        showToast("Final reward already claimed. Copy code to reset.", "#f97316");
+        return;
+      }
+      if (currentStepIndex >= TOTAL_STEPS) return;
+      if (completedSteps[currentStepIndex]) {
+        showToast(`Step ${currentStepIndex+1} already done! Next step active.`, "#facc15");
+        return;
+      }
+      if (verificationActive || activeTimer) {
+        showToast("Verification in progress. Wait or reset.", "#ffb347");
+        return;
+      }
+      const targetUrl = STEP_URLS[currentStepIndex];
+      window.open(targetUrl, '_blank');
+      startCountdown(currentStepIndex);
+      showToast(`🔗 Step ${currentStepIndex+1} opened. Stay there for 10 seconds.`, "#94a3b8");
+    }
+    
+    function generateRewardCode() {
+      const now = new Date();
+      const y = now.getFullYear();
+      const m = String(now.getMonth()+1).padStart(2,'0');
+      const d = String(now.getDate()).padStart(2,'0');
+      const h = String(now.getHours()).padStart(2,'0');
+      const min = String(now.getMinutes()).padStart(2,'0');
+      const sec = String(now.getSeconds()).padStart(2,'0');
+      return `DECA-${y}${m}${d}-${h}${min}${sec}`;
+    }
+    
+    async function copyRewardAndReset() {
+      if (!finalRewardUnlocked) {
+        showToast("No ultimate reward unlocked. Complete 10 runs first!", "#f97316");
+        return;
+      }
+      const code = rewardCodeSpan.innerText;
+      if (!code || code === "----") return;
+      try {
+        await navigator.clipboard.writeText(code);
+        showToast(`🎁 Code copied! ${code} — Global reset now.`, "#2dd4bf");
+        fullReset(true, "✅ Game reset. You can start a new 10‑run journey.");
+      } catch(err) {
+        showToast("Copy failed, try again.", "#f97316");
+      }
+    }
+    
+    // UI rendering: steps (no URL text)
+    function renderStepsUI() {
+      if (!stepListEl) return;
+      stepListEl.innerHTML = '';
+      for (let i = 0; i < TOTAL_STEPS; i++) {
+        const li = document.createElement('li');
+        li.className = 'step-tile';
+        if (completedSteps[i]) li.classList.add('completed');
+        if (!finalRewardUnlocked && !completedSteps[i] && i === currentStepIndex) li.classList.add('active-step');
+        
+        const iconSpan = document.createElement('span');
+        iconSpan.className = 'step-icon';
+        iconSpan.innerText = completedSteps[i] ? "✓ DONE" : `LINK ${i+1}`;
+        
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'step-name';
+        nameSpan.innerText = completedSteps[i] ? `Step ${i+1} – verified` : `Step ${i+1} – pending 10s verification`;
+        
+        li.appendChild(iconSpan);
+        li.appendChild(nameSpan);
+        stepListEl.appendChild(li);
+      }
+    }
+    
+    function updateRunAndProgressUI() {
+      const completedCount = completedSteps.filter(v => v === true).length;
+      progressSpan.innerText = `${completedCount} / ${TOTAL_STEPS}`;
+      runDisplaySpan.innerText = `🏆 RUN ${currentRun} / ${REQUIRED_RUNS}`;
+      
+      if (finalRewardUnlocked) {
+        statusLabel.innerText = "🎉 10 RUNS MASTERED! Copy reward to reset 🎉";
+        statusBadge.classList.remove('status-active');
+        statusBadge.classList.add('status-complete');
+      } 
+      else if (currentRun === REQUIRED_RUNS) {
+        statusLabel.innerText = "✨ Ready to claim ultimate reward! ✨";
+        statusBadge.classList.add('status-complete');
+      }
+      else {
+        statusLabel.innerText = `⚡ Run ${currentRun+1}/${REQUIRED_RUNS} · Step ${currentStepIndex+1}/${TOTAL_STEPS} · complete 6 links per run`;
+        statusBadge.classList.remove('status-complete');
+        statusBadge.classList.add('status-active');
+      }
+    }
+    
+    function attemptShowVerificationPanel() {
+      if (finalRewardUnlocked) {
+        verifyPanel.style.display = 'none';
+        return;
+      }
+      if (currentStepIndex < TOTAL_STEPS && !completedSteps[currentStepIndex]) {
+        verifyPanel.style.display = 'block';
+        activeStepNumSpan.innerText = `${currentStepIndex+1}`;
+        abortVerificationCleanup();
+        timerDigits.innerText = '--';
+        confirmBtn.disabled = true;
+        panelWarning.innerText = '🌐 Click "OPEN & VERIFY" to start. 10 seconds on external page.';
+      } else {
+        verifyPanel.style.display = 'none';
+      }
+    }
+    
+    function injectManualReset() {
+      const btn = document.createElement('button');
+      btn.innerText = '⚠️ HARD RESET (erase all runs & progress)';
+      btn.className = 'reset-all-btn';
+      btn.id = 'globalHardResetBtn';
+      const container = document.querySelector('.quest-area');
+      if (container && !document.getElementById('globalHardResetBtn')) {
+        container.appendChild(btn);
+        btn.addEventListener('click', () => {
+          if (confirm("⚠️ This will reset all 10 runs progress and steps. Continue?")) {
+            fullReset(true, "🔄 Manual hard reset. Runs set to 0.");
+          }
         });
+      }
     }
-    function attemptAdsgram() { if(!adInitialized||!adController) return Promise.reject(); return adController.show(); }
-    // Updated Monetag zone: 10865808 => function name remains as per SDK naming
-    function attemptMonetag() { if(typeof window.show_10865808 !== 'function') return Promise.reject(); return window.show_10865808(); }
-    function attemptGigaPub() { if(typeof window.showGiga !== 'function') return Promise.reject(); return window.showGiga(); }
-
-    function waitForReturnFromFallback() {
-        return new Promise((resolve) => {
-            const manualBtn = document.getElementById('manualFallbackContinueBtn');
-            const popupWarn = document.getElementById('popupBlockWarning');
-            manualBtn.style.display = 'block';
-            popupWarn.style.display = 'block';
-            const handler = () => { if(document.visibilityState === 'visible') { cleanup(); resolve(); } };
-            const cleanup = () => {
-                document.removeEventListener('visibilitychange', handler);
-                if(fallbackTimeoutId) clearTimeout(fallbackTimeoutId);
-                manualBtn.style.display = 'none';
-                popupWarn.style.display = 'none';
-                if(activeFallbackResolver === handler) activeFallbackResolver = null;
-            };
-            const onManual = () => { cleanup(); resolve(); };
-            manualBtn.onclick = onManual;
-            document.addEventListener('visibilitychange', handler);
-            activeFallbackResolver = handler;
-            fallbackTimeoutId = setTimeout(() => { if(activeFallbackResolver === handler) { cleanup(); resolve(); } }, 180000);
-        });
+    
+    function bindEvents() {
+      if (openLinkBtn) openLinkBtn.addEventListener('click', openCurrentLink);
+      if (confirmBtn) confirmBtn.addEventListener('click', completeCurrentStep);
+      if (copyResetBtn) copyResetBtn.addEventListener('click', copyRewardAndReset);
     }
-
-    async function runAdStepWithFallback(stepName, adFn, isLastStep=false) {
-        const panel = document.getElementById('adSequencePanel');
-        const stepMsg = document.getElementById('adStepMessage');
-        const desc = document.getElementById('adDescription');
-        const loading = document.getElementById('adLoadingIndicator');
-        const icon = document.getElementById('adStepIcon');
-        panel.style.display = 'flex';
-        icon.innerText = stepName.includes('Adsgram') ? '📺' : (stepName.includes('Monetag') ? '💰' : '🍿');
-        stepMsg.innerText = `🍽️ ${stepName}`;
-        desc.innerText = `Loading ${stepName} ad ...`;
-        loading.style.display = 'block';
-        let completed = false;
-        try {
-            await callAdWithTimeout(adFn, 15000);
-            completed = true;
-            stepMsg.innerText = `✅ ${stepName} Complete!`;
-            desc.innerText = isLastStep ? "All ads done! Start cooking..." : "Ad completed, moving on...";
-            loading.style.display = 'none';
-            await new Promise(r => setTimeout(r, 1000));
-        } catch(err) {
-            stepMsg.innerText = `⚠️ ${stepName} failed`;
-            desc.innerText = `Opening recipe link. Return to auto-continue.`;
-            loading.style.display = 'none';
-            window.open(FALLBACK_AD_LINK, '_blank');
-            await waitForReturnFromFallback();
-            completed = true;
-            stepMsg.innerText = `✅ ${stepName} Fallback done`;
-            desc.innerText = isLastStep ? "All steps finished!" : "Continuing...";
-            await new Promise(r => setTimeout(r, 800));
+    
+    function updateDateTime() {
+      const now = new Date();
+      const dateEl = document.getElementById('currentDate');
+      const timeEl = document.getElementById('currentTime');
+      if (dateEl) dateEl.innerText = now.toLocaleDateString(undefined, { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+      if (timeEl) timeEl.innerText = now.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
+    }
+    
+    function showToast(msg, colorHint) {
+      const toast = document.createElement('div');
+      toast.className = 'toast-msg';
+      toast.innerText = msg;
+      toast.style.background = colorHint + 'cc';
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 2000);
+    }
+    
+    function init() {
+      loadState();
+      // consistency checks
+      const completedCount = completedSteps.filter(v=>v===true).length;
+      if (finalRewardUnlocked && currentRun !== REQUIRED_RUNS) finalRewardUnlocked = false;
+      if (!finalRewardUnlocked && currentRun >= REQUIRED_RUNS) {
+        finalRewardUnlocked = true;
+      }
+      if (finalRewardUnlocked) {
+        finalRewardBlock.style.display = 'block';
+        verifyPanel.style.display = 'none';
+        rewardCodeSpan.innerText = generateRewardCode();
+      } else {
+        finalRewardBlock.style.display = 'none';
+        if (currentRun >= REQUIRED_RUNS) currentRun = REQUIRED_RUNS - 1;
+        // if steps mismatch
+        if (currentStepIndex >= TOTAL_STEPS) currentStepIndex = 0;
+        for(let i=0; i<completedSteps.length; i++) {
+          if(completedSteps[i] && i<currentStepIndex) continue;
+          if(!completedSteps[i]) { currentStepIndex = i; break; }
         }
-        if(!completed) throw new Error("fail");
-        if(isLastStep) panel.style.display = 'none';
-        else { panel.style.display = 'none'; await new Promise(r => setTimeout(r, 300)); }
+      }
+      saveState();
+      renderStepsUI();
+      updateRunAndProgressUI();
+      attemptShowVerificationPanel();
+      bindEvents();
+      injectManualReset();
+      setInterval(updateDateTime, 1000);
+      updateDateTime();
     }
-
-    async function runFullAdSequence() {
-        if(!isNetworkOnline()) throw new Error("offline");
-        await runAdStepWithFallback("Adsgram Ad", ()=>attemptAdsgram(), false);
-        if(!isNetworkOnline()) throw new Error("offline");
-        await runAdStepWithFallback("Monetag Ad", ()=>attemptMonetag(), false);
-        if(!isNetworkOnline()) throw new Error("offline");
-        await runAdStepWithFallback("GigaPub Ad", ()=>attemptGigaPub(), true);
-    }
-
-    async function startLevelEntrySequence(level) {
-        if(adSequenceActive || isProcessing) return false;
-        if(!isNetworkOnline()) { showOfflineExitAndCloseGame("Internet required"); return false; }
-        adSequenceActive = true; isProcessing = true;
-        document.getElementById('gamePanel').style.display = 'none';
-        try {
-            await runFullAdSequence();
-            if(!isNetworkOnline()) throw new Error("offline");
-            activeGameLevel = level;
-            buttonClickState = [false,false,false,false,false];
-            gameCompletedFlag = false;
-            renderGamePanel(level);
-            document.getElementById('gamePanel').style.display = 'flex';
-            adSequenceActive = false; isProcessing = false;
-            return true;
-        } catch(e) {
-            document.getElementById('adSequencePanel').style.display = 'none';
-            adSequenceActive = false; isProcessing = false;
-            showOfflineExitAndCloseGame("Ad sequence failed. Try later.");
-            return false;
-        }
-    }
-
-    function renderGamePanel(level) {
-        document.getElementById('gameLevelTitle').innerHTML = `🍛 LUNCH BALL ${level} 🍛`;
-        const cnt = buttonClickState.filter(v=>v).length;
-        document.getElementById('gameProgressText').innerHTML = `🥄 Progress: ${cnt} / 5 tasks completed`;
-        const grid = document.getElementById('buttonsGrid');
-        grid.innerHTML = '';
-        for(let i=0;i<5;i++) {
-            const btn = document.createElement('button');
-            btn.className = 'action-btn' + (buttonClickState[i] ? ' disabled-btn' : '');
-            btn.innerText = buttonClickState[i] ? `${TASKS[i]} ✓` : `${TASKS[i]}`;
-            if(!buttonClickState[i]) {
-                btn.onclick = () => {
-                    if(gameCompletedFlag || buttonClickState[i]) return;
-                    buttonClickState[i]=true;
-                    renderGamePanel(level);
-                    if(buttonClickState.every(v=>v===true) && !gameCompletedFlag) {
-                        gameCompletedFlag=true;
-                        handleLevelComplete(activeGameLevel);
-                    }
-                };
-            } else btn.disabled=true;
-            grid.appendChild(btn);
-        }
-        const remain = 5-cnt;
-        document.getElementById('completeStatusMsg').innerHTML = remain===0 ? "✨ BALL LUNCH READY! ✨" : `${remain} step${remain!==1?'s':''} remaining`;
-    }
-
-    async function handleLevelComplete(level) {
-        if(isProcessing) return;
-        isProcessing = true;
-        document.getElementById('gamePanel').style.display = 'none';
-        if(level === currentUnlockedLevel && level < MAX_LEVEL) { currentUnlockedLevel = level+1; saveProgress(); buildLevelList(); }
-        else if(level > currentUnlockedLevel && level <= MAX_LEVEL) { currentUnlockedLevel = level; saveProgress(); buildLevelList(); }
-        if(level === MAX_LEVEL) { showRewardScreen(); isProcessing=false; }
-        else { showLevelCompleteScreen(level); isProcessing=false; }
-    }
-
-    function showLevelCompleteScreen(level) {
-        const div = document.getElementById('levelCompleteScreen');
-        document.getElementById('completeLevelMsg').innerHTML = `Course ${level} devoured! 🎉<br><span style="font-size:14px;">🔗 Open link → return → next lunch auto-starts</span>`;
-        currentCompleteLevel = level;
-        externalLinkVisitedForCurrentLevel = false; autoStartScheduled = false;
-        clearWaitingForLink();
-        const waitingDiv = document.getElementById('externalLinkWaitingMsg');
-        const manualBtn = document.getElementById('manualResumeAfterLinkBtn');
-        waitingDiv.style.display = 'block';
-        manualBtn.style.display = 'none';
-        const linkA = document.getElementById('dynamicExternalLink');
-        linkA.onclick = (e) => { e.preventDefault(); window.open(EXTERNAL_NEXT_LEVEL_URL, '_blank'); };
-        manualBtn.onclick = () => { if(!externalLinkVisitedForCurrentLevel) markLinkVisitedAndAutoStart(); };
-        if(!visibilityListenerAttached) { document.addEventListener('visibilitychange', onVisibilityChange); visibilityListenerAttached = true; }
-        div.style.display = 'flex';
-    }
-
-    function markLinkVisitedAndAutoStart() {
-        if(externalLinkVisitedForCurrentLevel || autoStartScheduled) return;
-        externalLinkVisitedForCurrentLevel = true; autoStartScheduled = true;
-        document.getElementById('externalLinkWaitingMsg').style.display = 'none';
-        document.getElementById('manualResumeAfterLinkBtn').style.display = 'none';
-        const toast = document.createElement('div'); toast.className = 'offline-toast'; toast.style.background='#d48f2b'; toast.innerText='✅ Link visited! Next lunch starting...'; document.body.appendChild(toast); setTimeout(()=>toast.remove(),1800);
-        setTimeout(()=>{ if(currentCompleteLevel && currentCompleteLevel < MAX_LEVEL) proceedToActualNextLevel(currentCompleteLevel); }, 800);
-    }
-
-    function onVisibilityChange() {
-        if(document.visibilityState === 'visible' && !externalLinkVisitedForCurrentLevel && currentCompleteLevel && document.getElementById('levelCompleteScreen').style.display === 'flex' && !autoStartScheduled) markLinkVisitedAndAutoStart();
-    }
-
-    async function proceedToActualNextLevel(curLevel) {
-        const next = curLevel+1;
-        if(next > MAX_LEVEL) { document.getElementById('levelCompleteScreen').style.display = 'none'; showRewardScreen(); return; }
-        document.getElementById('levelCompleteScreen').style.display = 'none';
-        isProcessing = true;
-        await showCountdown(3, `🍲 LUNCH BALL ${next} incoming ...`);
-        if(!isNetworkOnline()) { showOfflineExitAndCloseGame("Network lost"); isProcessing=false; return; }
-        const success = await startLevelEntrySequence(next);
-        isProcessing=false;
-        if(!success) forceExitAllGameScreens();
-        externalLinkVisitedForCurrentLevel=false; currentCompleteLevel=null; autoStartScheduled=false;
-    }
-
-    function handleNextLevelClick() {
-        if(!currentCompleteLevel) return;
-        if(currentCompleteLevel >= MAX_LEVEL) { document.getElementById('levelCompleteScreen').style.display='none'; showRewardScreen(); return; }
-        if(!externalLinkVisitedForCurrentLevel) {
-            document.getElementById('externalLinkWaitingMsg').style.display='block';
-            document.getElementById('manualResumeAfterLinkBtn').style.display='inline-block';
-            window.open(EXTERNAL_NEXT_LEVEL_URL, '_blank');
-        } else proceedToActualNextLevel(currentCompleteLevel);
-    }
-
-    function showCountdown(secs, msg) {
-        return new Promise((resolve)=>{
-            const ov = document.getElementById('countdownOverlay');
-            const num = document.getElementById('countdownNum');
-            const txt = document.getElementById('countdownMsg');
-            txt.innerHTML = msg || "Next level starting...";
-            ov.style.display='flex';
-            let rem = secs;
-            num.textContent = rem;
-            const interval = setInterval(()=>{
-                if(!isNetworkOnline()) { clearInterval(interval); ov.style.display='none'; showOfflineExitAndCloseGame("Network lost"); resolve(); return; }
-                rem--;
-                if(rem>=1) num.textContent = rem;
-                else { clearInterval(interval); ov.style.display='none'; resolve(); }
-            },1000);
-        });
-    }
-
-    function showRewardScreen() {
-        const code = `LUNCH-${Math.random().toString(36).substr(2,8).toUpperCase()}`;
-        document.getElementById('rewardCodeDisplay').textContent = code;
-        document.getElementById('rewardScreen').style.display = 'flex';
-    }
-    function resetGameAndCopy() {
-        const code = document.getElementById('rewardCodeDisplay').textContent;
-        navigator.clipboard.writeText(code);
-        alert('🍳 Code copied! Game reset to Menu 1.');
-        currentUnlockedLevel = 1; saveProgress(); buildLevelList(); forceExitAllGameScreens();
-    }
-    function buildLevelList() {
-        const container = document.getElementById('levelListContainer');
-        container.innerHTML = '';
-        for(let i=1;i<=MAX_LEVEL;i++) {
-            const unlocked = i <= currentUnlockedLevel;
-            const card = document.createElement('div');
-            card.className = `recipe-card ${unlocked ? '' : 'locked'}`;
-            if(unlocked) card.onclick = () => { if(!adSequenceActive && !isProcessing) startLevelEntrySequence(i); };
-            card.innerHTML = `<div class="level-number">${i}</div><div class="level-info"><div class="level-name">🍽️ LUNCH BALL ${i}</div><div class="level-requirement">🍳 5 cooking steps • 3 ads+fallback</div></div><div class="level-status">${unlocked ? (i<currentUnlockedLevel ? '✓ EATEN' : '🔓 READY') : '🔒 LOCKED'}</div>`;
-            container.appendChild(card);
-        }
-    }
-    function exitGameToRoad() {
-        if(adSequenceActive) { document.getElementById('adSequencePanel').style.display='none'; adSequenceActive=false; if(activeFallbackResolver) activeFallbackResolver(); activeFallbackResolver=null; }
-        clearWaitingForLink(); document.getElementById('gamePanel').style.display='none'; isProcessing=false; externalLinkVisitedForCurrentLevel=false; currentCompleteLevel=null; autoStartScheduled=false;
-    }
-    function backToRoadFromComplete() { clearWaitingForLink(); document.getElementById('levelCompleteScreen').style.display='none'; isProcessing=false; externalLinkVisitedForCurrentLevel=false; currentCompleteLevel=null; autoStartScheduled=false; }
-
-    document.getElementById('nextLevelBtnFromComplete').onclick = handleNextLevelClick;
-    document.getElementById('backToRoadCompleteBtn').onclick = backToRoadFromComplete;
-    document.getElementById('resetAllBtn').onclick = resetGameAndCopy;
-    document.getElementById('exitGameBtn').onclick = exitGameToRoad;
-    document.getElementById('rewardCodeDisplay')?.addEventListener('click', () => {
-        const code = document.getElementById('rewardCodeDisplay').textContent;
-        navigator.clipboard.writeText(code); alert('Copied: '+code);
-    });
-
-    window.addEventListener('load', () => { loadProgress(); initAdsgram(); buildLevelList(); });
-    window.addEventListener('beforeunload', () => saveProgress());
+    
+    init();
+  })();
 </script>
 </body>
 </html>
