@@ -1,783 +1,813 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
-  <title>Nexus DecaRun | 10x6 Links → Final Reward</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    body {
-      background: radial-gradient(circle at 80% 20%, #0a0f1a, #02040c);
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 1.5rem;
-      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-    }
-
-    .nexus-card {
-      max-width: 780px;
-      width: 100%;
-      background: rgba(8, 14, 26, 0.65);
-      backdrop-filter: blur(10px);
-      border-radius: 3rem;
-      box-shadow: 0 30px 50px -20px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(139, 92, 246, 0.25);
-      overflow: hidden;
-    }
-
-    .hero-glow {
-      background: linear-gradient(125deg, #0b1121, #111827, #0a0f1f);
-      padding: 1.8rem 2rem 1.3rem;
-      text-align: center;
-      border-bottom: 1px solid rgba(139, 92, 246, 0.5);
-    }
-    .date-chip {
-      font-size: 1.2rem;
-      font-weight: 500;
-      background: rgba(139, 92, 246, 0.2);
-      backdrop-filter: blur(4px);
-      display: inline-block;
-      padding: 0.2rem 1rem;
-      border-radius: 60px;
-      color: #d9c6ff;
-    }
-    .time-digit {
-      font-size: 2.4rem;
-      font-weight: 700;
-      font-family: 'JetBrains Mono', monospace;
-      color: #f0f3ff;
-      text-shadow: 0 0 6px #8b5cf6;
-      margin-top: 0.2rem;
-    }
-    .run-pill {
-      margin-top: 0.8rem;
-      background: linear-gradient(95deg, #2b3b4e, #1e2a3a);
-      display: inline-block;
-      padding: 0.4rem 1.2rem;
-      border-radius: 60px;
-      font-weight: bold;
-      font-size: 1rem;
-      color: #ffd966;
-      border: 1px solid #ffb347;
-    }
-    .status-pill {
-      margin-top: 0.6rem;
-      background: rgba(0, 0, 0, 0.4);
-      backdrop-filter: blur(8px);
-      border-radius: 80px;
-      padding: 0.5rem 1.5rem;
-      font-weight: 600;
-      font-size: 0.95rem;
-      display: inline-block;
-    }
-    .status-active {
-      background: linear-gradient(95deg, #4c2a4a, #5e3a5e);
-      box-shadow: 0 0 8px #c084fc;
-      color: #f3e8ff;
-    }
-    .status-complete {
-      background: linear-gradient(95deg, #0f4c3a, #1b5e48);
-      box-shadow: 0 0 14px #2dd4bf;
-      color: #ccfbf1;
-    }
-    .quest-area {
-      padding: 1.8rem 1.8rem 1.5rem;
-      background: rgba(2, 6, 18, 0.5);
-    }
-    .quest-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      flex-wrap: wrap;
-      margin-bottom: 1rem;
-      padding-bottom: 0.5rem;
-      border-bottom: 1px solid rgba(139, 92, 246, 0.4);
-    }
-    .quest-header h2 {
-      font-size: 1.5rem;
-      font-weight: 700;
-      background: linear-gradient(120deg, #e0d5ff, #a78bfa);
-      background-clip: text;
-      -webkit-background-clip: text;
-      color: transparent;
-    }
-    .progress-ring {
-      background: rgba(0, 0, 0, 0.6);
-      padding: 0.2rem 0.9rem;
-      border-radius: 40px;
-      font-weight: 600;
-      font-size: 0.85rem;
-      color: #c4b5fd;
-      border: 1px solid #6d28d9;
-    }
-    .step-grid {
-      list-style: none;
-      display: flex;
-      flex-direction: column;
-      gap: 0.7rem;
-      margin-bottom: 1.5rem;
-    }
-    .step-tile {
-      background: rgba(16, 22, 38, 0.8);
-      border: 1px solid rgba(139, 92, 246, 0.3);
-      border-radius: 2rem;
-      padding: 0.8rem 1.2rem;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-      transition: all 0.2s;
-    }
-    .step-icon {
-      font-family: 'JetBrains Mono', monospace;
-      font-weight: 700;
-      background: #11172b;
-      padding: 0.2rem 0.5rem;
-      border-radius: 1rem;
-      font-size: 0.75rem;
-      min-width: 68px;
-      text-align: center;
-      color: #cdd9ff;
-    }
-    .step-name {
-      flex: 1;
-      font-size: 0.95rem;
-      font-weight: 500;
-      color: #f0f4ff;
-    }
-    .step-tile.completed {
-      background: linear-gradient(115deg, #0a2f24, #0e3a2c);
-      border-left: 5px solid #2dd4bf;
-      border-color: #2dd4bf #2c5270 #2c5270 #2dd4bf;
-    }
-    .step-tile.completed .step-name {
-      text-decoration: line-through;
-      text-decoration-color: #5ee0d0;
-      color: #9bc6c0;
-    }
-    .step-tile.active-step {
-      border: 2px solid #c084fc;
-      box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
-      background: rgba(31, 41, 85, 0.9);
-    }
-    .verification-panel {
-      background: rgba(2, 8, 20, 0.95);
-      border-radius: 2rem;
-      margin-top: 0.5rem;
-      padding: 1.2rem;
-      border: 1px solid #8b5cf6;
-      backdrop-filter: blur(12px);
-    }
-    .panel-title {
-      font-size: 1.1rem;
-      font-weight: 600;
-      color: #d9c6ff;
-      margin-bottom: 0.6rem;
-    }
-    .countdown-big {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 2.8rem;
-      font-weight: 800;
-      color: #facc15;
-      text-align: center;
-      margin: 0.4rem 0;
-    }
-    .link-btn, .confirm-btn {
-      border: none;
-      padding: 0.7rem;
-      border-radius: 3rem;
-      font-weight: 700;
-      color: white;
-      cursor: pointer;
-      width: 100%;
-      margin-bottom: 0.8rem;
-      font-size: 0.95rem;
-    }
-    .link-btn {
-      background: linear-gradient(95deg, #2b6e62, #1f574b);
-    }
-    .confirm-btn {
-      background: linear-gradient(95deg, #7c3aed, #6d28d9);
-    }
-    .confirm-btn:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-    }
-    .warning-text {
-      color: #facc15;
-      font-size: 0.75rem;
-      margin-top: 0.4rem;
-      text-align: center;
-    }
-    .reset-all-btn {
-      background: rgba(100, 70, 120, 0.4);
-      border: 1px solid #dc2626;
-      color: #fca5a5;
-      padding: 0.5rem 1rem;
-      border-radius: 2rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.2s;
-      margin-top: 1rem;
-      width: 100%;
-    }
-    .reward-vault {
-      margin: 1rem 0 0;
-      background: linear-gradient(125deg, #0a2f24, #022118);
-      border-radius: 2rem;
-      padding: 1.2rem;
-      text-align: center;
-      border: 2px solid #ffd966;
-      animation: pulseGlow 0.8s ease;
-    }
-    @keyframes pulseGlow {
-      0% { box-shadow: 0 0 0 0 #ffd96680; }
-      70% { box-shadow: 0 0 0 12px #ffd96600; }
-      100% { box-shadow: 0 0 0 0 transparent; }
-    }
-    .vault-code {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 1.3rem;
-      font-weight: bold;
-      background: #07161c;
-      color: #facc15;
-      display: inline-block;
-      padding: 0.3rem 1rem;
-      border-radius: 2rem;
-      margin: 0.5rem 0;
-      border: 1px solid #ffd966;
-    }
-    .copy-action {
-      background: linear-gradient(95deg, #2c7a5a, #1e563e);
-      border: none;
-      padding: 0.5rem 1.2rem;
-      border-radius: 3rem;
-      font-weight: 700;
-      color: white;
-      cursor: pointer;
-    }
-    .info-footer {
-      margin-top: 1rem;
-      text-align: center;
-      font-size: 0.7rem;
-      color: #8aa0bc;
-      background: #0a0f1a;
-      padding: 0.5rem;
-      border-radius: 2rem;
-    }
-    .toast-msg {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #1e5a4ccc;
-      backdrop-filter: blur(12px);
-      color: white;
-      padding: 0.5rem 1.2rem;
-      border-radius: 3rem;
-      font-weight: 600;
-      z-index: 2100;
-      animation: fadeSlide 1.6s ease forwards;
-    }
-    @keyframes fadeSlide {
-      0% { opacity: 1; transform: translateX(-50%) translateY(0);}
-      80% { opacity: 1; }
-      100% { opacity: 0; visibility: hidden; transform: translateX(-50%) translateY(-12px);}
-    }
-    @media (max-width: 550px) {
-      .time-digit { font-size: 1.8rem; }
-      .countdown-big { font-size: 2rem; }
-      .step-name { font-size: 0.8rem; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Viu Earn - Earn Rewards Daily</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { background: #f8fafc; display: flex; justify-content: center; transition: background 0.2s; }
+        body.dark-mode { background: #0f172a; color: #e2e8f0; }
+        .app-container { width: 100%; max-width: 500px; margin: 0 auto; min-height: 100vh; background: #fff; position: relative; box-shadow: 0 0 30px rgba(0,0,0,0.05); }
+        body.dark-mode .app-container { background: #0f172a; }
+        .loading-screen { position: fixed; inset: 0; background: #fff; z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        body.dark-mode .loading-screen { background: #0f172a; }
+        .loading-screen.hidden { display: none; }
+        .loading-logo { width: 95px; height: 95px; border-radius: 32px; background: linear-gradient(135deg, #000, #1e293b); display: flex; align-items: center; justify-content: center; gap: 10px; margin-bottom: 30px; box-shadow: 0 15px 25px rgba(0,0,0,0.1); }
+        .loading-logo i { font-size: 2.8rem; color: #FFD966; }
+        .loading-title { font-size: 2rem; font-weight: 800; background: linear-gradient(135deg, #000, #334155); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .loading-progress { width: 260px; height: 5px; background: #e2e8f0; border-radius: 6px; margin: 20px 0; overflow: hidden; }
+        .loading-progress-fill { width: 0%; height: 100%; background: #000; transition: width 0.3s ease; }
+        .auth-screen { position: fixed; inset: 0; background: #fff; z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 20px; }
+        body.dark-mode .auth-screen { background: #0f172a; }
+        .auth-card { background: #fff; border-radius: 48px; padding: 32px 24px; width: 100%; max-width: 380px; box-shadow: 0 20px 35px rgba(0,0,0,0.1); }
+        body.dark-mode .auth-card { background: #1e293b; }
+        .auth-title { font-size: 1.8rem; font-weight: 800; text-align: center; margin-bottom: 24px; }
+        .auth-input { width: 100%; padding: 14px 18px; border-radius: 60px; border: 1px solid #cbd5e1; margin: 10px 0; background: #fff; }
+        body.dark-mode .auth-input { background: #0f172a; border-color: #334155; color: white; }
+        .auth-checkbox { display: flex; align-items: center; gap: 10px; margin: 15px 0; font-size: 0.85rem; }
+        .auth-btn { background: #0f172a; color: white; border: none; padding: 14px; border-radius: 60px; width: 100%; font-weight: 600; margin-top: 12px; cursor: pointer; }
+        body.dark-mode .auth-btn { background: #3b82f6; }
+        .main-app-hidden { display: none; }
+        .balance-card, .task-card, .stat-card, .about-card, .withdraw-requirements-box, .payment-option, .referral-professional { background: #fff; border-radius: 32px; padding: 20px; margin-bottom: 20px; border: 1px solid #eef2f6; }
+        body.dark-mode .balance-card, body.dark-mode .task-card, body.dark-mode .stat-card, body.dark-mode .about-card,
+        body.dark-mode .withdraw-requirements-box, body.dark-mode .payment-option, body.dark-mode .referral-professional { background: #1e293b; border-color: #334155; }
+        .balance-amount { font-size: 2.8rem; font-weight: 800; }
+        .stats-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 12px; margin-bottom: 20px; }
+        .stat-card { text-align: center; padding: 16px 8px; }
+        .about-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 12px; margin: 20px 0; }
+        .task-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+        .task-title { font-weight: 700; font-size: 1.1rem; display: flex; align-items: center; gap: 8px; }
+        .task-reward { background: #f1f5f9; padding: 4px 12px; border-radius: 40px; font-weight: 600; font-size: 0.8rem; }
+        .task-btn { background: #0f172a; color: white; border: none; padding: 12px; border-radius: 60px; width: 100%; font-weight: 600; margin-top: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: 0.1s ease; }
+        body.dark-mode .task-btn { background: #3b82f6; }
+        .task-btn:active { transform: scale(0.97); }
+        .task-btn.disabled-nav, .task-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .progress-bar-bg { background: #e2e8f0; border-radius: 60px; height: 6px; margin: 8px 0; overflow: hidden; }
+        .progress-fill { background: #0f172a; height: 100%; width: 0%; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(255,255,255,0.96); backdrop-filter: blur(10px); display: flex; justify-content: space-around; padding: 8px 0 20px; border-top: 1px solid #eef2f6; max-width: 500px; margin: 0 auto; z-index: 100; transition: opacity 0.2s; }
+        .bottom-nav.disabled { pointer-events: none; opacity: 0.5; }
+        body.dark-mode .bottom-nav { background: #0f172a; border-top-color: #334155; }
+        .nav-btn { background: none; border: none; color: #64748b; display: flex; flex-direction: column; align-items: center; gap: 4px; padding: 8px; flex: 1; border-radius: 30px; cursor: pointer; font-size: 0; }
+        .nav-btn i { font-size: 1.6rem; }
+        .nav-btn.active { background: #f1f5f9; }
+        .nav-btn.active i { color: #0f172a; }
+        body.dark-mode .nav-btn.active { background: #334155; }
+        .content-section { display: none; padding: 20px; padding-bottom: 90px; animation: fadeIn 0.2s; }
+        .content-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .back-button { background: #f1f5f9; padding: 8px 16px; border-radius: 40px; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; transition: opacity 0.2s; }
+        .back-button.disabled { pointer-events: none; opacity: 0.5; }
+        .support-icon, .dark-toggle, .settings-icon { background: #0f172a; width: 42px; height: 42px; border-radius: 30px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-left: 8px; }
+        .support-icon i, .dark-toggle i, .settings-icon i { color: white; }
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(5px); z-index: 3000; align-items: center; justify-content: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: #fff; border-radius: 48px; padding: 28px; max-width: 340px; width: 90%; text-align: center; max-height: 80vh; overflow-y: auto; }
+        body.dark-mode .modal-content { background: #1e293b; }
+        /* In-app browser modal */
+        .browser-modal { position: fixed; inset: 0; background: #fff; z-index: 4000; display: none; flex-direction: column; }
+        .browser-modal.active { display: flex; }
+        .browser-header { background: #0f172a; color: white; padding: 12px 16px; display: flex; align-items: center; gap: 12px; }
+        .browser-header .back-btn { background: none; border: none; color: white; font-size: 1.4rem; cursor: pointer; width: 40px; }
+        .browser-header .url-bar { flex: 1; background: #1e293b; border-radius: 30px; padding: 8px 12px; font-size: 0.8rem; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+        .browser-iframe { flex: 1; width: 100%; border: none; }
+        .survey-option { display: block; margin: 10px 0; padding: 12px; background: #f8fafc; border-radius: 60px; cursor: pointer; border: 1px solid #e2e8f0; }
+        .survey-option.selected { background: #eef2ff; border-color: #0f172a; }
+        .payment-option { background: #f8fafc; border-radius: 60px; padding: 12px 16px; margin: 8px 0; display: flex; align-items: center; gap: 12px; cursor: pointer; border: 2px solid transparent; }
+        .payment-option.selected { border-color: #0f172a; background: #fff; }
+        .fee-breakdown { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eef2f6; }
+        .withdraw-btn { background: #0f172a; color: white; border: none; padding: 14px; border-radius: 60px; width: 100%; margin-top: 16px; cursor: pointer; }
+        .history-card { background: #f8fafc; border-radius: 24px; padding: 12px; margin-bottom: 12px; border-left: 4px solid #0f172a; }
+        .pending-status { color: #f97316; }
+        .approved-status { color: #22c55e; }
+        .rejected-status { color: #ef4444; }
+        .claim-btn, .cancel-btn { background: #0f172a; color: white; border: none; padding: 12px; border-radius: 60px; margin-top: 12px; width: 100%; cursor: pointer; }
+        .cancel-btn { background: #e2e8f0; color: #334155; }
+        .flex-btns { display: flex; gap: 10px; margin-top: 12px; }
+        .btn-sm { padding: 6px 12px; border-radius: 40px; border: none; font-weight: 600; cursor: pointer; }
+        .btn-approve { background: #22c55e; color: white; }
+        .btn-reject { background: #ef4444; color: white; }
+        .form-input { width: 100%; padding: 12px; border-radius: 60px; border: 1px solid #cbd5e1; margin: 8px 0; }
+        .small-text { font-size: 0.7rem; color: #64748b; margin-top: 6px; }
+        .timer-message { background: #e6f7ff; border-radius: 60px; padding: 8px; text-align: center; font-size: 0.75rem; margin-top: 8px; }
+        .settings-menu { position: fixed; top: 70px; right: 20px; background: white; border-radius: 28px; box-shadow: 0 10px 25px rgba(0,0,0,0.15); z-index: 150; width: 240px; display: none; overflow: hidden; }
+        body.dark-mode .settings-menu { background: #1e293b; }
+        .settings-menu.active { display: block; }
+        .settings-menu a { display: flex; align-items: center; gap: 14px; padding: 14px 20px; text-decoration: none; color: #0f172a; border-bottom: 1px solid #eef2f6; transition: background 0.2s; }
+        body.dark-mode .settings-menu a { color: #e2e8f0; border-bottom-color: #334155; }
+        .settings-menu a:last-child { border-bottom: none; }
+        .settings-menu a:hover { background: #f1f5f9; }
+        body.dark-mode .settings-menu a:hover { background: #334155; }
+        .settings-menu i { width: 24px; text-align: center; }
+        .requirement-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #eef2f6; }
+        .req-status { width: 28px; text-align: center; font-size: 1.2rem; }
+        .status-success { color: #22c55e; }
+        .status-failed { color: #ef4444; }
+        .support-profiles { display: flex; flex-direction: column; gap: 12px; margin-top: 15px; }
+        .support-profile { display: flex; align-items: center; gap: 12px; padding: 10px; background: #f1f5f9; border-radius: 60px; cursor: pointer; transition: 0.2s; }
+        body.dark-mode .support-profile { background: #334155; }
+        .support-profile i { font-size: 1.5rem; color: #0f172a; }
+        body.dark-mode .support-profile i { color: #facc15; }
+        .about-info { text-align: left; margin: 15px 0; line-height: 1.5; }
+        .task-add-btn { background: linear-gradient(135deg, #f59e0b, #d97706); color: white; border: none; border-radius: 60px; padding: 10px 18px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; margin-bottom: 20px; transition: 0.2s; }
+        .task-add-btn i { font-size: 1rem; }
+        body.dark-mode .task-add-btn { background: linear-gradient(135deg, #eab308, #ca8a04); }
+        .toast-message { position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 8px 16px; border-radius: 40px; font-size: 0.8rem; z-index: 200; white-space: nowrap; }
+    </style>
 </head>
 <body>
-<div class="nexus-card">
-  <div class="hero-glow">
-    <div>
-      <div class="date-chip" id="currentDate"></div>
-      <div class="time-digit" id="currentTime"></div>
-    </div>
-    <div class="run-pill" id="runCounterDisplay">🏆 RUN 0 / 10</div>
-    <div class="status-pill" id="globalStatusBadge">
-      <span id="statusLabel">🔁 10 runs · complete 6 links each</span>
-    </div>
-  </div>
+<div id="loadingScreen" class="loading-screen"><div class="loading-logo"><i class="fas fa-coins"></i><i class="fas fa-rocket"></i></div><div class="loading-title">Viu Earn</div><div class="loading-progress"><div class="loading-progress-fill" id="loadingFill"></div></div><div class="loading-percent" id="loadingPercent">0%</div></div>
+<div id="authScreen" class="auth-screen" style="display:none;"><div class="auth-card"><div class="auth-title">Create Account</div><input type="text" id="signupUsername" class="auth-input" placeholder="Choose a username" autocomplete="off"><input type="text" id="signupRefCode" class="auth-input" placeholder="Referral code (optional)" autocomplete="off"><div class="auth-checkbox"><input type="checkbox" id="signupPrivacy"><label>I agree to the <a href="#" id="privacyLinkModal">Privacy Policy</a> and <a href="#" id="termsLinkModal">Terms</a></label></div><button id="signupBtn" class="auth-btn">Create Account</button></div></div>
+<div id="mainApp" class="main-app-hidden"><div class="app-container">
+    <div id="homeSection" class="content-section active"><div class="section-header"><div></div><div style="display: flex; gap: 10px;"><div class="settings-icon" id="settingsIcon"><i class="fas fa-cog"></i></div><div class="dark-toggle" id="darkModeToggle"><i class="fas fa-moon"></i></div><div class="support-icon" id="supportIconHome"><i class="fas fa-headset"></i></div></div></div><div class="settings-menu" id="settingsMenu"><a href="#" id="menuPrivacy"><i class="fas fa-shield-alt"></i> Privacy Policy</a><a href="#" id="menuTerms"><i class="fas fa-file-contract"></i> Terms & Conditions</a><a href="#" id="menuSupport"><i class="fas fa-life-ring"></i> Support Team</a><a href="#" id="menuBusiness"><i class="fas fa-briefcase"></i> Business Team</a><a href="#" id="menuAbout"><i class="fas fa-info-circle"></i> About Viu Earn</a></div><div class="balance-card"><div><i class="fas fa-wallet"></i> YOUR BALANCE</div><div class="balance-amount" id="balanceAmount">0</div><div class="usd-equivalent" id="usdBalanceHome">≈ $0.000 USD</div></div><div class="stats-grid"><div class="stat-card"><div class="stat-value" id="refCount">0</div><div class="stat-label"><i class="fas fa-user-friends"></i> Referrals</div></div><div class="stat-card"><div class="stat-value" id="tasksCompletedCount">0</div><div class="stat-label"><i class="fas fa-check-circle"></i> Tasks Done</div></div><div class="stat-card"><div class="stat-value" id="todayEarningAmount">0</div><div class="stat-label"><i class="fas fa-sun"></i> Today Earned</div></div></div><div class="about-grid"><div class="about-card"><div class="about-icon"><i class="fas fa-tasks"></i></div><div class="about-title">Daily Tasks</div><div class="about-desc">Ads, Surveys, Visits</div></div><div class="about-card"><div class="about-icon"><i class="fab fa-youtube"></i></div><div class="about-title">Social Tasks</div><div class="about-desc">One-time rewards</div></div><div class="about-card"><div class="about-icon"><i class="fas fa-code"></i></div><div class="about-title">Step Tasks</div><div class="about-desc">50 one-time tasks</div></div><div class="about-card"><div class="about-icon"><i class="fas fa-wallet"></i></div><div class="about-title">Fast Withdraw</div><div class="about-desc">Min 1000 VIU + 3 referrals</div></div></div></div>
+    <div id="earnSection" class="content-section"><div class="section-header"><div class="back-button" id="earnBackBtn"><i class="fas fa-arrow-left"></i> Back</div><div class="support-icon" id="supportIconEarn"><i class="fas fa-headset"></i></div></div><div class="task-card"><div class="task-header"><span class="task-title"><i class="fas fa-clipboard-list"></i> Daily Survey (5 Q)</span><span class="task-reward">+40 VIU</span></div><div class="task-desc">Answer 5 questions. Each Next opens a link. Finish to earn 40 VIU (5x/day).</div><div class="progress-bar-bg"><div class="progress-fill" id="surveyFillCount" style="width:0%"></div></div><div class="small-text" id="surveyCountText">0/5 today</div><button id="startSurveyBtn" class="task-btn"><i class="fas fa-poll"></i> Start Survey (40 VIU)</button></div>
+    <div class="task-card"><div class="task-header"><span class="task-title"><i class="fas fa-play-circle"></i> See Ads 1</span><span class="task-reward">+20 VIU</span></div><div class="progress-bar-bg"><div class="progress-fill" id="ads1Fill"></div></div><div class="small-text" id="ads1ProgressText">0/10</div><button id="watchAd1Btn" class="task-btn"><i class="fas fa-eye"></i> Watch & Earn 20</button></div>
+    <div class="task-card"><div class="task-header"><span class="task-title"><i class="fas fa-video"></i> See Ads 2</span><span class="task-reward">+10 VIU</span></div><div class="progress-bar-bg"><div class="progress-fill" id="ads2Fill"></div></div><div class="small-text" id="ads2ProgressText">0/10</div><button id="watchAd2Btn" class="task-btn"><i class="fas fa-eye"></i> Watch & Earn 10</button></div>
+    <div class="task-card"><div class="task-header"><span class="task-title"><i class="fas fa-ad"></i> See Ads 3</span><span class="task-reward">+20 VIU</span></div><div class="progress-bar-bg"><div class="progress-fill" id="ads3Fill"></div></div><div class="small-text" id="ads3ProgressText">0/10</div><button id="watchAd3Btn" class="task-btn"><i class="fas fa-eye"></i> Watch & Earn 20</button></div>
+    <div class="task-card"><div class="task-header"><span class="task-title"><i class="fas fa-ad"></i> See Ads 4</span><span class="task-reward">+10 VIU</span></div><div class="progress-bar-bg"><div class="progress-fill" id="ads4Fill"></div></div><div class="small-text" id="ads4ProgressText">0/10</div><button id="watchAd4Btn" class="task-btn"><i class="fas fa-eye"></i> Watch & Earn 10</button></div>
+    <div id="visitTasksContainer"></div></div>
+    <div id="earningSection" class="content-section"><div class="section-header"><div class="back-button" id="earningBackBtn"><i class="fas fa-arrow-left"></i> Back</div><div class="support-icon" id="supportIconEarning"><i class="fas fa-headset"></i></div></div><button id="campaignAddBtn" class="task-add-btn"><i class="fas fa-bullhorn"></i> Add Task / Campaign</button><div id="socialTasksContainer"></div><div id="megaTaskContainer"></div><h3 style="margin: 20px 0 10px;"><i class="fas fa-code-branch"></i> Step Tasks (10 VIU each - One-time)</h3><div id="stepTasksContainer"></div><h3 style="margin: 30px 0 15px;"><i class="fas fa-history"></i> Task History</h3><div id="taskHistoryContainer"></div><div style="text-align:center; margin-top:30px; opacity:0.4; font-size:10px; cursor:pointer;" id="adminTrigger"><i class="fas fa-user-shield"></i> Admin Panel</div></div>
+    <div id="cashoutSection" class="content-section"><div class="section-header"><div class="back-button" id="cashoutBackBtn"><i class="fas fa-arrow-left"></i> Back</div><div class="support-icon" id="supportIconCashout"><i class="fas fa-headset"></i></div></div><div class="balance-card"><div>Available Balance</div><div class="balance-amount" id="withdrawBalance">0</div><div class="usd-equivalent" id="usdBalanceCashout">≈ $0.000 USD</div></div><div class="withdraw-requirements-box"><h4><i class="fas fa-clipboard-list"></i> Withdrawal Requirements</h4><div class="requirement-item" id="reqBalanceItem"><div class="req-status" id="reqBalanceStatus"><i class="fas fa-times-circle status-failed"></i></div><div>Minimum Balance: 1,000 VIU</div></div><div class="requirement-item" id="reqReferralsItem"><div class="req-status" id="reqReferralsStatus"><i class="fas fa-times-circle status-failed"></i></div><div>Minimum Referrals: 3 people</div></div></div><div style="padding:20px;"><h4><i class="fas fa-credit-card"></i> Payment Method</h4><div id="paymentMethodBinance" class="payment-option selected"><i class="fab fa-bitcoin"></i> Binance</div><div id="paymentMethodBkash" class="payment-option"><i class="fas fa-mobile-alt"></i> bKash</div><div id="paymentMethodPaxum" class="payment-option"><i class="fas fa-credit-card"></i> Paxum</div></div><input type="text" id="paymentAccount" class="form-input" placeholder="Binance Email/UID"><input type="number" id="withdrawAmount" step="500" min="1000" class="form-input" placeholder="Amount (VIU)"><div style="background:#f8fafc; border-radius:32px; padding:20px;"><div class="fee-breakdown"><span>Amount</span><span id="wdAmount">0 VIU</span></div><div class="fee-breakdown"><span>Fee (10%)</span><span id="wdFee">0 VIU</span></div><div class="fee-breakdown"><span>You Receive</span><span id="wdNet">0 VIU</span></div><div class="fee-breakdown"><span>≈ USD</span><span id="wdUsdValue">$0.000</span></div></div><button id="submitWithdrawBtn" class="withdraw-btn" disabled><i class="fas fa-paper-plane"></i> Request Withdrawal</button><div style="margin-top:35px;"><h4><i class="fas fa-clock"></i> Withdrawal History</h4><div id="historyList"></div></div></div>
+    <div id="referralSection" class="content-section"><div class="section-header"><div class="back-button" id="referralBackBtn"><i class="fas fa-arrow-left"></i> Back</div><div class="support-icon" id="supportIconReferral"><i class="fas fa-headset"></i></div></div><div class="referral-professional"><i class="fas fa-user-friends" style="font-size:2.5rem;"></i><h3>Invite Friends</h3><p style="margin: 8px 0;">📌 When someone uses your referral code:</p><p><strong>✓ You and your friend each get +100 VIU</strong> after your friend completes <strong>20 tasks</strong>.</p><p>Your unique code: <strong id="refCodeDisplay"></strong></p><button class="claim-btn" id="copyRefCode"><i class="fas fa-copy"></i> Copy Code</button></div><div><h4><i class="fas fa-list"></i> Your Referrals (<span id="referralCountDisplay">0</span>)</h4><div id="referralsList"></div><div style="margin-top:20px; background:#f8fafc; border-radius:28px; padding:18px;"><strong>Referral Bonus Earned:</strong> <span id="referralBonusTotal">0</span> VIU</div></div></div>
+    <div class="bottom-nav"><button class="nav-btn active" id="navHome"><i class="fas fa-home"></i></button><button class="nav-btn" id="navEarn"><i class="fas fa-ad"></i></button><button class="nav-btn" id="navEarning"><i class="fas fa-tasks"></i></button><button class="nav-btn" id="navCashout"><i class="fas fa-wallet"></i></button><button class="nav-btn" id="navReferral"><i class="fas fa-user-friends"></i></button></div>
+</div></div>
+<div id="congratsModal" class="modal"><div class="modal-content"><i class="fas fa-trophy" style="font-size:3rem; color:#facc15;"></i><h2>Congratulations!</h2><p id="congratsMessage"></p><button id="claimRewardBtn" class="claim-btn">Claim Reward</button><button id="cancelRewardBtn" class="cancel-btn">Cancel</button></div></div>
+<div id="surveyModal" class="modal"><div class="modal-content" id="surveyModalContent"></div></div>
+<div id="adminModal" class="modal"><div class="modal-content"><h3><i class="fas fa-user-shield"></i> Admin Panel</h3><div id="adminStepList"></div><button id="closeAdminModal" class="cancel-btn">Close</button></div></div>
+<div id="businessModal" class="modal"><div class="modal-content"><h3><i class="fas fa-bullhorn"></i> Publish Your Ad / Campaign</h3><p>If you want to add a task or run a campaign, please contact our Business Team:</p><div style="margin:20px 0;"><i class="fas fa-envelope"></i> <strong>pedobussinessteam@gmail.com</strong></div><div><i class="fab fa-telegram"></i> <strong>@pedobusinessteam</strong> &nbsp; <a href="https://t.me/pedobusinessteam" target="_blank">Click to message</a></div><button id="closeBusinessModal" class="cancel-btn">Close</button></div></div>
+<div id="supportModal" class="modal"><div class="modal-content"><h3><i class="fas fa-headset"></i> Support Team</h3><div class="support-profiles"><div class="support-profile" data-link="https://t.me/pedosupport1"><i class="fab fa-telegram"></i> @pedosupport1</div><div class="support-profile" data-link="https://t.me/Pedosupport3"><i class="fab fa-telegram"></i> @Pedosupport3</div></div><button id="closeSupportModal" class="cancel-btn">Close</button></div></div>
+<div id="aboutModal" class="modal"><div class="modal-content"><h3><i class="fas fa-info-circle"></i> About Viu Earn</h3><div class="about-info"><p><strong>Version:</strong> 3.0 (Fully Fixed)</p><p><strong>Platform:</strong> Earn rewards by completing daily tasks, watching ads, and referring friends.</p><p><strong>Features:</strong></p><ul style="text-align:left; margin-left:20px;"><li>Daily Surveys (40 VIU, 5x/day)</li><li>Watch Ads (20/10 VIU, 10x/day each)</li><li>Website Visits (5 VIU, 10x/day)</li><li>One-time Social Tasks (40 VIU)</li><li>50 Step Tasks (10 VIU each - unique editable links)</li><li>Referral Bonus (100 VIU each, after referred friend completes 20 tasks)</li><li>Withdrawals (Min 1000 VIU + 3 referrals)</li></ul><p>© 2025 Viu Earn. All rights reserved.</p></div><button id="closeAboutModal" class="cancel-btn">Close</button></div></div>
 
-  <div class="quest-area">
-    <div class="quest-header">
-      <h2>✦ DECA‑RUN TRIAL ✦</h2>
-      <div class="progress-ring" id="progressCounter">0 / 6</div>
+<!-- In-app browser modal -->
+<div id="browserModal" class="browser-modal">
+    <div class="browser-header">
+        <button class="back-btn" id="browserBackBtn"><i class="fas fa-arrow-left"></i></button>
+        <div class="url-bar" id="browserUrl">Loading...</div>
     </div>
-
-    <ul class="step-grid" id="stepList"></ul>
-
-    <div id="verifyPanel" class="verification-panel" style="display: none;">
-      <div class="panel-title">⚡ STEP <span id="activeStepNum">1</span></div>
-      <button id="openLinkBtn" class="link-btn">🌐 OPEN & VERIFY</button>
-      <div id="countdownArea">
-        <div class="countdown-big" id="timerDigits">--</div>
-        <div style="font-size: 0.75rem; color:#cbd5e6;">stay on external page for 10 seconds</div>
-      </div>
-      <button id="confirmCompleteBtn" class="confirm-btn" disabled>✅ CONFIRM & COMPLETE</button>
-      <div id="panelWarning" class="warning-text"></div>
-    </div>
-
-    <div id="finalRewardBlock" style="display: none;">
-      <div class="reward-vault">
-        <h3 style="color:#ffd966;">🏆 ULTIMATE REWARD 🏆</h3>
-        <p style="color:#bbf0e0;">10 runs mastered! Your time‑locked code:</p>
-        <div class="vault-code" id="rewardCodeText">----</div>
-        <button id="copyRewardResetBtn" class="copy-action">📋 COPY & RESTART GLOBAL</button>
-        <div style="margin-top: 8px; font-size: 0.7rem;">(resets runs + steps)</div>
-      </div>
-    </div>
-
-    <div class="info-footer">
-      ⟡ 10 RUNS CHALLENGE: complete all 6 hidden links → run increases ⟡<br>
-      ⟡ After 6/6 steps, if runs < 10 → steps reset, runs +1, continue.<br>
-      ⟡ On 10th completion → FINAL reward code appears (date+time).<br>
-      ⟡ Copy code → full reset (runs=0, steps fresh). No URL visible.
-    </div>
-  </div>
+    <iframe id="browserIframe" class="browser-iframe" src="about:blank"></iframe>
 </div>
 
 <script>
-  (function(){
-    // ---------- 6 links (hidden, no text shown) ----------
-    const STEP_URLS = [
-      "https://www.effectivecpmnetwork.com/mtt2h1nk0z?key=5a3fc2236e46b0346afe33e605fe42e7",
-      "https://omg10.com/4/11017295",
-      "https://link.gigapub.tech/l/9jfxp27o6m",
-      "https://reatasesetitoefa.com?29qfP=1255203",
-      "https://earnforearnlinksads2.vercel.app/",
-      "https://earnforearnlinksads.vercel.app/"
+    // Firebase config
+    const firebaseConfig = { apiKey: "AIzaSyAmTdb5ejQtgYxmkfLc575HcBN8pMhrBPM", authDomain: "earn-for-earn-55d3e.firebaseapp.com", databaseURL: "https://earn-for-earn-55d3e-default-rtdb.firebaseio.com", projectId: "earn-for-earn-55d3e", storageBucket: "earn-for-earn-55d3e.firebasestorage.app", messagingSenderId: "109416949734", appId: "1:109416949734:web:53f52de7899d65a04c9827" };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    let currentUser = null;
+    let userUnsubscribe = null;
+    const EXCHANGE_RATE = 10000;
+    let pendingReward = null;
+    let navigationDisabled = false;
+    let disableTimer = null;
+
+    // Device ID for one-account-per-device
+    const DEVICE_ID_KEY = 'viu_device_id';
+    let deviceId = localStorage.getItem(DEVICE_ID_KEY);
+    if(!deviceId) {
+        deviceId = 'dev_' + Date.now() + '_' + Math.random().toString(36).substr(2, 8);
+        localStorage.setItem(DEVICE_ID_KEY, deviceId);
+    }
+
+    // In-app browser functions
+    function openInAppBrowser(url) {
+        const modal = document.getElementById('browserModal');
+        const iframe = document.getElementById('browserIframe');
+        const urlBar = document.getElementById('browserUrl');
+        iframe.src = url;
+        urlBar.innerText = url;
+        modal.classList.add('active');
+        // Disable bottom nav and back buttons while browser is open
+        document.querySelector('.bottom-nav')?.classList.add('disabled');
+        document.querySelectorAll('.back-button').forEach(btn => btn.classList.add('disabled'));
+    }
+    document.getElementById('browserBackBtn').onclick = () => {
+        const modal = document.getElementById('browserModal');
+        const iframe = document.getElementById('browserIframe');
+        iframe.src = 'about:blank';
+        modal.classList.remove('active');
+        document.querySelector('.bottom-nav')?.classList.remove('disabled');
+        document.querySelectorAll('.back-button').forEach(btn => btn.classList.remove('disabled'));
+    };
+
+    // Helper: disable navigation for 5 seconds (for visit tasks)
+    function disableNavigationForSeconds(seconds) {
+        if(disableTimer) clearTimeout(disableTimer);
+        navigationDisabled = true;
+        document.querySelectorAll('.back-button').forEach(btn => btn.classList.add('disabled'));
+        document.querySelector('.bottom-nav')?.classList.add('disabled');
+        disableTimer = setTimeout(() => {
+            navigationDisabled = false;
+            document.querySelectorAll('.back-button').forEach(btn => btn.classList.remove('disabled'));
+            document.querySelector('.bottom-nav')?.classList.remove('disabled');
+        }, seconds * 1000);
+    }
+
+    // For external links (non-ad tasks) we use normal window.location
+    function openExternalLink(url) { window.location.href = url; }
+
+    // For ad/survey/visit links we use in-app browser
+    function openAdLink(url) { openInAppBrowser(url); }
+
+    async function applyReward(amount, type, extra) {
+        if(!currentUser) return;
+        let ref = db.ref(`users/${currentUser}`);
+        let snap = await ref.once('value');
+        let user = snap.val();
+        if(!user) return;
+        user.balance = (user.balance || 0) + amount;
+        user.dailyEarned = (user.dailyEarned || 0) + amount;
+        user.totalTasks = (user.totalTasks || 0) + 1;
+        if(type === 'ads1') user.ads1 = (user.ads1 || 0) + 1;
+        if(type === 'ads2') user.ads2 = (user.ads2 || 0) + 1;
+        if(type === 'ads3') user.ads3 = (user.ads3 || 0) + 1;
+        if(type === 'ads4') user.ads4 = (user.ads4 || 0) + 1;
+        if(type === 'survey') user.surveyCount = (user.surveyCount || 0) + 1;
+        if(type && type.startsWith('visit')) {
+            user.visits = user.visits || {1:0,2:0,3:0,4:0,5:0};
+            let idx = type.split('_')[1];
+            user.visits[idx] = (user.visits[idx] || 0) + 1;
+        }
+        if(extra && typeof extra === 'function') await extra(user);
+        await ref.update(user);
+        // After updating, check referral reward condition (if user has referrer and reached 20 tasks)
+        await checkReferralReward(user);
+    }
+
+    // New function: award referral bonus when referred user reaches 20 tasks
+    async function checkReferralReward(user) {
+        if(!user.referredBy) return;
+        if(user.referralBonusClaimed === true) return;
+        if(user.totalTasks >= 20) {
+            // Award 100 VIU to this user
+            const userRef = db.ref(`users/${currentUser}`);
+            await userRef.update({
+                balance: (user.balance || 0) + 100,
+                dailyEarned: (user.dailyEarned || 0) + 100,
+                totalTasks: (user.totalTasks || 0) + 1,
+                referralBonusEarned: (user.referralBonusEarned || 0) + 100,
+                referralBonusClaimed: true
+            });
+            // Award 100 VIU to the referrer
+            const referrerRef = db.ref(`users/${user.referredBy}`);
+            const referrerSnap = await referrerRef.once('value');
+            const referrer = referrerSnap.val();
+            if(referrer) {
+                let newReferrals = referrer.referrals || [];
+                // Check if this referral already exists, if not add it
+                const already = newReferrals.find(r => r.username === currentUser);
+                if(!already) {
+                    newReferrals.push({ username: currentUser, bonus: 100 });
+                }
+                await referrerRef.update({
+                    balance: (referrer.balance || 0) + 100,
+                    dailyEarned: (referrer.dailyEarned || 0) + 100,
+                    totalTasks: (referrer.totalTasks || 0) + 1,
+                    referralBonusEarned: (referrer.referralBonusEarned || 0) + 100,
+                    referrals: newReferrals
+                });
+            }
+            alert("🎉 Congratulations! You completed 20 tasks and earned +100 VIU referral bonus! Your referrer also got +100 VIU.");
+        }
+    }
+
+    function showReward(amount, type, extra) {
+        pendingReward = {amount, type, extra};
+        document.getElementById('congratsMessage').innerHTML = `You earned +${amount} VIU! Click Claim.`;
+        document.getElementById('congratsModal').classList.add('active');
+    }
+    document.getElementById('claimRewardBtn').onclick = async () => {
+        if(pendingReward) {
+            await applyReward(pendingReward.amount, pendingReward.type, pendingReward.extra);
+            pendingReward = null;
+        }
+        document.getElementById('congratsModal').classList.remove('active');
+    };
+    document.getElementById('cancelRewardBtn').onclick = () => { pendingReward = null; document.getElementById('congratsModal').classList.remove('active'); };
+
+    function startUserListener() {
+        if(userUnsubscribe) userUnsubscribe();
+        const userRef = db.ref(`users/${currentUser}`);
+        userUnsubscribe = userRef.on('value', (snap) => { if(snap.exists()) refreshUI(snap.val()); });
+    }
+
+    async function dailyReset(user) {
+        const today = new Date().toDateString();
+        if(user.lastReset !== today) {
+            user.dailyEarned = 0;
+            user.ads1 = 0; user.ads2 = 0; user.ads3 = 0; user.ads4 = 0;
+            user.surveyCount = 0;
+            user.visits = {1:0,2:0,3:0,4:0,5:0};
+            user.lastReset = today;
+            await db.ref(`users/${currentUser}`).update(user);
+            return true;
+        }
+        return false;
+    }
+
+    async function refreshUI(user) {
+        if(!user) return;
+        await dailyReset(user);
+        document.getElementById('balanceAmount').innerText = user.balance;
+        document.getElementById('withdrawBalance').innerText = user.balance;
+        let usd = (user.balance / EXCHANGE_RATE).toFixed(3);
+        document.getElementById('usdBalanceHome').innerHTML = `≈ $${usd} USD`;
+        document.getElementById('usdBalanceCashout').innerHTML = `≈ $${usd} USD`;
+        document.getElementById('tasksCompletedCount').innerText = user.totalTasks || 0;
+        let refCount = (user.referrals || []).length;
+        document.getElementById('refCount').innerText = refCount;
+        document.getElementById('referralCountDisplay').innerText = refCount;
+        document.getElementById('todayEarningAmount').innerHTML = `${user.dailyEarned} VIU`;
+        document.getElementById('refCodeDisplay').innerText = user.refCode;
+        document.getElementById('referralBonusTotal').innerText = user.referralBonusEarned || 0;
+        document.getElementById('ads1ProgressText').innerText = `${user.ads1||0}/10`;
+        document.getElementById('ads2ProgressText').innerText = `${user.ads2||0}/10`;
+        document.getElementById('ads3ProgressText').innerText = `${user.ads3||0}/10`;
+        document.getElementById('ads4ProgressText').innerText = `${user.ads4||0}/10`;
+        document.getElementById('ads1Fill').style.width = ((user.ads1||0)/10)*100+'%';
+        document.getElementById('ads2Fill').style.width = ((user.ads2||0)/10)*100+'%';
+        document.getElementById('ads3Fill').style.width = ((user.ads3||0)/10)*100+'%';
+        document.getElementById('ads4Fill').style.width = ((user.ads4||0)/10)*100+'%';
+        document.getElementById('surveyCountText').innerText = `${user.surveyCount||0}/5`;
+        document.getElementById('surveyFillCount').style.width = ((user.surveyCount||0)/5)*100+'%';
+        for(let i=1;i<=5;i++) {
+            let el = document.getElementById(`visit${i}Status`);
+            if(el) el.innerText = `${(user.visits?.[i]||0)}/10 today`;
+        }
+        renderVisitTasks(user);
+        renderSocialTasks();
+        renderMegaTask();
+        renderStepTasks(user);
+        renderTaskHistory();
+        let refDiv = document.getElementById('referralsList');
+        if(user.referrals && user.referrals.length) {
+            refDiv.innerHTML = user.referrals.map(r => `<div class="history-card"><i class="fas fa-user-plus"></i> ${r.username} +100 VIU</div>`).join('');
+        } else {
+            refDiv.innerHTML = '<div class="small-text">No referrals yet</div>';
+        }
+        let histDiv = document.getElementById('historyList');
+        if(user.withdrawals && user.withdrawals.length) {
+            histDiv.innerHTML = user.withdrawals.slice().reverse().map(w => `<div class="history-card"><div><i class="fas fa-${w.method==='binance'?'bitcoin':(w.method==='bkash'?'mobile-alt':'credit-card')}"></i> ${w.method} - ${w.amount} VIU</div><div>Net: ${w.net} VIU</div><small>${new Date(w.date).toLocaleString()}</small></div>`).join('');
+        } else {
+            histDiv.innerHTML = '<div class="small-text">No withdrawals</div>';
+        }
+        let hasBalance = user.balance >= 1000;
+        let hasReferrals = refCount >= 3;
+        document.getElementById('reqBalanceStatus').innerHTML = hasBalance ? '<i class="fas fa-check-circle status-success"></i>' : '<i class="fas fa-times-circle status-failed"></i>';
+        document.getElementById('reqReferralsStatus').innerHTML = hasReferrals ? '<i class="fas fa-check-circle status-success"></i>' : '<i class="fas fa-times-circle status-failed"></i>';
+        document.getElementById('submitWithdrawBtn').disabled = !(hasBalance && hasReferrals);
+    }
+
+    // Visit tasks with 5-second timer and navigation disable, using in-app browser for link
+    function renderVisitTasks(user) {
+        let container = document.getElementById('visitTasksContainer');
+        let html = '';
+        for(let i=1;i<=5;i++) {
+            html += `<div class="task-card"><div class="task-header"><span class="task-title"><i class="fas fa-globe"></i> Visit Site ${i}</span><span class="task-reward">+5 VIU</span></div><div class="small-text" id="visit${i}Status">${(user.visits?.[i]||0)}/10 today</div><button id="visit${i}Btn" class="task-btn"><i class="fas fa-external-link-alt"></i> Visit & Stay 5s</button><div id="visit${i}Msg" class="timer-message" style="display:none"></div></div>`;
+        }
+        container.innerHTML = html;
+        for(let i=1;i<=5;i++) attachVisitTask(i);
+    }
+    let visitTimers = {};
+    function attachVisitTask(num) {
+        let btn = document.getElementById(`visit${num}Btn`);
+        let msg = document.getElementById(`visit${num}Msg`);
+        if(!btn) return;
+        btn.onclick = async () => {
+            let snap = await db.ref(`users/${currentUser}`).once('value');
+            let user = snap.val();
+            if((user.visits?.[num]||0) >= 10) { alert("Daily limit 10 reached"); return; }
+            if(visitTimers[num]) return;
+            // Disable navigation for 5 seconds
+            disableNavigationForSeconds(5);
+            // Open link in in-app browser
+            openAdLink(`https://example.com/visit${num}`);
+            msg.style.display = 'block'; msg.innerHTML = 'Stay 5 seconds...'; btn.disabled = true;
+            let sec = 5;
+            let t = setInterval(() => {
+                sec--;
+                msg.innerHTML = `Stay ${sec}s...`;
+                if(sec <= 0) {
+                    clearInterval(t);
+                    delete visitTimers[num];
+                    msg.style.display = 'none';
+                    btn.disabled = false;
+                    showReward(5, `visit_${num}`);
+                }
+            }, 1000);
+            visitTimers[num] = t;
+        };
+    }
+
+    // Ads: use in-app browser for the ad links (simulate watch then open link)
+    document.getElementById('watchAd1Btn').onclick = () => { if(confirm("Watch ad?")) { setTimeout(() => { showReward(20,'ads1'); openAdLink('https://example.com/ad1'); }, 200); } };
+    document.getElementById('watchAd2Btn').onclick = () => { if(confirm("Watch ad?")) { setTimeout(() => { showReward(10,'ads2'); openAdLink('https://example.com/ad2'); }, 200); } };
+    document.getElementById('watchAd3Btn').onclick = () => { if(confirm("Watch ad?")) { setTimeout(() => { showReward(20,'ads3'); openAdLink('https://example.com/ad3'); }, 200); } };
+    document.getElementById('watchAd4Btn').onclick = () => { if(confirm("Watch ad?")) { setTimeout(() => { showReward(10,'ads4'); openAdLink('https://example.com/ad4'); }, 200); } };
+
+    // Survey links open in in-app browser
+    const surveyQuestions = [
+        { text: "What is the main way to earn VIU coins on Viu Earn?", options: ["Watching ads & completing tasks", "Playing games", "Inviting only"], correct: "Watching ads & completing tasks" },
+        { text: "How many VIU do you get for completing a 'Visit Website' task?", options: ["5 VIU", "10 VIU", "20 VIU"], correct: "5 VIU" },
+        { text: "What is the minimum withdrawal amount in VIU?", options: ["500 VIU", "1000 VIU", "2000 VIU"], correct: "1000 VIU" },
+        { text: "Which of these is a payment method on Viu Earn?", options: ["Binance", "PayPal", "Stripe"], correct: "Binance" },
+        { text: "How many times can you do the Daily Survey per day?", options: ["3 times", "5 times", "10 times"], correct: "5 times" }
     ];
-    const TOTAL_STEPS = 6;
-    const REQUIRED_RUNS = 10;
-    const STORAGE_KEY = "nexus_deca_run_v3";
-
-    // core state
-    let completedSteps = new Array(TOTAL_STEPS).fill(false);
-    let currentStepIndex = 0;           // first incomplete step (0-5)
-    let currentRun = 0;                 // 0..10 (10 = ready for final reward)
-    let finalRewardUnlocked = false;    // true after 10 runs and reward code generated
-
-    // verification flags
-    let activeTimer = null;
-    let timerSecondsLeft = 0;
-    let verificationActive = false;
-    let timerFinished = false;
-    let currentStepUnderVerify = -1;
-    let visibilityListenerActive = false;
-
-    // DOM elements
-    const stepListEl = document.getElementById('stepList');
-    const progressSpan = document.getElementById('progressCounter');
-    const statusBadge = document.getElementById('globalStatusBadge');
-    const statusLabel = document.getElementById('statusLabel');
-    const runDisplaySpan = document.getElementById('runCounterDisplay');
-    const verifyPanel = document.getElementById('verifyPanel');
-    const openLinkBtn = document.getElementById('openLinkBtn');
-    const confirmBtn = document.getElementById('confirmCompleteBtn');
-    const timerDigits = document.getElementById('timerDigits');
-    const activeStepNumSpan = document.getElementById('activeStepNum');
-    const panelWarning = document.getElementById('panelWarning');
-    const finalRewardBlock = document.getElementById('finalRewardBlock');
-    const rewardCodeSpan = document.getElementById('rewardCodeText');
-    const copyResetBtn = document.getElementById('copyRewardResetBtn');
-
-    // ---------- helpers ----------
-    function saveState() {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({
-        completed: completedSteps,
-        currentStep: currentStepIndex,
-        currentRun: currentRun,
-        finalRewardUnlocked: finalRewardUnlocked
-      }));
-    }
-
-    function loadState() {
-      const raw = localStorage.getItem(STORAGE_KEY);
-      if (!raw) return;
-      try {
-        const data = JSON.parse(raw);
-        if (data.completed && data.completed.length === TOTAL_STEPS) {
-          completedSteps = data.completed.map(v => !!v);
+    const surveyLinks = ["https://example.com/survey1","https://example.com/survey2","https://example.com/survey3","https://example.com/survey4","https://example.com/survey5"];
+    let surveyStep = 0, surveyAnswers = [];
+    function renderSurveyModal() {
+        let container = document.getElementById('surveyModalContent');
+        if(surveyStep >= surveyQuestions.length) {
+            let allCorrect = surveyAnswers.every((ans,i)=>ans===surveyQuestions[i].correct);
+            if(!allCorrect) { alert("Some answers wrong. Try again."); document.getElementById('surveyModal').classList.remove('active'); return; }
+            document.getElementById('surveyModal').classList.remove('active');
+            showReward(40, 'survey');
+            return;
         }
-        if (typeof data.currentStep === 'number' && data.currentStep >= 0 && data.currentStep <= TOTAL_STEPS) {
-          currentStepIndex = data.currentStep;
-        }
-        if (typeof data.currentRun === 'number' && data.currentRun >= 0 && data.currentRun <= REQUIRED_RUNS) {
-          currentRun = data.currentRun;
-        }
-        finalRewardUnlocked = !!data.finalRewardUnlocked;
-      } catch(e) {}
-    }
-
-    function abortVerificationCleanup() {
-      if (activeTimer) {
-        clearInterval(activeTimer);
-        activeTimer = null;
-      }
-      if (visibilityListenerActive) {
-        document.removeEventListener('visibilitychange', handleVisibilityChange);
-        visibilityListenerActive = false;
-      }
-      verificationActive = false;
-      timerFinished = false;
-      currentStepUnderVerify = -1;
-      timerSecondsLeft = 0;
-      if (confirmBtn) confirmBtn.disabled = true;
-      if (timerDigits) timerDigits.innerText = '--';
-    }
-
-    function handleVisibilityChange() {
-      if (!verificationActive) return;
-      if (timerFinished) return;
-      if (!document.hidden) {
-        abortVerificationCleanup();
-        showToast("❌ Early return! Full progress reset.", "#f97316");
-        fullReset(true, "⚠️ You returned before 10 seconds. All runs & steps reset.");
-      }
-    }
-
-    // full global reset (runs = 0, steps fresh, reward hidden)
-    function fullReset(showMsg = true, customMsg = "") {
-      abortVerificationCleanup();
-      completedSteps = new Array(TOTAL_STEPS).fill(false);
-      currentStepIndex = 0;
-      currentRun = 0;
-      finalRewardUnlocked = false;
-      saveState();
-      finalRewardBlock.style.display = 'none';
-      renderStepsUI();
-      updateRunAndProgressUI();
-      attemptShowVerificationPanel();
-      if (showMsg) {
-        showToast(customMsg || "🔄 Entire progress reset: runs=0, steps fresh. Start from run 1.", "#ffb347");
-      }
-    }
-
-    // called when all 6 steps are completed in current run
-    function completeRunAndAdvance() {
-      // mark all steps as completed? they already are, but we check
-      const allDone = completedSteps.every(v => v === true);
-      if (!allDone) return;
-      
-      // increment run counter
-      let newRun = currentRun + 1;
-      if (newRun === REQUIRED_RUNS) {
-        // 10th run completed → unlock ultimate reward
-        currentRun = newRun;
-        finalRewardUnlocked = true;
-        saveState();
-        renderStepsUI();
-        updateRunAndProgressUI();
-        verifyPanel.style.display = 'none';
-        // generate reward code based on current datetime
-        const rewardCode = generateRewardCode();
-        rewardCodeSpan.innerText = rewardCode;
-        finalRewardBlock.style.display = 'block';
-        abortVerificationCleanup();
-        showToast("🏆 10 RUNS COMPLETE! Final reward code generated.", "#2dd4bf");
-      } 
-      else if (newRun < REQUIRED_RUNS) {
-        // reset steps but keep new run count
-        currentRun = newRun;
-        completedSteps = new Array(TOTAL_STEPS).fill(false);
-        currentStepIndex = 0;
-        saveState();
-        renderStepsUI();
-        updateRunAndProgressUI();
-        abortVerificationCleanup();
-        attemptShowVerificationPanel();
-        showToast(`✨ RUN ${currentRun}/${REQUIRED_RUNS} COMPLETE! Steps reset, continue to next run. ✨`, "#a78bfa");
-      } 
-      else {
-        // shouldn't happen
-        fullReset(true);
-      }
-    }
-
-    // complete current step (called after timerFinished)
-    function completeCurrentStep() {
-      if (finalRewardUnlocked) {
-        showToast("Game already finished! Copy reward to reset.", "#facc15");
-        return;
-      }
-      if (currentStepIndex >= TOTAL_STEPS) return;
-      if (completedSteps[currentStepIndex]) {
-        showToast("Step already completed!", "#cbd5e6");
-        return;
-      }
-      
-      if (!timerFinished && (verificationActive || (!verificationActive && !timerFinished))) {
-        abortVerificationCleanup();
-        showToast("❌ CONFIRM clicked before 10 seconds! Full reset.", "#f97316");
-        fullReset(true);
-        return;
-      }
-      
-      if (!timerFinished) {
-        showToast("Wait for the 10-second timer to finish.", "#f97316");
-        return;
-      }
-      
-      // mark step completed
-      completedSteps[currentStepIndex] = true;
-      
-      // find next incomplete step
-      let nextIdx = currentStepIndex + 1;
-      while (nextIdx < TOTAL_STEPS && completedSteps[nextIdx]) nextIdx++;
-      
-      if (nextIdx >= TOTAL_STEPS) {
-        // all steps completed in this run
-        saveState();
-        renderStepsUI();
-        updateRunAndProgressUI();
-        abortVerificationCleanup();       // close any leftover timer UI
-        verifyPanel.style.display = 'none';
-        completeRunAndAdvance();          // handles run increment & reward logic
-      } else {
-        currentStepIndex = nextIdx;
-        saveState();
-        renderStepsUI();
-        updateRunAndProgressUI();
-        abortVerificationCleanup();
-        attemptShowVerificationPanel();
-        showToast(`✅ Step ${currentStepIndex+1} unlocked. Proceed to next link.`, "#2dd4bf");
-      }
-    }
-
-    function startCountdown(stepIdx) {
-      if (activeTimer) abortVerificationCleanup();
-      if (stepIdx !== currentStepIndex) return;
-      
-      verificationActive = true;
-      timerFinished = false;
-      currentStepUnderVerify = stepIdx;
-      timerSecondsLeft = 10;
-      timerDigits.innerText = `${timerSecondsLeft}`;
-      confirmBtn.disabled = true;
-      panelWarning.innerText = "⏳ Wait 10 seconds on external page. Don't return early!";
-      
-      if (!visibilityListenerActive) {
-        document.addEventListener('visibilitychange', handleVisibilityChange);
-        visibilityListenerActive = true;
-      }
-      
-      activeTimer = setInterval(() => {
-        if (!verificationActive) {
-          if (activeTimer) clearInterval(activeTimer);
-          activeTimer = null;
-          return;
-        }
-        timerSecondsLeft--;
-        timerDigits.innerText = `${timerSecondsLeft >= 0 ? timerSecondsLeft : 0}`;
-        
-        if (timerSecondsLeft <= 0) {
-          clearInterval(activeTimer);
-          activeTimer = null;
-          timerFinished = true;
-          verificationActive = false;
-          confirmBtn.disabled = false;
-          panelWarning.innerText = "✅ 10 seconds done! Click CONFIRM to finish step.";
-          if (visibilityListenerActive) {
-            document.removeEventListener('visibilitychange', handleVisibilityChange);
-            visibilityListenerActive = false;
-          }
-        }
-      }, 1000);
-    }
-    
-    function openCurrentLink() {
-      if (finalRewardUnlocked) {
-        showToast("Final reward already claimed. Copy code to reset.", "#f97316");
-        return;
-      }
-      if (currentStepIndex >= TOTAL_STEPS) return;
-      if (completedSteps[currentStepIndex]) {
-        showToast(`Step ${currentStepIndex+1} already done! Next step active.`, "#facc15");
-        return;
-      }
-      if (verificationActive || activeTimer) {
-        showToast("Verification in progress. Wait or reset.", "#ffb347");
-        return;
-      }
-      const targetUrl = STEP_URLS[currentStepIndex];
-      window.open(targetUrl, '_blank');
-      startCountdown(currentStepIndex);
-      showToast(`🔗 Step ${currentStepIndex+1} opened. Stay there for 10 seconds.`, "#94a3b8");
-    }
-    
-    function generateRewardCode() {
-      const now = new Date();
-      const y = now.getFullYear();
-      const m = String(now.getMonth()+1).padStart(2,'0');
-      const d = String(now.getDate()).padStart(2,'0');
-      const h = String(now.getHours()).padStart(2,'0');
-      const min = String(now.getMinutes()).padStart(2,'0');
-      const sec = String(now.getSeconds()).padStart(2,'0');
-      return `DECA-${y}${m}${d}-${h}${min}${sec}`;
-    }
-    
-    async function copyRewardAndReset() {
-      if (!finalRewardUnlocked) {
-        showToast("No ultimate reward unlocked. Complete 10 runs first!", "#f97316");
-        return;
-      }
-      const code = rewardCodeSpan.innerText;
-      if (!code || code === "----") return;
-      try {
-        await navigator.clipboard.writeText(code);
-        showToast(`🎁 Code copied! ${code} — Global reset now.`, "#2dd4bf");
-        fullReset(true, "✅ Game reset. You can start a new 10‑run journey.");
-      } catch(err) {
-        showToast("Copy failed, try again.", "#f97316");
-      }
-    }
-    
-    // UI rendering: steps (no URL text)
-    function renderStepsUI() {
-      if (!stepListEl) return;
-      stepListEl.innerHTML = '';
-      for (let i = 0; i < TOTAL_STEPS; i++) {
-        const li = document.createElement('li');
-        li.className = 'step-tile';
-        if (completedSteps[i]) li.classList.add('completed');
-        if (!finalRewardUnlocked && !completedSteps[i] && i === currentStepIndex) li.classList.add('active-step');
-        
-        const iconSpan = document.createElement('span');
-        iconSpan.className = 'step-icon';
-        iconSpan.innerText = completedSteps[i] ? "✓ DONE" : `LINK ${i+1}`;
-        
-        const nameSpan = document.createElement('span');
-        nameSpan.className = 'step-name';
-        nameSpan.innerText = completedSteps[i] ? `Step ${i+1} – verified` : `Step ${i+1} – pending 10s verification`;
-        
-        li.appendChild(iconSpan);
-        li.appendChild(nameSpan);
-        stepListEl.appendChild(li);
-      }
-    }
-    
-    function updateRunAndProgressUI() {
-      const completedCount = completedSteps.filter(v => v === true).length;
-      progressSpan.innerText = `${completedCount} / ${TOTAL_STEPS}`;
-      runDisplaySpan.innerText = `🏆 RUN ${currentRun} / ${REQUIRED_RUNS}`;
-      
-      if (finalRewardUnlocked) {
-        statusLabel.innerText = "🎉 10 RUNS MASTERED! Copy reward to reset 🎉";
-        statusBadge.classList.remove('status-active');
-        statusBadge.classList.add('status-complete');
-      } 
-      else if (currentRun === REQUIRED_RUNS) {
-        statusLabel.innerText = "✨ Ready to claim ultimate reward! ✨";
-        statusBadge.classList.add('status-complete');
-      }
-      else {
-        statusLabel.innerText = `⚡ Run ${currentRun+1}/${REQUIRED_RUNS} · Step ${currentStepIndex+1}/${TOTAL_STEPS} · complete 6 links per run`;
-        statusBadge.classList.remove('status-complete');
-        statusBadge.classList.add('status-active');
-      }
-    }
-    
-    function attemptShowVerificationPanel() {
-      if (finalRewardUnlocked) {
-        verifyPanel.style.display = 'none';
-        return;
-      }
-      if (currentStepIndex < TOTAL_STEPS && !completedSteps[currentStepIndex]) {
-        verifyPanel.style.display = 'block';
-        activeStepNumSpan.innerText = `${currentStepIndex+1}`;
-        abortVerificationCleanup();
-        timerDigits.innerText = '--';
-        confirmBtn.disabled = true;
-        panelWarning.innerText = '🌐 Click "OPEN & VERIFY" to start. 10 seconds on external page.';
-      } else {
-        verifyPanel.style.display = 'none';
-      }
-    }
-    
-    function injectManualReset() {
-      const btn = document.createElement('button');
-      btn.innerText = '⚠️ HARD RESET (erase all runs & progress)';
-      btn.className = 'reset-all-btn';
-      btn.id = 'globalHardResetBtn';
-      const container = document.querySelector('.quest-area');
-      if (container && !document.getElementById('globalHardResetBtn')) {
-        container.appendChild(btn);
-        btn.addEventListener('click', () => {
-          if (confirm("⚠️ This will reset all 10 runs progress and steps. Continue?")) {
-            fullReset(true, "🔄 Manual hard reset. Runs set to 0.");
-          }
+        let q = surveyQuestions[surveyStep];
+        let html = `<div>${surveyStep+1}. ${q.text}</div>`;
+        q.options.forEach(opt => { html += `<div class="survey-option" data-val="${opt}">${opt}</div>`; });
+        html += `<div class="flex-btns"><button id="surveyNextBtn" class="claim-btn">Next & Open Link</button><button id="surveyCancelBtn" class="cancel-btn">Cancel</button></div>`;
+        container.innerHTML = html;
+        document.querySelectorAll('.survey-option').forEach(el => {
+            el.onclick = () => {
+                surveyAnswers[surveyStep] = el.dataset.val;
+                document.querySelectorAll('.survey-option').forEach(o=>o.classList.remove('selected'));
+                el.classList.add('selected');
+            };
         });
-      }
+        document.getElementById('surveyNextBtn').onclick = () => {
+            if(!surveyAnswers[surveyStep]) return alert("Select an answer");
+            openAdLink(surveyLinks[surveyStep]);  // in-app browser
+            surveyStep++;
+            renderSurveyModal();
+        };
+        document.getElementById('surveyCancelBtn').onclick = () => document.getElementById('surveyModal').classList.remove('active');
     }
-    
-    function bindEvents() {
-      if (openLinkBtn) openLinkBtn.addEventListener('click', openCurrentLink);
-      if (confirmBtn) confirmBtn.addEventListener('click', completeCurrentStep);
-      if (copyResetBtn) copyResetBtn.addEventListener('click', copyRewardAndReset);
-    }
-    
-    function updateDateTime() {
-      const now = new Date();
-      const dateEl = document.getElementById('currentDate');
-      const timeEl = document.getElementById('currentTime');
-      if (dateEl) dateEl.innerText = now.toLocaleDateString(undefined, { weekday:'long', year:'numeric', month:'long', day:'numeric' });
-      if (timeEl) timeEl.innerText = now.toLocaleTimeString('en-GB', { hour:'2-digit', minute:'2-digit', second:'2-digit' });
-    }
-    
-    function showToast(msg, colorHint) {
-      const toast = document.createElement('div');
-      toast.className = 'toast-msg';
-      toast.innerText = msg;
-      toast.style.background = colorHint + 'cc';
-      document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 2000);
-    }
-    
-    function init() {
-      loadState();
-      // consistency checks
-      const completedCount = completedSteps.filter(v=>v===true).length;
-      if (finalRewardUnlocked && currentRun !== REQUIRED_RUNS) finalRewardUnlocked = false;
-      if (!finalRewardUnlocked && currentRun >= REQUIRED_RUNS) {
-        finalRewardUnlocked = true;
-      }
-      if (finalRewardUnlocked) {
-        finalRewardBlock.style.display = 'block';
-        verifyPanel.style.display = 'none';
-        rewardCodeSpan.innerText = generateRewardCode();
-      } else {
-        finalRewardBlock.style.display = 'none';
-        if (currentRun >= REQUIRED_RUNS) currentRun = REQUIRED_RUNS - 1;
-        // if steps mismatch
-        if (currentStepIndex >= TOTAL_STEPS) currentStepIndex = 0;
-        for(let i=0; i<completedSteps.length; i++) {
-          if(completedSteps[i] && i<currentStepIndex) continue;
-          if(!completedSteps[i]) { currentStepIndex = i; break; }
+    document.getElementById('startSurveyBtn').onclick = async () => {
+        let snap = await db.ref(`users/${currentUser}`).once('value');
+        let user = snap.val();
+        if(user.surveyCount >= 5) return alert("Daily limit 5");
+        surveyStep = 0; surveyAnswers = [];
+        document.getElementById('surveyModal').classList.add('active');
+        renderSurveyModal();
+    };
+
+    // 50 unique step task links (these open normally, not in-app)
+    const stepVideoLinks = [
+        "https://terabox.com/s/step1_alpha", "https://terabox.com/s/step2_beta", "https://terabox.com/s/step3_gamma", "https://terabox.com/s/step4_delta", "https://terabox.com/s/step5_epsilon",
+        "https://terabox.com/s/step6_zeta", "https://terabox.com/s/step7_eta", "https://terabox.com/s/step8_theta", "https://terabox.com/s/step9_iota", "https://terabox.com/s/step10_kappa",
+        "https://terabox.com/s/step11_lambda", "https://terabox.com/s/step12_mu", "https://terabox.com/s/step13_nu", "https://terabox.com/s/step14_xi", "https://terabox.com/s/step15_omicron",
+        "https://terabox.com/s/step16_pi", "https://terabox.com/s/step17_rho", "https://terabox.com/s/step18_sigma", "https://terabox.com/s/step19_tau", "https://terabox.com/s/step20_upsilon",
+        "https://terabox.com/s/step21_phi", "https://terabox.com/s/step22_chi", "https://terabox.com/s/step23_psi", "https://terabox.com/s/step24_omega", "https://terabox.com/s/step25_alpha2",
+        "https://terabox.com/s/step26_beta2", "https://terabox.com/s/step27_gamma2", "https://terabox.com/s/step28_delta2", "https://terabox.com/s/step29_epsilon2", "https://terabox.com/s/step30_zeta2",
+        "https://terabox.com/s/step31_eta2", "https://terabox.com/s/step32_theta2", "https://terabox.com/s/step33_iota2", "https://terabox.com/s/step34_kappa2", "https://terabox.com/s/step35_lambda2",
+        "https://terabox.com/s/step36_mu2", "https://terabox.com/s/step37_nu2", "https://terabox.com/s/step38_xi2", "https://terabox.com/s/step39_omicron2", "https://terabox.com/s/step40_pi2",
+        "https://terabox.com/s/step41_rho2", "https://terabox.com/s/step42_sigma2", "https://terabox.com/s/step43_tau2", "https://terabox.com/s/step44_upsilon2", "https://terabox.com/s/step45_phi2",
+        "https://terabox.com/s/step46_chi2", "https://terabox.com/s/step47_psi2", "https://terabox.com/s/step48_omega2", "https://terabox.com/s/step49_alpha3", "https://terabox.com/s/step50_beta3"
+    ];
+    const stepCodes = [1786,9805,2341,5678,4321,8765,3456,7890,1234,5670,9087,6543,2109,8760,5432,1098,7654,3210,9876,4567,2345,6789,3457,7891,4568,8901,5679,9012,6780,123,7892,1235,8903,2346,9014,3457,125,4568,1236,5679,2347,6780,3458,7891,4569,8902,5670,9013,6781,7893];
+    async function renderStepTasks(user) {
+        let completed = user.completedStepTasks || [];
+        let container = document.getElementById('stepTasksContainer');
+        let html = '';
+        for(let i=1;i<=50;i++) {
+            if(completed.includes(i)) continue;
+            html += `<div class="task-card"><div class="task-header"><span class="task-title"><i class="fas fa-code-branch"></i> Step Task ${i}</span><span class="task-reward">+10 VIU</span></div><button class="task-btn openVideoStepBtn" data-link="${stepVideoLinks[i-1]}" style="background:#3b82f6; margin-bottom:8px;"><i class="fas fa-play"></i> Open Video & Get Code</button><div class="task-desc">Watch video to find secret code, then enter below.</div><input type="text" id="stepCodeInput_${i}" class="form-input" placeholder="Enter 4-digit code"><button class="task-btn verifyStepBtn" data-id="${i}"><i class="fas fa-check-circle"></i> Verify & Claim 10 VIU</button></div>`;
         }
-      }
-      saveState();
-      renderStepsUI();
-      updateRunAndProgressUI();
-      attemptShowVerificationPanel();
-      bindEvents();
-      injectManualReset();
-      setInterval(updateDateTime, 1000);
-      updateDateTime();
+        if(html === "") html = '<div class="info-message">🎉 You completed all 50 Step Tasks!</div>';
+        container.innerHTML = html;
+        // These links open externally (normal)
+        document.querySelectorAll('.openVideoStepBtn').forEach(btn => btn.onclick = () => openExternalLink(btn.dataset.link));
+        document.querySelectorAll('.verifyStepBtn').forEach(btn => {
+            btn.onclick = async () => {
+                let tid = parseInt(btn.dataset.id);
+                let code = parseInt(document.getElementById(`stepCodeInput_${tid}`).value.trim());
+                if(isNaN(code)) return alert("Enter valid code");
+                let userNow = (await db.ref(`users/${currentUser}`).once('value')).val();
+                let comp = userNow.completedStepTasks || [];
+                if(comp.includes(tid)) return alert("Already completed");
+                if(code === stepCodes[tid-1]) {
+                    userNow.balance += 10;
+                    userNow.dailyEarned += 10;
+                    userNow.totalTasks += 1;
+                    userNow.completedStepTasks = [...comp, tid];
+                    await db.ref(`users/${currentUser}`).update(userNow);
+                    await checkReferralReward(userNow);
+                    alert(`🎉 Correct! +10 VIU for Step Task ${tid}`);
+                } else {
+                    alert("Incorrect code. Watch video again.");
+                }
+            };
+        });
     }
-    
-    init();
-  })();
+
+    // Social tasks (open externally)
+    async function renderSocialTasks() {
+        let subsSnap = await db.ref('social_submissions').orderByChild('userId').equalTo(currentUser).once('value');
+        let existing = []; subsSnap.forEach(s => existing.push(s.val()));
+        let tasks = [
+            {id:'youtube', title:'Join & Subscribe YouTube Channel', reward:40, link:'https://youtube.com/@earnviuofficial'},
+            {id:'paymentProof', title:'Join Payment Proof Telegram', reward:40, link:'https://t.me/viupaymentproof'},
+            {id:'announce', title:'Join Announcement Telegram', reward:40, link:'https://t.me/viuannounce'}
+        ];
+        let container = document.getElementById('socialTasksContainer');
+        let html = '';
+        for(let task of tasks) {
+            let approved = existing.find(s => s.taskId===task.id && s.status==='approved');
+            let pending = existing.find(s => s.taskId===task.id && s.status==='pending');
+            if(approved) continue;
+            if(pending) {
+                html += `<div class="task-card"><div class="task-header"><span class="task-title"><i class="fab fa-${task.id==='youtube'?'youtube':'telegram'}"></i> ${task.title}</span><span class="task-reward">+${task.reward} VIU</span></div><div class="pending-status"><i class="fas fa-clock"></i> Pending admin approval</div><div class="small-text">Username: ${pending.username}</div></div>`;
+                continue;
+            }
+            html += `<div class="task-card"><div class="task-header"><span class="task-title"><i class="fab fa-${task.id==='youtube'?'youtube':'telegram'}"></i> ${task.title}</span><span class="task-reward">+${task.reward} VIU</span></div><div class="task-desc"><strong>Step 1:</strong> Subscribe/Join the channel</div><button class="task-btn openSocialBtn" data-link="${task.link}" style="background:#f59e0b;"><i class="fas fa-external-link-alt"></i> Open & Join</button><div class="task-desc"><strong>Step 2:</strong> Enter your username</div><input type="text" id="username_${task.id}" class="form-input" placeholder="Your @username"><button class="task-btn submitSocialBtn" data-type="${task.id}" data-reward="${task.reward}"><i class="fas fa-paper-plane"></i> Submit for Approval</button></div>`;
+        }
+        container.innerHTML = html;
+        document.querySelectorAll('.openSocialBtn').forEach(btn => btn.onclick = () => openExternalLink(btn.dataset.link));
+        document.querySelectorAll('.submitSocialBtn').forEach(btn => {
+            btn.onclick = async () => {
+                let type = btn.dataset.type;
+                let username = document.getElementById(`username_${type}`).value.trim();
+                if(!username) return alert("Enter your Telegram username");
+                await db.ref(`social_submissions/${Date.now()}`).set({
+                    id: Date.now(), userId: currentUser, taskId: type, username, status: 'pending', date: Date.now()
+                });
+                alert("Submitted. Admin will review.");
+                renderSocialTasks();
+                renderTaskHistory();
+            };
+        });
+    }
+
+    async function renderMegaTask() {
+        let subsSnap = await db.ref('mega_submissions').orderByChild('userId').equalTo(currentUser).once('value');
+        let submission = null;
+        subsSnap.forEach(s => { if(s.val().status !== 'rejected') submission = s.val(); });
+        let container = document.getElementById('megaTaskContainer');
+        if(submission && submission.status === 'approved') return;
+        if(submission && submission.status === 'pending') {
+            container.innerHTML = `<div class="task-card"><div class="task-header"><span class="task-title"><i class="fas fa-star"></i> 3-Step Mega Task</span><span class="task-reward">+50 VIU</span></div><div class="pending-status">⏳ Pending approval</div><div class="small-text">Username: ${submission.username}</div></div>`;
+            return;
+        }
+        container.innerHTML = `<div class="task-card"><div class="task-header"><span class="task-title"><i class="fas fa-star"></i> 3-Step Mega Task</span><span class="task-reward">+50 VIU</span></div><div class="task-desc"><strong>Step 1:</strong> Open bot/link</div><button id="megaStep1Btn" class="task-btn" style="background:#f59e0b;">Open Link / Bot</button><div class="task-desc"><strong>Step 2:</strong> Complete 20 tasks on platform</div><button id="megaStep2Btn" class="task-btn" style="background:#3b82f6;" disabled>I have completed 20 tasks</button><div class="task-desc"><strong>Step 3:</strong> Enter username</div><input type="text" id="megaUsername" class="form-input" placeholder="@username" disabled><button id="megaSubmitBtn" class="task-btn" disabled>Submit for Approval (50 VIU)</button><div id="megaStatusMsg" class="small-text">Step 1: Open the link first</div></div>`;
+        let step1 = false, step2 = false;
+        document.getElementById('megaStep1Btn').onclick = () => { openExternalLink('https://t.me/example_bot?start=task'); step1 = true; document.getElementById('megaStep2Btn').disabled = false; document.getElementById('megaStatusMsg').innerText = 'Step 1 done. Confirm step 2.'; };
+        document.getElementById('megaStep2Btn').onclick = () => { if(confirm("Completed 20 tasks on the external platform?")) { step2 = true; document.getElementById('megaUsername').disabled = false; document.getElementById('megaSubmitBtn').disabled = false; document.getElementById('megaStatusMsg').innerText = 'Step 2 confirmed. Submit username.'; } };
+        document.getElementById('megaSubmitBtn').onclick = async () => {
+            let username = document.getElementById('megaUsername').value.trim();
+            if(!username) return alert("Enter username");
+            await db.ref(`mega_submissions/${Date.now()}`).set({ id: Date.now(), userId: currentUser, username, status: 'pending', date: Date.now() });
+            alert("Submitted for admin approval.");
+            renderMegaTask();
+            renderTaskHistory();
+        };
+    }
+
+    async function renderTaskHistory() {
+        let social = await db.ref('social_submissions').orderByChild('userId').equalTo(currentUser).once('value');
+        let mega = await db.ref('mega_submissions').orderByChild('userId').equalTo(currentUser).once('value');
+        let all = [];
+        social.forEach(s => all.push(s.val()));
+        mega.forEach(s => all.push(s.val()));
+        let container = document.getElementById('taskHistoryContainer');
+        if(all.length === 0) { container.innerHTML = '<div class="small-text">No submissions yet.</div>'; return; }
+        let html = '';
+        all.slice().reverse().forEach(sub => {
+            let statusClass = sub.status==='pending' ? 'pending-status' : (sub.status==='approved' ? 'approved-status' : 'rejected-status');
+            let icon = sub.status==='pending' ? '⏳' : (sub.status==='approved' ? '✅' : '❌');
+            let detail = sub.taskId ? `Social (${sub.taskId})` : 'Mega Task';
+            html += `<div class="history-card"><div><i class="fas fa-tasks"></i> ${detail}</div><div>${sub.username ? `Username: ${sub.username}` : ''}</div><div class="${statusClass}">${icon} ${sub.status}</div><small>${new Date(sub.date).toLocaleString()}</small></div>`;
+        });
+        container.innerHTML = html;
+    }
+
+    document.getElementById('adminTrigger').onclick = async () => {
+        if(prompt("Admin password:") !== "admin123") return;
+        let social = await db.ref('social_submissions').orderByChild('status').equalTo('pending').once('value');
+        let mega = await db.ref('mega_submissions').orderByChild('status').equalTo('pending').once('value');
+        let container = document.getElementById('adminStepList');
+        let html = '';
+        social.forEach(s => {
+            let sub = s.val();
+            html += `<div><strong>Social (${sub.taskId})</strong> | User: ${sub.userId}<br>Username: ${sub.username}<div class="flex-btns"><button class="btn-sm btn-approve-social" data-id="${sub.id}" data-reward="40">Approve (+40)</button><button class="btn-sm btn-reject-social" data-id="${sub.id}">Reject</button></div></div>`;
+        });
+        mega.forEach(s => {
+            let sub = s.val();
+            html += `<div><strong>Mega Task</strong> | User: ${sub.userId}<br>Username: ${sub.username}<div class="flex-btns"><button class="btn-sm btn-approve-mega" data-id="${sub.id}" data-reward="50">Approve (+50)</button><button class="btn-sm btn-reject-mega" data-id="${sub.id}">Reject</button></div></div>`;
+        });
+        if(!html) html = '<p>No pending.</p>';
+        container.innerHTML = html;
+        document.querySelectorAll('.btn-approve-social').forEach(btn => {
+            btn.onclick = async () => {
+                let id = btn.dataset.id;
+                let sub = (await db.ref(`social_submissions/${id}`).once('value')).val();
+                if(sub && sub.status === 'pending') {
+                    await db.ref(`social_submissions/${id}/status`).set('approved');
+                    let userSnap = await db.ref(`users/${sub.userId}`).once('value');
+                    let user = userSnap.val();
+                    if(user) {
+                        user.balance += 40;
+                        user.dailyEarned += 40;
+                        user.totalTasks += 1;
+                        user.referralBonusEarned = (user.referralBonusEarned || 0) + 40;
+                        await db.ref(`users/${sub.userId}`).update(user);
+                        await checkReferralReward(user);
+                    }
+                    alert("Approved +40 VIU");
+                    if(sub.userId === currentUser) refreshUI(await db.ref(`users/${currentUser}`).once('value').then(s=>s.val()));
+                    renderTaskHistory();
+                }
+            };
+        });
+        document.querySelectorAll('.btn-reject-social').forEach(btn => {
+            btn.onclick = async () => { let id = btn.dataset.id; await db.ref(`social_submissions/${id}`).remove(); alert("Rejected"); };
+        });
+        document.querySelectorAll('.btn-approve-mega').forEach(btn => {
+            btn.onclick = async () => {
+                let id = btn.dataset.id;
+                let sub = (await db.ref(`mega_submissions/${id}`).once('value')).val();
+                if(sub && sub.status === 'pending') {
+                    await db.ref(`mega_submissions/${id}/status`).set('approved');
+                    let userSnap = await db.ref(`users/${sub.userId}`).once('value');
+                    let user = userSnap.val();
+                    if(user) {
+                        user.balance += 50;
+                        user.dailyEarned += 50;
+                        user.totalTasks += 1;
+                        user.referralBonusEarned = (user.referralBonusEarned || 0) + 50;
+                        await db.ref(`users/${sub.userId}`).update(user);
+                        await checkReferralReward(user);
+                    }
+                    alert("Approved +50 VIU");
+                    if(sub.userId === currentUser) refreshUI(await db.ref(`users/${currentUser}`).once('value').then(s=>s.val()));
+                    renderTaskHistory();
+                }
+            };
+        });
+        document.querySelectorAll('.btn-reject-mega').forEach(btn => {
+            btn.onclick = async () => { let id = btn.dataset.id; await db.ref(`mega_submissions/${id}`).remove(); alert("Rejected"); };
+        });
+        document.getElementById('adminModal').classList.add('active');
+    };
+    document.getElementById('closeAdminModal').onclick = () => document.getElementById('adminModal').classList.remove('active');
+
+    // Payment & Withdrawal
+    let selectedMethod = 'binance';
+    document.getElementById('paymentMethodBinance').onclick = () => { selectedMethod='binance'; document.querySelectorAll('.payment-option').forEach(o=>o.classList.remove('selected')); document.getElementById('paymentMethodBinance').classList.add('selected'); document.getElementById('paymentAccount').placeholder='Binance Email/UID'; };
+    document.getElementById('paymentMethodBkash').onclick = () => { selectedMethod='bkash'; document.querySelectorAll('.payment-option').forEach(o=>o.classList.remove('selected')); document.getElementById('paymentMethodBkash').classList.add('selected'); document.getElementById('paymentAccount').placeholder='bKash Mobile'; };
+    document.getElementById('paymentMethodPaxum').onclick = () => { selectedMethod='paxum'; document.querySelectorAll('.payment-option').forEach(o=>o.classList.remove('selected')); document.getElementById('paymentMethodPaxum').classList.add('selected'); document.getElementById('paymentAccount').placeholder='Paxum Email'; };
+    document.getElementById('withdrawAmount').addEventListener('input', (e) => {
+        let a = parseInt(e.target.value) || 0;
+        let f = Math.floor(a * 0.1);
+        document.getElementById('wdAmount').innerText = `${a} VIU`;
+        document.getElementById('wdFee').innerText = `${f} VIU`;
+        document.getElementById('wdNet').innerText = `${a-f} VIU`;
+        document.getElementById('wdUsdValue').innerText = `$${((a-f)/EXCHANGE_RATE).toFixed(3)}`;
+    });
+    document.getElementById('submitWithdrawBtn').onclick = async () => {
+        let amt = parseInt(document.getElementById('withdrawAmount').value);
+        let acc = document.getElementById('paymentAccount').value.trim();
+        let user = (await db.ref(`users/${currentUser}`).once('value')).val();
+        if(user.balance < 1000 || (user.referrals?.length||0) < 3) return alert("Requirements: 1000 VIU + 3 referrals");
+        if(amt < 1000 || amt > user.balance) return alert("Invalid amount");
+        let fee = Math.floor(amt * 0.1);
+        let net = amt - fee;
+        user.balance -= amt;
+        user.withdrawals = user.withdrawals || [];
+        user.withdrawals.push({ id: Date.now(), amount: amt, fee, net, method: selectedMethod, account: acc, status: 'Completed', date: Date.now() });
+        await db.ref(`users/${currentUser}`).update(user);
+        alert(`Withdrawal requested! You receive ${net} VIU after fee.`);
+        document.getElementById('withdrawAmount').value = '';
+        document.getElementById('paymentAccount').value = '';
+    };
+    document.getElementById('copyRefCode').onclick = async () => {
+        let user = (await db.ref(`users/${currentUser}`).once('value')).val();
+        navigator.clipboard.writeText(user.refCode);
+        alert("Copied!");
+    };
+
+    // Navigation
+    function switchSection(id) {
+        if(navigationDisabled) { alert("Please wait, task in progress..."); return; }
+        document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+        if(id === 'homeSection') document.getElementById('navHome').classList.add('active');
+        if(id === 'earnSection') document.getElementById('navEarn').classList.add('active');
+        if(id === 'earningSection') document.getElementById('navEarning').classList.add('active');
+        if(id === 'cashoutSection') document.getElementById('navCashout').classList.add('active');
+        if(id === 'referralSection') document.getElementById('navReferral').classList.add('active');
+    }
+    document.getElementById('navHome').onclick = () => switchSection('homeSection');
+    document.getElementById('navEarn').onclick = () => switchSection('earnSection');
+    document.getElementById('navEarning').onclick = () => switchSection('earningSection');
+    document.getElementById('navCashout').onclick = () => switchSection('cashoutSection');
+    document.getElementById('navReferral').onclick = () => switchSection('referralSection');
+    document.getElementById('earnBackBtn').onclick = () => switchSection('homeSection');
+    document.getElementById('earningBackBtn').onclick = () => switchSection('homeSection');
+    document.getElementById('cashoutBackBtn').onclick = () => switchSection('homeSection');
+    document.getElementById('referralBackBtn').onclick = () => switchSection('referralSection');
+    document.querySelectorAll('.support-icon').forEach(icon => icon.onclick = () => openExternalLink('https://t.me/Pedosupport3'));
+    document.getElementById('campaignAddBtn').onclick = () => document.getElementById('businessModal').classList.add('active');
+    document.getElementById('closeBusinessModal').onclick = () => document.getElementById('businessModal').classList.remove('active');
+    document.getElementById('menuSupport').onclick = () => document.getElementById('supportModal').classList.add('active');
+    document.querySelectorAll('.support-profile').forEach(p => p.onclick = () => openExternalLink(p.dataset.link));
+    document.getElementById('closeSupportModal').onclick = () => document.getElementById('supportModal').classList.remove('active');
+    document.getElementById('menuAbout').onclick = () => document.getElementById('aboutModal').classList.add('active');
+    document.getElementById('closeAboutModal').onclick = () => document.getElementById('aboutModal').classList.remove('active');
+    document.getElementById('menuPrivacy').onclick = () => openExternalLink('https://example.com/privacy');
+    document.getElementById('menuTerms').onclick = () => openExternalLink('https://example.com/terms');
+    document.getElementById('menuBusiness').onclick = () => openExternalLink('https://t.me/pedobusinessteam');
+    let darkToggle = document.getElementById('darkModeToggle');
+    if(localStorage.getItem('darkMode') === 'enabled') { document.body.classList.add('dark-mode'); darkToggle.innerHTML = '<i class="fas fa-sun"></i>'; }
+    darkToggle.onclick = () => {
+        document.body.classList.toggle('dark-mode');
+        if(document.body.classList.contains('dark-mode')) { localStorage.setItem('darkMode','enabled'); darkToggle.innerHTML='<i class="fas fa-sun"></i>'; }
+        else { localStorage.setItem('darkMode','disabled'); darkToggle.innerHTML='<i class="fas fa-moon"></i>'; }
+    };
+    let settingsIcon = document.getElementById('settingsIcon'), settingsMenu = document.getElementById('settingsMenu');
+    settingsIcon.onclick = (e) => { e.stopPropagation(); settingsMenu.classList.toggle('active'); };
+    document.addEventListener('click', (e) => { if(!settingsIcon.contains(e.target)) settingsMenu.classList.remove('active'); });
+
+    // Signup with device ID check - NO instant referral bonus
+    async function signup(username, refCode) {
+        let deviceSnap = await db.ref('devices').child(deviceId).once('value');
+        if(deviceSnap.exists()) {
+            throw new Error("This device already has an account. Only one account per device is allowed.");
+        }
+        let check = await db.ref(`users/${username}`).once('value');
+        if(check.exists()) throw new Error("Username already exists");
+        let newRefCode = username.slice(0,4).toUpperCase() + Math.floor(Math.random()*10000);
+        let referredBy = null;
+        if(refCode) {
+            let usersSnap = await db.ref('users').once('value');
+            usersSnap.forEach(u => { if(u.val().refCode === refCode) referredBy = u.key; });
+        }
+        let newUser = {
+            username, refCode: newRefCode, referredBy,
+            balance: 0, totalTasks: 0, referrals: [], withdrawals: [],
+            dailyEarned: 0, lastReset: new Date().toDateString(),
+            ads1:0, ads2:0, ads3:0, ads4:0, visits: {1:0,2:0,3:0,4:0,5:0}, surveyCount: 0,
+            completedStepTasks: [], earningsHistory: [], referralBonusEarned: 0,
+            referralBonusClaimed: false  // new flag to track if bonus already given
+        };
+        // No instant bonus; it will be awarded when user reaches 20 tasks
+        await db.ref(`users/${username}`).set(newUser);
+        await db.ref('devices').child(deviceId).set({ userId: username, createdAt: Date.now() });
+        currentUser = username;
+        localStorage.setItem('currentUser', currentUser);
+        document.getElementById('authScreen').style.display = 'none';
+        document.getElementById('mainApp').classList.remove('main-app-hidden');
+        startUserListener();
+        refreshUI(newUser);
+        setInterval(() => refreshUI(newUser), 60000);
+    }
+    document.getElementById('signupBtn').onclick = async () => {
+        let username = document.getElementById('signupUsername').value.trim();
+        let ref = document.getElementById('signupRefCode').value.trim();
+        let privacy = document.getElementById('signupPrivacy').checked;
+        if(!username || username.length < 3) return alert("Username must be at least 3 characters");
+        if(!privacy) return alert("You must accept Privacy Policy and Terms");
+        try {
+            await signup(username, ref);
+        } catch(e) { alert(e.message); }
+    };
+
+    // Loading animation and initial auth check
+    let loadPercent = 0;
+    const loadInterval = setInterval(() => {
+        loadPercent += Math.floor(Math.random() * 8) + 2;
+        if(loadPercent >= 100) loadPercent = 100;
+        document.getElementById('loadingFill').style.width = loadPercent + '%';
+        document.getElementById('loadingPercent').innerText = loadPercent + '%';
+        if(loadPercent >= 100) {
+            clearInterval(loadInterval);
+            setTimeout(() => {
+                document.getElementById('loadingScreen').classList.add('hidden');
+                let stored = localStorage.getItem('currentUser');
+                if(stored) {
+                    db.ref(`users/${stored}`).once('value').then(snap => {
+                        if(snap.exists()) {
+                            currentUser = stored;
+                            document.getElementById('authScreen').style.display = 'none';
+                            document.getElementById('mainApp').classList.remove('main-app-hidden');
+                            startUserListener();
+                            refreshUI(snap.val());
+                            setInterval(() => refreshUI(snap.val()), 60000);
+                        } else {
+                            document.getElementById('authScreen').style.display = 'flex';
+                        }
+                    });
+                } else {
+                    document.getElementById('authScreen').style.display = 'flex';
+                }
+            }, 300);
+        }
+    }, 70);
 </script>
 </body>
 </html>
