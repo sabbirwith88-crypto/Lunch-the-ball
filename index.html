@@ -57,6 +57,10 @@
         border: 2px solid #FFD700;
         border-radius: 12px;
         animation: hintPulse 2s infinite alternate;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        justify-content: center;
     }
 
     @keyframes hintPulse {
@@ -103,7 +107,18 @@
         background-color: rgba(255, 255, 255, 0.3);
     }
 
-    /* JR Wallet display */
+    /* Coin SVG sizing helper */
+    .coin-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: none;
+    }
+    .coin-icon svg {
+        display: block;
+    }
+
+    /* Coin Wallet display */
     .wallet-display {
         position: fixed;
         top: 16px;
@@ -122,17 +137,7 @@
         gap: 8px;
         box-shadow: 0 0 15px rgba(255, 215, 0, 0.5);
     }
-    .wallet-display .js-icon {
-        background: linear-gradient(135deg, #FFD700, #FFA500);
-        color: #333;
-        width: 22px;
-        height: 22px;
-        border-radius: 50%;
-        text-align: center;
-        line-height: 22px;
-        font-size: 0.6rem;
-        font-weight: 900;
-    }
+    .wallet-display .coin-icon { width: 26px; height: 26px; }
     .wallet-display.hidden { display: none; }
 
     /* Withdraw button on start screen */
@@ -186,6 +191,10 @@
         font-weight: bold;
         margin-bottom: 12px;
         letter-spacing: 2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
     }
     .withdraw-balance {
         color: #ccc;
@@ -1333,14 +1342,19 @@
         margin-bottom: 20px;
     }
     .reward-big {
-        font-size: 4rem;
+        font-size: 3.4rem;
         font-weight: 900;
         color: #FFD700;
         text-shadow: 0 0 20px rgba(255,215,0,0.9), 0 0 40px rgba(255,215,0,0.6);
         margin: 10px 0 30px;
         letter-spacing: 3px;
         animation: rewardPop 1.2s ease-in-out infinite alternate;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 14px;
     }
+    .reward-big .coin-icon svg { width: 58px; height: 58px; }
     @keyframes rewardPop {
         0% { transform: scale(1); }
         100% { transform: scale(1.08); }
@@ -1433,26 +1447,40 @@
         .power-drag-area { height: 90px; }
         .ball-counter { font-size: 1.2rem; top: 85px; left: 20px; }
         .wallet-display { font-size: 0.95rem; padding: 6px 14px; top: 12px; }
+        .wallet-display .coin-icon { width: 22px; height: 22px; }
         .session3-complete-title { font-size: 2rem; }
-        .reward-big { font-size: 3rem; }
+        .reward-big { font-size: 2.4rem; }
+        .reward-big .coin-icon svg { width: 44px; height: 44px; }
     }
   </style>
 </head>
 <body>
 
-<!-- Global JR wallet display -->
+<!-- Global coin wallet display -->
 <div class="wallet-display" id="walletDisplay">
-  <span class="js-icon">JR</span>
+  <span class="coin-icon">
+    <svg viewBox="0 0 40 40" width="26" height="26" aria-hidden="true">
+      <circle cx="20" cy="20" r="19.4" fill="#FBFBFE"/>
+      <path d="M9 13 L5.2 3.5 L13 9.2 Z" fill="#FBFBFE" stroke="#0A0A0A" stroke-width="1" stroke-linejoin="round"/>
+      <path d="M31 13 L34.8 3.5 L27 9.2 Z" fill="#FBFBFE" stroke="#0A0A0A" stroke-width="1" stroke-linejoin="round"/>
+      <path d="M9 13 C9 28 12.5 34 20 37 C27.5 34 31 28 31 13 C28 8 12 8 9 13 Z" fill="#FBFBFE" stroke="#0A0A0A" stroke-width="1"/>
+      <ellipse cx="14" cy="21" rx="2.6" ry="3.6" fill="#0A0A0A"/>
+      <ellipse cx="26" cy="21" rx="2.6" ry="3.6" fill="#0A0A0A"/>
+      <ellipse cx="20" cy="31.5" rx="4.3" ry="3.2" fill="#0A0A0A"/>
+    </svg>
+  </span>
   <span class="js-balance-value" id="jsBalanceValue">0</span>
 </div>
 
 <!-- Start Screen with Mountain and Sun -->
 <div id="start-screen">
   <div class="welcome">WELCOME TO BALL LAUNCHER</div>
-  <div class="reward-hint">🎁 COMPLETE ALL 27 LEVELS TO EARN 1000 JR 🎁</div>
+  <div class="reward-hint">
+    <span> 👉 COMPLETE ALL 27 LEVELS TO EARN 1000 COINS </span>
+  </div>
   <button class="start-button" id="startButton">START</button>
   <button class="settings-button" id="settingsButton">SETTINGS</button>
-  <button class="withdraw-button" id="withdrawButton">WITHDRAW JR</button>
+  <button class="withdraw-button" id="withdrawButton">WITHDRAW COINS</button>
   <div class="mountain"></div>
   <div class="sun"></div>
 </div>
@@ -1487,10 +1515,23 @@
 <!-- Withdraw Modal -->
 <div class="withdraw-modal" id="withdrawModal">
   <div class="withdraw-content">
-    <div class="withdraw-title">WITHDRAW JR</div>
-    <div class="withdraw-balance">Game balance: <span class="js-balance-value" id="withdrawBalanceValue">0</span> JR</div>
-    <input type="text" class="withdraw-input" id="withdrawUsername" placeholder="Enter your PMER username" autocomplete="off" autocapitalize="off" spellcheck="false">
-    <div class="withdraw-hint">Example: yourname (without @). We will credit the JR balance of that PMER account instantly.</div>
+    <div class="withdraw-title">
+      <span class="coin-icon">
+        <svg viewBox="0 0 40 40" width="28" height="28" aria-hidden="true">
+          <circle cx="20" cy="20" r="19.4" fill="#FBFBFE"/>
+          <path d="M9 13 L5.2 3.5 L13 9.2 Z" fill="#FBFBFE" stroke="#0A0A0A" stroke-width="1" stroke-linejoin="round"/>
+          <path d="M31 13 L34.8 3.5 L27 9.2 Z" fill="#FBFBFE" stroke="#0A0A0A" stroke-width="1" stroke-linejoin="round"/>
+          <path d="M9 13 C9 28 12.5 34 20 37 C27.5 34 31 28 31 13 C28 8 12 8 9 13 Z" fill="#FBFBFE" stroke="#0A0A0A" stroke-width="1"/>
+          <ellipse cx="14" cy="21" rx="2.6" ry="3.6" fill="#0A0A0A"/>
+          <ellipse cx="26" cy="21" rx="2.6" ry="3.6" fill="#0A0A0A"/>
+          <ellipse cx="20" cy="31.5" rx="4.3" ry="3.2" fill="#0A0A0A"/>
+        </svg>
+      </span>
+      WITHDRAW COINS
+    </div>
+    <div class="withdraw-balance">Game balance: <span class="js-balance-value" id="withdrawBalanceValue">0</span> coins</div>
+    <input type="text" class="withdraw-input" id="withdrawUsername" placeholder="Enter your Telegram username" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <div class="withdraw-hint">Example: yourname (without @). We will credit the coin balance of that DOGS account instantly.</div>
     <div class="withdraw-error" id="withdrawError"></div>
     <div class="withdraw-success" id="withdrawSuccess"></div>
     <div class="withdraw-actions">
@@ -1554,7 +1595,7 @@
       <div class="tutorial-text">
         Drag <span class="tutorial-highlight">upward</span> in the power box to set the launch power.<br>
         Release to launch the ball into the target.<br>
-        Complete all 27 levels to earn <span class="tutorial-highlight">1000 JR</span>!
+        Complete all 27 levels to earn <span class="tutorial-highlight">1000 coins</span>!
       </div>
       <button class="tutorial-button" id="tutorialButton">GOT IT!</button>
     </div>
@@ -1575,7 +1616,20 @@
 <div class="session3-complete-screen" id="session3CompleteScreen">
   <div class="session3-complete-title">🎉 CONGRATULATIONS! 🎉</div>
   <div class="session3-complete-sub">You completed all 27 levels!</div>
-  <div class="reward-big">+1000 JR</div>
+  <div class="reward-big">
+    <span class="coin-icon">
+      <svg viewBox="0 0 40 40" aria-hidden="true">
+        <circle cx="20" cy="20" r="19.4" fill="#FBFBFE"/>
+        <path d="M9 13 L5.2 3.5 L13 9.2 Z" fill="#FBFBFE" stroke="#0A0A0A" stroke-width="1" stroke-linejoin="round"/>
+        <path d="M31 13 L34.8 3.5 L27 9.2 Z" fill="#FBFBFE" stroke="#0A0A0A" stroke-width="1" stroke-linejoin="round"/>
+        <path d="M9 13 C9 28 12.5 34 20 37 C27.5 34 31 28 31 13 C28 8 12 8 9 13 Z" fill="#FBFBFE" stroke="#0A0A0A" stroke-width="1"/>
+        <ellipse cx="14" cy="21" rx="2.6" ry="3.6" fill="#0A0A0A"/>
+        <ellipse cx="26" cy="21" rx="2.6" ry="3.6" fill="#0A0A0A"/>
+        <ellipse cx="20" cy="31.5" rx="4.3" ry="3.2" fill="#0A0A0A"/>
+      </svg>
+    </span>
+    <span>+1000 COINS</span>
+  </div>
   <div class="session3-complete-buttons">
     <button class="s3-complete-button s3-claim" id="s3ClaimButton">CLAIM REWARD</button>
   </div>
@@ -1637,8 +1691,8 @@
 
   const GAME_USER_ID = getOrCreateUserId();
   const GAME_USER_PATH = 'game/users/' + GAME_USER_ID;
-  const COMPLETION_REWARD = 1000;   // JR for completing all 27 levels
-  const JR_TO_PMER_JR_RATE = 1;     // 1 game JR = 1 PMER JR
+  const COMPLETION_REWARD = 1000;   // coins for completing all 27 levels
+  const GAME_COIN_TO_APP_COIN = 1;  // 1 game coin = 1 DOGS app coin
 
   let jsBalanceRef = null;
 
@@ -1705,9 +1759,6 @@
 
   /**************************************************************************
    *  AD INTEGRATION
-   *  - Primary: AdsGram (blockId: int-24138)
-   *  - Fallback: AdsBitvex (appId: 000274 → window.showadsbitvex())
-   *  - Last resort: Open an external ad link
    **************************************************************************/
   const ADSGRAM_BLOCK_ID = 'int-24138';
   const AD_LINKS = [
@@ -1742,9 +1793,7 @@
       await window.showadsbitvex();
   }
 
-  /* Game-over / reward ad: AdsGram first, fall back to AdsBitvex, then link */
   async function triggerAd() {
-      // 1) Try AdsGram
       try {
           await showAdsGramAd();
           console.log('[Ad] AdsGram shown');
@@ -1752,8 +1801,6 @@
       } catch (e) {
           console.warn('[Ad] AdsGram failed:', e && e.message);
       }
-
-      // 2) Fallback to AdsBitvex
       try {
           await showAdsBitvexAd();
           console.log('[Ad] AdsBitvex shown');
@@ -1761,16 +1808,12 @@
       } catch (e) {
           console.warn('[Ad] AdsBitvex failed:', e && e.message);
       }
-
-      // 3) Last resort: open an ad link
       try {
           console.log('[Ad] Both SDKs failed, opening ad link');
           openAdLink();
       } catch (e) {
           console.warn('[Ad] openAdLink failed:', e);
       }
-
-      // 4) Keep Android bridge compatibility (native app)
       if (window.AndroidBridge && window.AndroidBridge.showGameOverAd) {
           try { window.AndroidBridge.showGameOverAd(); } catch (e) {}
       } else if (window.AndroidBridge && AndroidBridge.onLevelCompleted) {
@@ -1917,7 +1960,7 @@
   ball.style.bottom = ballPosition.y + 'px';
 
   /**************************************************************************
-   *  Firebase: JR balance
+   *  Firebase: coin balance
    **************************************************************************/
   function updateJsDisplay() {
       const val = gameState.jsBalance || 0;
@@ -3013,7 +3056,7 @@
       session3CompleteScreen.style.display = 'none';
       newRunToast.style.display = 'block';
 
-      showGameToast('+' + COMPLETION_REWARD + ' JR added!');
+      showGameToast('+' + COMPLETION_REWARD + ' coins added!');
 
       setTimeout(() => {
           newRunToast.style.display = 'none';
@@ -3486,7 +3529,7 @@
   }
 
   /**************************************************************************
-   *  Withdraw flow
+   *  Withdraw flow — credits the DOGS app user's coin balance
    **************************************************************************/
   function openWithdrawModal() {
       ensureAudio(); soundClick();
@@ -3507,7 +3550,7 @@
       withdrawSuccessEl.textContent = '';
 
       const raw = withdrawUsernameInput.value.trim();
-      if (!raw) { withdrawErrorEl.textContent = 'Please enter your PMER username.'; return; }
+      if (!raw) { withdrawErrorEl.textContent = 'Please enter your Telegram username.'; return; }
       const username = raw.replace(/^@+/, '').toLowerCase();
       if (!/^[a-z0-9_]{3,32}$/.test(username)) {
           withdrawErrorEl.textContent = 'That does not look like a valid username.';
@@ -3516,7 +3559,7 @@
 
       const amount = Math.floor(gameState.jsBalance || 0);
       if (amount < 1) {
-          withdrawErrorEl.textContent = 'You have no JR to withdraw.';
+          withdrawErrorEl.textContent = 'You have no coins to withdraw.';
           return;
       }
 
@@ -3531,16 +3574,18 @@
       }
 
       try {
+          // Look up the DOGS app user by username
           const snap = await db.ref('pn/users').orderByChild('username').equalTo(username).once('value');
           if (!snap.exists()) {
-              withdrawErrorEl.textContent = 'No PMER user found with @' + username;
+              withdrawErrorEl.textContent = 'No DOGS user found with @' + username;
               withdrawConfirmBtn.disabled = false;
               withdrawConfirmBtn.textContent = 'WITHDRAW';
               return;
           }
           const users = snap.val();
-          const pmerUserId = Object.keys(users)[0];
+          const targetUserId = Object.keys(users)[0];
 
+          // Deduct from game balance
           const tx = await db.ref(GAME_USER_PATH + '/jsBalance').transaction(cur => {
               const n = (typeof cur === 'number' && isFinite(cur)) ? cur : 0;
               if (n < amount) return;
@@ -3553,16 +3598,17 @@
               return;
           }
 
-          const pmerAmount = amount * JR_TO_PMER_JR_RATE;
-          await db.ref('pn/users/' + pmerUserId).transaction(u => {
+          // Credit the DOGS app user's coin balance
+          const appAmount = amount * GAME_COIN_TO_APP_COIN;
+          await db.ref('pn/users/' + targetUserId).transaction(u => {
               if (!u) return u;
-              u.balance = (u.balance || 0) + pmerAmount;
-              u.totalIncome = (u.totalIncome || 0) + pmerAmount;
+              u.balance = (u.balance || 0) + appAmount;
+              u.totalIncome = (u.totalIncome || 0) + appAmount;
               return u;
           });
 
-          withdrawSuccessEl.textContent = 'Success! ' + amount + ' JR -> @' + username;
-          showGameToast('Withdrew ' + amount + ' JR to @' + username);
+          withdrawSuccessEl.textContent = 'Success! ' + amount + ' coins -> @' + username;
+          showGameToast('Withdrew ' + amount + ' coins to @' + username);
           withdrawConfirmBtn.textContent = 'SENT';
           setTimeout(() => {
               closeWithdrawModal();
