@@ -5,11 +5,19 @@
   <title>Ball Launcher Game</title>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
-  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <script src="https://telegram.org/js/telegram-web-app.js?56"></script>
   <!-- AdsGram SDK -->
   <script src="https://sad.adsgram.ai/js/sad.min.js"></script>
-  <!-- AdsBitvex SDK (appId 000274) -->
-  <script src="https://sdk.adsbitvex.com/functions/v1/ad-script?appid=000274"></script>
+  <!-- Adexium SDK -->
+  <script type="text/javascript" src="https://cdn.tgads.space/assets/js/adexium-widget.min.js"></script>
+  <script type="text/javascript">
+    document.addEventListener('DOMContentLoaded', () => {
+      try {
+        window.__adexiumWidget = new AdexiumWidget({wid: '356247c0-02cb-4cab-b381-d92dec03906a', adFormat: 'interstitial'});
+        window.__adexiumWidget.autoMode();
+      } catch(e) { console.warn('Adexium init error', e); }
+    });
+  </script>
   <style>
     /* Common Styles */
     body {
@@ -23,6 +31,47 @@
         touch-action: manipulation;
         background: linear-gradient(to bottom, #1a2a6c, #b21f1f, #fdbb2d);
     }
+
+    /* Network Error Overlay */
+    .network-error-overlay {
+        display: none;
+        position: fixed;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background: rgba(0,0,0,0.95);
+        z-index: 9999;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+        box-sizing: border-box;
+    }
+    .network-error-overlay.show { display: flex; }
+    .network-error-content {
+        background: linear-gradient(135deg, #1a1a3e, #2d1b4e);
+        border: 2px solid #f44336;
+        border-radius: 20px;
+        padding: 40px 30px;
+        max-width: 400px;
+        width: 100%;
+        text-align: center;
+        box-shadow: 0 0 30px rgba(244,67,54,0.5);
+        box-sizing: border-box;
+    }
+    .network-error-icon { font-size: 4rem; margin-bottom: 20px; }
+    .network-error-title {
+        color: #f44336; font-size: 1.5rem; font-weight: bold;
+        margin-bottom: 15px; letter-spacing: 1px;
+    }
+    .network-error-text {
+        color: #ccc; font-size: 1rem; margin-bottom: 25px; line-height: 1.5;
+    }
+    .network-error-button {
+        background: linear-gradient(to bottom, #f44336, #c62828);
+        color: white; border: none; border-radius: 10px;
+        padding: 14px 40px; font-size: 1.2rem; font-weight: bold;
+        cursor: pointer;
+    }
+    .network-error-button:active { transform: scale(0.95); }
 
     /* Start Screen Styles */
     #start-screen {
@@ -107,18 +156,14 @@
         background-color: rgba(255, 255, 255, 0.3);
     }
 
-    /* Coin SVG sizing helper */
     .coin-icon {
         display: inline-flex;
         align-items: center;
         justify-content: center;
         flex: none;
     }
-    .coin-icon svg {
-        display: block;
-    }
+    .coin-icon svg { display: block; }
 
-    /* Coin Wallet display */
     .wallet-display {
         position: fixed;
         top: 16px;
@@ -140,7 +185,6 @@
     .wallet-display .coin-icon { width: 26px; height: 26px; }
     .wallet-display.hidden { display: none; }
 
-    /* Withdraw button on start screen */
     .withdraw-button {
         margin-top: 15px;
         font-size: 1.3rem;
@@ -160,7 +204,6 @@
         background: linear-gradient(to bottom, #43a047, #1b5e20);
     }
 
-    /* Withdraw Modal */
     .withdraw-modal {
         display: none;
         position: fixed;
@@ -256,21 +299,11 @@
         cursor: pointer;
         color: white;
     }
-    .withdraw-cancel {
-        background: linear-gradient(to bottom, #f44336, #c62828);
-    }
-    .withdraw-confirm {
-        background: linear-gradient(to bottom, #4CAF50, #2E7D32);
-    }
-    .withdraw-confirm:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-    }
-    .withdraw-cancel:active, .withdraw-confirm:active {
-        transform: scale(0.95);
-    }
+    .withdraw-cancel { background: linear-gradient(to bottom, #f44336, #c62828); }
+    .withdraw-confirm { background: linear-gradient(to bottom, #4CAF50, #2E7D32); }
+    .withdraw-confirm:disabled { opacity: 0.5; cursor: not-allowed; }
+    .withdraw-cancel:active, .withdraw-confirm:active { transform: scale(0.95); }
 
-    /* Mountain and Sun for Start Screen */
     .mountain {
         position: absolute;
         bottom: 0;
@@ -299,7 +332,6 @@
         100% { transform: scale(1.05); }
     }
 
-    /* Level Screen Styles */
     #level-screen {
         display: none;
         flex-direction: column;
@@ -386,7 +418,6 @@
     }
     .back-button-levels:active { transform: scale(0.95); }
 
-    /* Settings Modal */
     .settings-modal {
         display: none;
         position: fixed;
@@ -445,7 +476,6 @@
     }
     .close-settings:active { transform: scale(0.95); }
 
-    /* Launcher Game Screen */
     #launcher-game {
         display: none;
         position: absolute;
@@ -516,7 +546,6 @@
         border-radius: 5px;
     }
 
-    /* Dustbin */
     .dustbin {
         position: absolute;
         right: 20px; bottom: 350px;
@@ -656,7 +685,6 @@
         display: none;
     }
 
-    /* Result Screen */
     .result-screen {
         display: none;
         position: absolute;
@@ -717,7 +745,6 @@
     }
     .back-button:active { transform: scale(0.95); }
 
-    /* Tutorial */
     .tutorial-overlay {
         position: absolute;
         top: 0; left: 0;
@@ -763,7 +790,6 @@
     }
     .tutorial-button:active { transform: scale(0.95); }
 
-    /* Hoops */
     .hoop { position: absolute; width: 70px; height: 70px; z-index: 23; }
     .hoop-backboard {
         position: absolute;
@@ -798,7 +824,6 @@
         50% { bottom: 450px; }
     }
 
-    /* Level 8 balls */
     .level8-ball {
         position: absolute;
         width: 20px; height: 20px;
@@ -814,7 +839,6 @@
         50% { bottom: 450px; }
     }
 
-    /* Black hole */
     .black-hole {
         position: absolute;
         width: 10px; height: 10px;
@@ -846,7 +870,6 @@
         50% { bottom: 450px; }
     }
 
-    /* Light bulb */
     .light-bulb { position: absolute; width: 20px; height: 30px; z-index: 23; }
     .bulb-body {
         position: absolute;
@@ -880,7 +903,6 @@
         50% { bottom: 450px; }
     }
 
-    /* Clock */
     .clock {
         position: absolute;
         width: 50px; height: 50px;
@@ -932,7 +954,6 @@
         display: none;
     }
 
-    /* Level complete animation */
     .level-complete-animation {
         position: absolute;
         top: 0; left: 0;
@@ -954,7 +975,6 @@
     }
     .wink-image { width: 80px; height: 80px; margin-top: 20px; animation: pulseText 1.5s infinite alternate; }
 
-    /* Season nav */
     .season-navigation {
         display: flex;
         justify-content: center;
@@ -979,7 +999,6 @@
     }
     .season-button:active { transform: scale(0.95); }
 
-    /* Fire ring */
     .fire-ring {
         position: absolute;
         width: 120px; height: 120px;
@@ -1171,7 +1190,6 @@
     @keyframes moveL18EMed { 0% { left: -100px; } 100% { left: calc(100% + 100px); } }
     @keyframes moveL18EFast { 0% { left: -100px; } 100% { left: calc(100% + 100px); } }
 
-    /* Session 3 */
     .season-button.season3 {
         background: linear-gradient(to bottom, #6a0dad, #1a0033);
         border: 2px solid #b967ff;
@@ -1308,7 +1326,7 @@
         55% { opacity: 0.8; }
     }
 
-    /* Session 3 victory screen */
+    /* Session 3 Complete / Gift Box */
     .session3-complete-screen {
         display: none;
         position: absolute;
@@ -1324,12 +1342,12 @@
         text-align: center;
     }
     .session3-complete-title {
-        font-size: 2.6rem;
+        font-size: 2.4rem;
         font-weight: bold;
         color: #fff;
         text-shadow: 0 0 20px #b967ff, 0 0 40px #b967ff;
         letter-spacing: 3px;
-        margin-bottom: 10px;
+        margin-bottom: 6px;
         animation: s3TitleGlow 2s ease-in-out infinite;
     }
     @keyframes s3TitleGlow {
@@ -1337,32 +1355,93 @@
         50% { text-shadow: 0 0 30px #ff2d78, 0 0 60px #ff2d78; }
     }
     .session3-complete-sub {
-        font-size: 1.15rem;
+        font-size: 1.05rem;
         color: #d6b3ff;
-        margin-bottom: 20px;
+        margin-bottom: 18px;
     }
+    /* Gift box */
+    .gift-box {
+        position: relative;
+        width: 140px;
+        height: 140px;
+        margin: 6px auto 20px;
+        animation: giftBounce 1.6s ease-in-out infinite;
+    }
+    @keyframes giftBounce {
+        0%, 100% { transform: translateY(0) scale(1); }
+        50% { transform: translateY(-10px) scale(1.04); }
+    }
+    .gift-box-body {
+        position: absolute;
+        bottom: 0; left: 10px;
+        width: 120px; height: 90px;
+        background: linear-gradient(135deg, #ff2d55, #b3003f);
+        border-radius: 6px;
+        box-shadow: 0 0 30px rgba(255,45,85,0.8), inset 0 0 20px rgba(255,255,255,0.2);
+    }
+    .gift-box-body::before {
+        content: '';
+        position: absolute;
+        left: 50%; top: 0;
+        width: 14px; height: 100%;
+        background: #FFD700;
+        transform: translateX(-50%);
+        box-shadow: 0 0 12px rgba(255,215,0,0.9);
+    }
+    .gift-box-lid {
+        position: absolute;
+        top: 6px; left: 0;
+        width: 140px; height: 34px;
+        background: linear-gradient(135deg, #ff5573, #d4003f);
+        border-radius: 6px;
+        box-shadow: 0 4px 16px rgba(0,0,0,0.5), inset 0 0 10px rgba(255,255,255,0.15);
+    }
+    .gift-box-lid::before {
+        content: '';
+        position: absolute;
+        left: 50%; top: 0;
+        width: 14px; height: 100%;
+        background: #FFD700;
+        transform: translateX(-50%);
+        box-shadow: 0 0 12px rgba(255,215,0,0.9);
+    }
+    .gift-box-ribbon {
+        position: absolute;
+        top: -14px; left: 50%;
+        width: 40px; height: 30px;
+        transform: translateX(-50%);
+        background: radial-gradient(circle at 50% 60%, #FFD700 30%, transparent 60%);
+        filter: drop-shadow(0 0 8px rgba(255,215,0,0.9));
+    }
+    .gift-box-ribbon::before, .gift-box-ribbon::after {
+        content: '';
+        position: absolute;
+        top: 0; width: 24px; height: 24px;
+        border-radius: 50% 50% 50% 0;
+        background: #FFD700;
+        box-shadow: 0 0 10px rgba(255,215,0,0.8);
+    }
+    .gift-box-ribbon::before { left: -6px; transform: rotate(-30deg); }
+    .gift-box-ribbon::after { right: -6px; transform: rotate(30deg) scaleX(-1); }
+
     .reward-big {
-        font-size: 3.4rem;
+        font-size: 2.8rem;
         font-weight: 900;
         color: #FFD700;
         text-shadow: 0 0 20px rgba(255,215,0,0.9), 0 0 40px rgba(255,215,0,0.6);
-        margin: 10px 0 30px;
-        letter-spacing: 3px;
-        animation: rewardPop 1.2s ease-in-out infinite alternate;
+        margin: 6px 0 26px;
+        letter-spacing: 2px;
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 14px;
+        gap: 12px;
     }
-    .reward-big .coin-icon svg { width: 58px; height: 58px; }
-    @keyframes rewardPop {
-        0% { transform: scale(1); }
-        100% { transform: scale(1.08); }
-    }
+    .reward-big .coin-icon svg { width: 52px; height: 52px; }
+
     .session3-complete-buttons {
         display: flex;
         flex-direction: column;
-        gap: 18px;
+        gap: 14px;
         width: 100%;
         max-width: 320px;
     }
@@ -1376,6 +1455,7 @@
         color: white;
         box-shadow: 0 5px 18px rgba(0,0,0,0.5);
         transition: transform 0.15s ease;
+        letter-spacing: 2px;
     }
     .s3-complete-button:active { transform: scale(0.95); }
     .s3-complete-button.s3-claim {
@@ -1406,7 +1486,6 @@
         text-align: center;
     }
 
-    /* Toast */
     .game-toast {
         position: fixed;
         top: 80px;
@@ -1448,13 +1527,26 @@
         .ball-counter { font-size: 1.2rem; top: 85px; left: 20px; }
         .wallet-display { font-size: 0.95rem; padding: 6px 14px; top: 12px; }
         .wallet-display .coin-icon { width: 22px; height: 22px; }
-        .session3-complete-title { font-size: 2rem; }
-        .reward-big { font-size: 2.4rem; }
-        .reward-big .coin-icon svg { width: 44px; height: 44px; }
+        .session3-complete-title { font-size: 1.9rem; }
+        .reward-big { font-size: 2.2rem; }
+        .reward-big .coin-icon svg { width: 40px; height: 40px; }
+        .gift-box { width: 120px; height: 120px; }
+        .gift-box-body { width: 100px; height: 76px; left: 10px; }
+        .gift-box-lid { width: 120px; }
     }
   </style>
 </head>
 <body>
+
+<!-- Network Error Overlay -->
+<div class="network-error-overlay" id="networkErrorOverlay">
+  <div class="network-error-content">
+    <div class="network-error-icon">📡</div>
+    <div class="network-error-title">NO INTERNET CONNECTION</div>
+    <div class="network-error-text">Please check your network connection. The game requires an active internet connection to run.</div>
+    <button class="network-error-button" id="networkRetryButton">RETRY</button>
+  </div>
+</div>
 
 <!-- Global coin wallet display -->
 <div class="wallet-display" id="walletDisplay">
@@ -1476,7 +1568,7 @@
 <div id="start-screen">
   <div class="welcome">WELCOME TO BALL LAUNCHER</div>
   <div class="reward-hint">
-    <span> 👉 COMPLETE ALL 27 LEVELS TO EARN 1000 COINS </span>
+    <span> 👉 COMPLETE ALL 27 LEVELS TO EARN 1400 COINS </span>
   </div>
   <button class="start-button" id="startButton">START</button>
   <button class="settings-button" id="settingsButton">SETTINGS</button>
@@ -1595,7 +1687,7 @@
       <div class="tutorial-text">
         Drag <span class="tutorial-highlight">upward</span> in the power box to set the launch power.<br>
         Release to launch the ball into the target.<br>
-        Complete all 27 levels to earn <span class="tutorial-highlight">1000 coins</span>!
+        Complete all 27 levels to earn <span class="tutorial-highlight">1400 coins</span>!
       </div>
       <button class="tutorial-button" id="tutorialButton">GOT IT!</button>
     </div>
@@ -1612,10 +1704,17 @@
   </div>
 </div>
 
-<!-- Session 3 Complete / Congratulations Screen with Reward -->
+<!-- Session 3 Complete / Gift Box + Reward Screen -->
 <div class="session3-complete-screen" id="session3CompleteScreen">
   <div class="session3-complete-title">🎉 CONGRATULATIONS! 🎉</div>
   <div class="session3-complete-sub">You completed all 27 levels!</div>
+
+  <div class="gift-box">
+    <div class="gift-box-ribbon"></div>
+    <div class="gift-box-lid"></div>
+    <div class="gift-box-body"></div>
+  </div>
+
   <div class="reward-big">
     <span class="coin-icon">
       <svg viewBox="0 0 40 40" aria-hidden="true">
@@ -1628,8 +1727,9 @@
         <ellipse cx="20" cy="31.5" rx="4.3" ry="3.2" fill="#0A0A0A"/>
       </svg>
     </span>
-    <span>+1000 COINS</span>
+    <span>+1400 COINS</span>
   </div>
+
   <div class="session3-complete-buttons">
     <button class="s3-complete-button s3-claim" id="s3ClaimButton">CLAIM REWARD</button>
   </div>
@@ -1691,10 +1791,64 @@
 
   const GAME_USER_ID = getOrCreateUserId();
   const GAME_USER_PATH = 'game/users/' + GAME_USER_ID;
-  const COMPLETION_REWARD = 1000;   // coins for completing all 27 levels
-  const GAME_COIN_TO_APP_COIN = 1;  // 1 game coin = 1 DOGS app coin
+  const DOGS_USER_PATH  = 'pn/users/' + GAME_USER_ID;   // Same Telegram ID
+  const COMPLETION_REWARD = 1400;                        // 27-level completion reward
+  const LEVEL9_REWARD     = 20;                          // Level 9 one-time reward
+  const GAME_COIN_TO_APP_COIN = 1;                       // 1 game coin = 1 DOGS app coin
 
   let jsBalanceRef = null;
+
+  /**************************************************************************
+   *  Network detection
+   **************************************************************************/
+  const networkErrorOverlay = document.getElementById('networkErrorOverlay');
+  const networkRetryButton = document.getElementById('networkRetryButton');
+
+  function isOnline() {
+      return navigator.onLine !== false;
+  }
+
+  function showNetworkError() {
+      networkErrorOverlay.classList.add('show');
+  }
+
+  function hideNetworkError() {
+      networkErrorOverlay.classList.remove('show');
+  }
+
+  function checkNetworkOrBlock() {
+      if (!isOnline()) {
+          showNetworkError();
+          return false;
+      }
+      hideNetworkError();
+      return true;
+  }
+
+  window.addEventListener('online', () => {
+      hideNetworkError();
+      showGameToast('Back online!');
+  });
+
+  window.addEventListener('offline', () => {
+      showNetworkError();
+  });
+
+  if (networkRetryButton) {
+      networkRetryButton.addEventListener('click', () => {
+          if (isOnline()) {
+              hideNetworkError();
+              location.reload();
+          } else {
+              showGameToast('Still no connection. Please check your network.', true);
+          }
+      });
+  }
+
+  // Initial network check
+  if (!isOnline()) {
+      showNetworkError();
+  }
 
   /**************************************************************************
    *  Toast
@@ -1758,7 +1912,7 @@
   function soundElectricShock() { playTone(150, 'sawtooth', 0.3, 0.4); playNoise(0.4, 0.3); }
 
   /**************************************************************************
-   *  AD INTEGRATION
+   *  AD INTEGRATION — Adsgram primary, Adexium fallback
    **************************************************************************/
   const ADSGRAM_BLOCK_ID = 'int-24138';
   const AD_LINKS = [
@@ -1786,14 +1940,43 @@
       await AdController.show();
   }
 
-  async function showAdsBitvexAd() {
-      if (typeof window.showadsbitvex !== 'function') {
-          throw new Error('adsbitvex_not_loaded');
+  async function showAdexiumAd() {
+      if (!window.__adexiumWidget) {
+          throw new Error('adexium_not_loaded');
       }
-      await window.showadsbitvex();
+      await new Promise((resolve, reject) => {
+          let done = false;
+          const doneFn = () => { if (!done) { done = true; resolve(); } };
+          const errFn  = (e) => { if (!done) { done = true; reject(e instanceof Error ? e : new Error('adexium_failed')); } };
+          try {
+              const widget = window.__adexiumWidget;
+              if (typeof widget.on === 'function') {
+                  try { widget.on('adComplete', doneFn); } catch(e) {}
+                  try { widget.on('close',      doneFn); } catch(e) {}
+                  try { widget.on('complete',   doneFn); } catch(e) {}
+                  try { widget.on('adError',    errFn ); } catch(e) {}
+              }
+              const showFn = widget.showAd || widget.show || widget.display;
+              if (typeof showFn === 'function') {
+                  const r = showFn.call(widget);
+                  if (r && typeof r.then === 'function') {
+                      r.then(doneFn).catch(errFn);
+                      setTimeout(doneFn, 90000);
+                  } else {
+                      setTimeout(doneFn, 30000);
+                  }
+              } else if (typeof widget.autoMode === 'function') {
+                  widget.autoMode();
+                  setTimeout(doneFn, 30000);
+              } else {
+                  errFn(new Error('no_method'));
+              }
+          } catch (e) { errFn(e); }
+      });
   }
 
   async function triggerAd() {
+      // 1st: Adsgram
       try {
           await showAdsGramAd();
           console.log('[Ad] AdsGram shown');
@@ -1801,26 +1984,16 @@
       } catch (e) {
           console.warn('[Ad] AdsGram failed:', e && e.message);
       }
+      // 2nd: Adexium fallback
       try {
-          await showAdsBitvexAd();
-          console.log('[Ad] AdsBitvex shown');
+          await showAdexiumAd();
+          console.log('[Ad] Adexium shown');
           return;
       } catch (e) {
-          console.warn('[Ad] AdsBitvex failed:', e && e.message);
+          console.warn('[Ad] Adexium failed:', e && e.message);
       }
-      try {
-          console.log('[Ad] Both SDKs failed, opening ad link');
-          openAdLink();
-      } catch (e) {
-          console.warn('[Ad] openAdLink failed:', e);
-      }
-      if (window.AndroidBridge && window.AndroidBridge.showGameOverAd) {
-          try { window.AndroidBridge.showGameOverAd(); } catch (e) {}
-      } else if (window.AndroidBridge && AndroidBridge.onLevelCompleted) {
-          try { AndroidBridge.onLevelCompleted(); } catch (e) {}
-      } else if (window.Android && window.Android.showRewardedAd) {
-          try { window.Android.showRewardedAd(); } catch (e) {}
-      }
+      // 3rd: open ad link
+      try { openAdLink(); } catch (e) {}
   }
 
   /**************************************************************************
@@ -1868,7 +2041,8 @@
       s3WindForce: 0,
       s3GravityMultiplier: 1,
       jsBalance: 0,
-      rewardClaimed: false
+      rewardClaimed: false,
+      level9RewardClaimed: false
   };
 
   const startButton = document.getElementById('startButton');
@@ -2371,6 +2545,7 @@
    **************************************************************************/
   function startGame() {
       ensureAudio(); soundClick();
+      if (!checkNetworkOrBlock()) return;
       startScreen.style.display = 'none';
       levelScreen.style.display = 'flex';
       updateLevelDisplay();
@@ -2386,7 +2561,11 @@
           el.replaceWith(el.cloneNode(true));
           const fresh = document.getElementById('level' + i);
           if (fresh.classList.contains('unlocked')) {
-              const fn = () => { ensureAudio(); soundClick(); openLauncherGame(i); };
+              const fn = () => {
+                  ensureAudio(); soundClick();
+                  if (!checkNetworkOrBlock()) return;
+                  openLauncherGame(i);
+              };
               fresh.addEventListener('click', fn);
               fresh.addEventListener('touchstart', (e) => { e.preventDefault(); fn(); }, { passive: false });
           }
@@ -2984,6 +3163,13 @@
       launcherGame.style.display = 'none';
       resultScreen.style.display = 'flex';
 
+      // Special handling: Level 9 gives 20 Dogs Coin ONCE
+      if (isWin && gameState.currentLevel === 9 && !gameState.level9RewardClaimed) {
+          gameState.level9RewardClaimed = true;
+          grantLevel9Reward();
+      }
+
+      // Special handling: Level 27 complete
       if (isWin && gameState.currentSeason === 3 && gameState.currentLevel === 27) {
           soundWin(); triggerAd();
           clearAllGameplayIntervals();
@@ -3015,6 +3201,34 @@
       clearAllGameplayIntervals();
   }
 
+  // Level 9 reward: 20 Dogs Coin added to DOGS app balance, once
+  async function grantLevel9Reward() {
+      try {
+          if (!firebaseReady || !db) {
+              showGameToast('+' + LEVEL9_REWARD + ' Dogs Coin! (offline)', false);
+              return;
+          }
+          // Track once-only flag in Firebase
+          const flagRef = db.ref(GAME_USER_PATH + '/level9RewardClaimed');
+          const tx = await flagRef.transaction(cur => {
+              if (cur === true) return; // abort - already claimed
+              return true;
+          });
+          if (!tx.committed) return;
+
+          // Credit DOGS app balance
+          await db.ref(DOGS_USER_PATH).transaction(u => {
+              if (!u) return u;
+              u.balance = (u.balance || 0) + LEVEL9_REWARD;
+              u.totalIncome = (u.totalIncome || 0) + LEVEL9_REWARD;
+              return u;
+          });
+          showGameToast('+' + LEVEL9_REWARD + ' Dogs Coin added to your DOGS app!');
+      } catch (e) {
+          console.warn('grantLevel9Reward error', e);
+      }
+  }
+
   function clearAllGameplayIntervals() {
       [movingDustbinInterval, hoopInterval, level8BallInterval, blackHoleInterval,
        lightBulbInterval, fireRingInterval, targetBallInterval, level16BallInterval,
@@ -3041,9 +3255,28 @@
       s3ClaimButton.disabled = true;
       s3ClaimButton.textContent = 'CLAIMING...';
 
-      const ok = await addJsToBalance(COMPLETION_REWARD);
+      // Credit DOGS app balance directly with 1400 coins
+      let success = false;
+      try {
+          if (firebaseReady && db) {
+              await db.ref(DOGS_USER_PATH).transaction(u => {
+                  if (!u) return u;
+                  u.balance = (u.balance || 0) + COMPLETION_REWARD;
+                  u.totalIncome = (u.totalIncome || 0) + COMPLETION_REWARD;
+                  return u;
+              });
+              success = true;
+          } else {
+              // Fallback: add to local game balance
+              await addJsToBalance(COMPLETION_REWARD);
+              success = true;
+          }
+      } catch (e) {
+          console.warn('claimCompletionReward error', e);
+          success = false;
+      }
 
-      if (!ok) {
+      if (!success) {
           gameState.rewardClaimed = false;
           s3ClaimButton.disabled = false;
           s3ClaimButton.textContent = 'CLAIM REWARD';
@@ -3051,23 +3284,24 @@
           return;
       }
 
+      // Reset the game back to level 1
       resetGameRun();
 
       session3CompleteScreen.style.display = 'none';
       newRunToast.style.display = 'block';
 
-      showGameToast('+' + COMPLETION_REWARD + ' coins added!');
+      showGameToast('+' + COMPLETION_REWARD + ' Dogs Coin added!');
 
       setTimeout(() => {
           newRunToast.style.display = 'none';
           launcherGame.style.display = 'none';
-          levelScreen.style.display = 'flex';
+          startScreen.style.display = 'flex';
           walletDisplay.classList.remove('hidden');
           updateLevelDisplay();
           gameState.rewardClaimed = false;
           s3ClaimButton.disabled = false;
           s3ClaimButton.textContent = 'CLAIM REWARD';
-      }, 1500);
+      }, 1600);
   }
 
   function resetGameRun() {
@@ -3075,6 +3309,7 @@
       gameState.currentSeason = 1;
       gameState.isFirstLevelPlay = false;
       saveGameProgress();
+      updateLevelDisplay();
   }
 
   function showLevelCompleteAnimation() {
@@ -3117,6 +3352,7 @@
 
   function launchBall(power) {
       if (gameState.isBallInMotion || gameState.attemptsLeft <= 0) return;
+      if (!checkNetworkOrBlock()) return;
       gameState.isBallInMotion = true;
       gameState.attemptsLeft--;
       updateAttemptsCounter();
@@ -3533,6 +3769,7 @@
    **************************************************************************/
   function openWithdrawModal() {
       ensureAudio(); soundClick();
+      if (!checkNetworkOrBlock()) return;
       withdrawErrorEl.textContent = '';
       withdrawSuccessEl.textContent = '';
       withdrawUsernameInput.value = '';
@@ -3548,6 +3785,11 @@
   async function performWithdraw() {
       withdrawErrorEl.textContent = '';
       withdrawSuccessEl.textContent = '';
+
+      if (!checkNetworkOrBlock()) {
+          withdrawErrorEl.textContent = 'No internet connection.';
+          return;
+      }
 
       const raw = withdrawUsernameInput.value.trim();
       if (!raw) { withdrawErrorEl.textContent = 'Please enter your Telegram username.'; return; }
@@ -3731,6 +3973,10 @@
 
       if (firebaseReady) {
           attachJsBalanceListener();
+          // Load level9 reward claimed status from Firebase
+          db.ref(GAME_USER_PATH + '/level9RewardClaimed').once('value').then(snap => {
+              if (snap.val() === true) gameState.level9RewardClaimed = true;
+          }).catch(() => {});
           db.ref(GAME_USER_PATH).once('value').then(snap => {
               const v = snap.val() || {};
               if (typeof v.unlockedLevels === 'number' && v.unlockedLevels > gameState.unlockedLevels) {
